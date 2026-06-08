@@ -6,8 +6,6 @@
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
-
 ## Goals
 
 <!-- Goals & requirements -->
@@ -19,3 +17,5 @@ Not Started
 ## History
 
 <!-- Keep this updated. Earliest to latest -->
+
+- Dashboard fase 1: creada la ruta `/dashboard`, top bar con búsqueda y placeholders de `Menu` y `Main`.
