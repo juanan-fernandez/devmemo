@@ -53,8 +53,7 @@ Items can belong to one of the following built‑in types:
 - File
 - Image
 - URL
-
-Custom types allowed for Pro users.
+- Custom type
 
 ### B) Collections
 
@@ -91,6 +90,12 @@ Full‑text search across:
 - Dark mode (default)
 
 ---
+
+## UI Screenshots
+
+Review the screenshots as base for design. It doesn't have to match exactly. Use it as reference.
+
+- For the dashboard and main screen of the application: @context/stich/screens/mainScreen.png
 
 ## 🗄️ Data Model (Rough Prisma Draft)
 
@@ -204,6 +209,7 @@ model ItemTag {
 
 ## 🎨 UI / UX
 
+- All the texts for the web must be in spanish
 - Dark mode / light mode toggle
 - Minimal, developer‑friendly UI
 - Syntax highlighting for code

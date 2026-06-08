@@ -2,6 +2,7 @@
 
 ## Communication
 
+- I will speak to you in english or in spanish
 - Be concise and direct
 - Explain non-obvious decisions briefly
 - Ask before large refactors or architectural changes
