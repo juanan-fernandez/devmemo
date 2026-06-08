@@ -49,6 +49,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --background: #121317;
   --foreground: #e3e2e7;
   --card: #161618;
@@ -84,6 +85,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #121317;
   --foreground: #e3e2e7;
   --card: #161618;
@@ -118,6 +120,13 @@
 }
 
 @layer base {
+  html,
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100%;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 export default function DashboardPage() {
   return (
     <div className="flex h-dvh flex-col">
-      <header className="flex shrink-0 items-center gap-4 border-b border-border px-6 py-3">
+      <header className="flex shrink-0 items-center gap-4 px-6 py-3">
         <h1 className="font-heading text-lg font-bold text-foreground">
           DevMemo
         </h1>
@@ -18,7 +18,7 @@ export default function DashboardPage() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-sidebar p-6">
+        <aside className="flex w-60 shrink-0 flex-col bg-sidebar p-6">
           <h2>Menu</h2>
         </aside>
         <main className="flex flex-1 flex-col items-center justify-center p-6">
