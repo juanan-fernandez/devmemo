@@ -20,7 +20,6 @@ export default function DashboardLayout({
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         onToggleCollapse={() => setCollapsed(!collapsed)}
-        onToggleMobile={() => setMobileOpen(!mobileOpen)}
         onCloseMobile={() => setMobileOpen(false)}
       />
       <div className="flex min-w-0 flex-1 flex-col">
