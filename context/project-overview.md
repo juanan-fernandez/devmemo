@@ -194,18 +194,18 @@ model ItemTag {
 
 ## 🧱 Tech Stack
 
-| Category     | Choice                       |
-| ------------ | ---------------------------- |
-| Framework    | **Next.js (React 19)**       |
-| Language     | TypeScript                   |
-| Database     | Neon PostgreSQL + Prisma ORM |
-| Caching      | Redis (optional)             |
-| File Storage | Cloudflare R2                |
-| CSS/UI       | Tailwind CSS v4 + ShadCN     |
-| Auth         | NextAuth v5 (email + GitHub) |
-| AI           | OpenAI gpt-5-nano            |
-| Deployment   | Vercel (likely)              |
-| Monitoring   | Sentry (later)               |
+| Category     | Choice                         |
+| ------------ | ------------------------------ |
+| Framework    | **Next.js (React 19)**         |
+| Language     | TypeScript                     |
+| Database     | Supabase PostgreSQL+Prisma ORM |
+| Caching      | Redis (optional)               |
+| File Storage | Cloudflare R2                  |
+| CSS/UI       | Tailwind CSS v4 + ShadCN       |
+| Auth         | NextAuth v5 (email + GitHub)   |
+| AI           | OpenAI gpt-5-nano              |
+| Deployment   | Vercel (likely)                |
+| Monitoring   | Sentry (later)                 |
 
 ## 🎨 UI / UX
 
@@ -233,7 +233,7 @@ model ItemTag {
 ```mermaid
 graph TD;
   Client <--> Next.API
-  Next.API --> Postgres[(Neon DB)]
+  Next.API --> Postgres[(Supabase DB)]
   Next.API --> R2[(File Storage)]
   Next.API --> OpenAI
   Next.API --> Redis[(Cache)]
