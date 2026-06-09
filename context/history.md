@@ -22,3 +22,13 @@
 
 - Dashboard fase 3 activada y marcada como `In Progress` usando `context/features/dashboard-3-spec.md` como referencia.
 - Dashboard fase 3: se implementó la sección principal con cards resumen, últimas colecciones, items fijados con vista de tarjetas o lista, y se añadió más margen lateral en la sección main.
+
+# 2026-06-09 :: 19:17 - Seed de system item types
+
+- Prisma + Supabase completado: esquema completo de 10 modelos con migración inicial.
+- Añadido `DIRECT_URL` a `.env.example` documentando la separación pooled vs directa.
+- Creado `prisma/seed.ts` con los 7 tipos de sistema (Snippet, Prompt, Note, Command, File, Image, URL) — idempotente.
+- Añadidos scripts `prisma:seed` y `prisma db seed` configurados.
+- Instalado `tsx` como dependencia de desarrollo.
+- Creado `scripts/test-db.ts` para probar conexión a BD.
+- Añadido script `scripts:test-db` en `package.json`.
