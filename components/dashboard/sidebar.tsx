@@ -4,6 +4,7 @@ import {
 	ChevronRight,
 	Code2,
 	FileText,
+	Folder,
 	Image,
 	Link as LinkIcon,
 	MoreHorizontal,
@@ -95,16 +96,18 @@ export function Sidebar({
 								<li key={type.id}>
 									<Link
 										href={type.href}
-									className={cn(
-										'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
-										collapsed && 'justify-center px-0'
-									)}
-									title={collapsed ? type.name : undefined}
-								>
+										className={cn(
+											'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
+											collapsed && 'justify-center px-0'
+										)}
+										title={collapsed ? type.name : undefined}
+									>
 										<Icon className='size-5 shrink-0' style={{ color: type.color }} />
 										{!collapsed && <span>{type.label}</span>}
 										{!collapsed && (
-											<span className='ml-auto text-right text-xs text-sidebar-foreground/50'>{type.itemCount}</span>
+											<span className='ml-auto text-right text-xs text-sidebar-foreground/50'>
+												{type.itemCount}
+											</span>
 										)}
 									</Link>
 								</li>
@@ -129,17 +132,17 @@ export function Sidebar({
 											href='/collections/favorites'
 											className='flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-sidebar-foreground/50 transition-colors hover:text-sidebar-foreground'
 										>
-												<Star className='size-4 shrink-0' />
-												Ver favoritas ({collections.favoriteCollectionsCount})
+											<Star className='size-4 shrink-0' />
+											Ver favoritas ({collections.favoriteCollectionsCount})
 										</Link>
 									</li>
 									<li>
 										<Link
 											href='/collections'
-											className='flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-sidebar-foreground/50 transition-colors hover:text-sidebar-foreground'
+											className='flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-sidebar-foreground/50 transition-colors hover:text-sidebar-foreground'
 										>
-												<span className='size-1.5 shrink-0 rounded-full bg-sidebar-foreground/30' />
-												Ver todas
+											<Folder className='size-4 shrink-0' />
+											Ver todas
 										</Link>
 									</li>
 									{collections.recentCollections.map(collection => (
@@ -150,7 +153,11 @@ export function Sidebar({
 											>
 												<span
 													className='size-1.5 shrink-0 rounded-full bg-sidebar-foreground/30'
-													style={collection.predominantTypeColor ? { backgroundColor: collection.predominantTypeColor } : undefined}
+													style={
+														collection.predominantTypeColor
+															? { backgroundColor: collection.predominantTypeColor }
+															: undefined
+													}
 												/>
 												<span className='truncate'>{collection.name}</span>
 											</Link>
