@@ -5,7 +5,7 @@ import {
 	Code2,
 	FileText,
 	Folder,
-	Image,
+	Image as ImageIcon,
 	Link as LinkIcon,
 	MoreHorizontal,
 	NotebookPen,
@@ -17,6 +17,7 @@ import {
 	User
 } from 'lucide-react'
 import Link from 'next/link'
+import NextImage from 'next/image'
 import { cn } from '@/lib/utils'
 import type { SidebarUser } from '@/lib/db/user'
 import { Button } from '@/components/ui/button'
@@ -30,14 +31,14 @@ const iconMap: Record<string, React.ElementType> = {
 	Terminal: TerminalSquare,
 	StickyNote: NotebookPen,
 	FileText: FileText,
-	Image: Image,
+	Image: ImageIcon,
 	Link: LinkIcon,
 	'code-2': Code2,
 	sparkles: Sparkles,
 	'terminal-square': TerminalSquare,
 	'notebook-pen': NotebookPen,
 	'file-text': FileText,
-	image: Image,
+	image: ImageIcon,
 	link: LinkIcon
 }
 
@@ -180,14 +181,22 @@ export function Sidebar({
 					<div className={cn('flex items-center gap-3', collapsed && 'flex-col')}>
 						<div className='flex size-8 items-center justify-center overflow-hidden rounded-full bg-sidebar-accent'>
 							{user?.image ? (
-								<img src={user.image} alt='' className='size-full object-cover' />
+								<NextImage
+									src={user.image}
+									alt={user.name ? `Avatar de ${user.name}` : 'Avatar de usuario'}
+									width={32}
+									height={32}
+									className='size-full object-cover'
+								/>
 							) : (
 								<User className='size-4 text-sidebar-foreground/60' />
 							)}
 						</div>
 						{!collapsed && (
 							<div className='min-w-0'>
-								<p className='truncate text-sm font-medium text-sidebar-foreground'>{user?.email ?? 'Usuario'}</p>
+								<p className='truncate text-sm font-medium text-sidebar-foreground'>
+									{user?.email ?? 'Usuario'}
+								</p>
 								{user?.name && <p className='truncate text-xs text-sidebar-foreground/50'>{user.name}</p>}
 							</div>
 						)}
