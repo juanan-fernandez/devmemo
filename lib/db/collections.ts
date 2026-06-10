@@ -7,6 +7,17 @@ export type DashboardSummary = {
 	favoriteCollections: number
 }
 
+export type SidebarCollection = {
+	id: string
+	name: string
+	predominantTypeColor: string | null
+}
+
+export type SidebarCollectionsData = {
+	favoriteCollectionsCount: number
+	recentCollections: SidebarCollection[]
+}
+
 export type DashboardCollection = {
 	id: string
 	name: string
@@ -18,6 +29,36 @@ export type DashboardCollection = {
 	typeIcons: { icon: string | null; color: string | null; name: string }[]
 }
 
+function getPredominantType(
+	items: { type: { id: string; name: string; icon: string | null; color: string | null } }[]
+) {
+	const typeCounts = new Map<
+		string,
+		{ count: number; type: { id: string; name: string; icon: string | null; color: string | null } }
+	>()
+
+	for (const item of items) {
+		const existing = typeCounts.get(item.type.id)
+		if (existing) {
+			existing.count++
+		} else {
+			typeCounts.set(item.type.id, { count: 1, type: item.type })
+		}
+	}
+
+	let predominantType: { id: string; name: string; icon: string | null; color: string | null } | null = null
+	let maxCount = 0
+
+	for (const [, entry] of typeCounts) {
+		if (entry.count > maxCount) {
+			maxCount = entry.count
+			predominantType = entry.type
+		}
+	}
+
+	return predominantType
+}
+
 export async function getDashboardSummary(): Promise<DashboardSummary> {
 	const [totalItems, totalCollections, favoriteItems, favoriteCollections] = await Promise.all([
 		prisma.item.count(),
@@ -27,6 +68,32 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 	])
 
 	return { totalItems, totalCollections, favoriteItems, favoriteCollections }
+}
+
+export async function getSidebarCollections(): Promise<SidebarCollectionsData> {
+	const [favoriteCollectionsCount, recentCollections] = await Promise.all([
+		prisma.collection.count({ where: { isFavorite: true } }),
+		prisma.collection.findMany({
+			orderBy: { createdAt: 'desc' },
+			take: 6,
+			include: {
+				items: {
+					select: {
+						type: true
+					}
+				}
+			}
+		})
+	])
+
+	return {
+		favoriteCollectionsCount,
+		recentCollections: recentCollections.map(collection => ({
+			id: collection.id,
+			name: collection.name,
+			predominantTypeColor: getPredominantType(collection.items)?.color ?? null
+		}))
+	}
 }
 
 export async function getLatestCollections(): Promise<DashboardCollection[]> {
@@ -45,29 +112,7 @@ export async function getLatestCollections(): Promise<DashboardCollection[]> {
 	return collections.map(collection => {
 		const itemCount = collection.items.length
 
-		const typeCounts = new Map<
-			string,
-			{ count: number; type: { id: string; name: string; icon: string | null; color: string | null } }
-		>()
-
-		for (const item of collection.items) {
-			const existing = typeCounts.get(item.type.id)
-			if (existing) {
-				existing.count++
-			} else {
-				typeCounts.set(item.type.id, { count: 1, type: item.type })
-			}
-		}
-
-		let predominantType: { id: string; name: string; icon: string | null; color: string | null } | null = null
-		let maxCount = 0
-
-		for (const [, entry] of typeCounts) {
-			if (entry.count > maxCount) {
-				maxCount = entry.count
-				predominantType = entry.type
-			}
-		}
+		const predominantType = getPredominantType(collection.items)
 
 		const typeIcons: { icon: string | null; color: string | null; name: string }[] = []
 		const seenIds = new Set<string>()

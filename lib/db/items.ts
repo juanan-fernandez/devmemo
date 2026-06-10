@@ -23,6 +23,17 @@ export type DashboardItemsSection = {
 	mode: 'pinned' | 'recent'
 }
 
+export type SidebarItemType = {
+	id: string
+	name: string
+	label: string
+	icon: string | null
+	color: string | null
+	itemCount: number
+	isSystem: boolean
+	href: string
+}
+
 const ITEM_TYPE_LABELS: Record<string, string> = {
 	Snippet: 'Snippet',
 	Prompt: 'Prompt',
@@ -31,6 +42,28 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
 	File: 'Archivo',
 	Image: 'Imagen',
 	URL: 'Enlace'
+}
+
+const SIDEBAR_ITEM_TYPE_LABELS: Record<string, string> = {
+	Snippet: 'Snippets',
+	Prompt: 'Prompts',
+	Note: 'Notas',
+	Command: 'Comandos',
+	File: 'Archivos',
+	Image: 'Imágenes',
+	URL: 'Enlaces'
+}
+
+function getItemTypeHref(name: string) {
+	const slug = name
+		.normalize('NFD')
+		.replace(/\p{Diacritic}/gu, '')
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-+|-+$/g, '')
+
+	return `/items/${slug}`
 }
 
 function mapDashboardItem(item: {
@@ -59,6 +92,30 @@ function mapDashboardItem(item: {
 			color: item.type.color
 		}
 	}
+}
+
+export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
+	const itemTypes = await prisma.itemType.findMany({
+		orderBy: [{ isSystem: 'desc' }, { name: 'asc' }],
+		include: {
+			_count: {
+				select: {
+					items: true
+				}
+			}
+		}
+	})
+
+	return itemTypes.map(type => ({
+		id: type.id,
+		name: type.name,
+		label: SIDEBAR_ITEM_TYPE_LABELS[type.name] ?? type.name,
+		icon: type.icon,
+		color: type.color,
+		itemCount: type._count.items,
+		isSystem: type.isSystem,
+		href: getItemTypeHref(type.name)
+	}))
 }
 
 export async function getDashboardItemsSection(): Promise<DashboardItemsSection> {
