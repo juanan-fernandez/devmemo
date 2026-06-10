@@ -13,21 +13,10 @@ import {
 	TerminalSquare
 } from 'lucide-react'
 import { getDashboardSummary, getLatestCollections } from '@/lib/db/collections'
-import { mockItems, type MockItemType } from '@/lib/mockdata'
+import { getDashboardItemsSection } from '@/lib/db/items'
 
 import Link from 'next/link'
 import { PinnedSection } from '@/components/dashboard/pinned-section'
-
-// Icon map for mock items (pinned section — temporary)
-const iconMap: Record<string, React.ElementType> = {
-	'code-2': Code2,
-	sparkles: Sparkles,
-	'terminal-square': TerminalSquare,
-	'notebook-pen': NotebookPen,
-	'file-text': FileText,
-	image: Image,
-	link: LinkIcon
-}
 
 // Icon map for system types coming from the database
 const systemIconMap: Record<string, React.ElementType> = {
@@ -40,12 +29,6 @@ const systemIconMap: Record<string, React.ElementType> = {
 	Link: LinkIcon
 }
 
-function getItemTypeIcon(type: MockItemType | undefined, className?: string) {
-	if (!type) return <MoreHorizontal className={className} />
-	const Icon = iconMap[type.icon] || MoreHorizontal
-	return <Icon className={className} />
-}
-
 function getSystemTypeIcon(iconName: string | null, className?: string) {
 	if (!iconName) return <MoreHorizontal className={className} />
 	const Icon = systemIconMap[iconName] || MoreHorizontal
@@ -53,9 +36,10 @@ function getSystemTypeIcon(iconName: string | null, className?: string) {
 }
 
 export default async function DashboardPage() {
-	const [summary, collections] = await Promise.all([
+	const [summary, collections, itemsSection] = await Promise.all([
 		getDashboardSummary(),
-		getLatestCollections()
+		getLatestCollections(),
+		getDashboardItemsSection()
 	])
 
 	const summaryCards = [
@@ -84,8 +68,6 @@ export default async function DashboardPage() {
 			icon: Star
 		}
 	]
-
-	const pinnedItems = mockItems.filter(i => i.isPinned)
 
 	return (
 		<div className='space-y-8 px-8 py-6 md:px-10 xl:px-12'>
@@ -165,7 +147,7 @@ export default async function DashboardPage() {
 			</section>
 
 			{/* Row 3: Pinned items */}
-			<PinnedSection items={pinnedItems} />
+			<PinnedSection items={itemsSection.items} title={itemsSection.title} />
 		</div>
 	)
 }

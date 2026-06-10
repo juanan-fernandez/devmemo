@@ -17,10 +17,17 @@ import {
 	Image,
 	Link
 } from 'lucide-react'
-import { mockItemTypes, type MockItem, type MockItemType } from '@/lib/mockdata'
+import type { DashboardItem } from '@/lib/db/items'
 import { cn } from '@/lib/utils'
 
 const iconMap: Record<string, React.ElementType> = {
+	Braces: Code2,
+	MessageSquare: Sparkles,
+	Terminal: TerminalSquare,
+	StickyNote: NotebookPen,
+	FileText: FileText,
+	Image: Image,
+	Link: Link,
 	'code-2': Code2,
 	sparkles: Sparkles,
 	'terminal-square': TerminalSquare,
@@ -30,17 +37,14 @@ const iconMap: Record<string, React.ElementType> = {
 	link: Link
 }
 
-function getItemTypeIcon(type: MockItemType | undefined, className?: string) {
-	if (!type) return <MoreHorizontal className={className} />
-	const Icon = iconMap[type.icon] || MoreHorizontal
-	return <Icon className={className} />
+
+function getItemTypeIcon(iconName: string | null, color: string | null, className?: string) {
+	if (!iconName) return <MoreHorizontal className={className} style={{ color: color ?? undefined }} />
+	const Icon = iconMap[iconName] || MoreHorizontal
+	return <Icon className={className} style={{ color: color ?? undefined }} />
 }
 
-function getItemTypeById(typeId: string): MockItemType | undefined {
-	return mockItemTypes.find(t => t.id === typeId)
-}
-
-export function PinnedSection({ items }: { items: MockItem[] }) {
+export function PinnedSection({ items, title }: { items: DashboardItem[]; title: string }) {
 	const [pinnedView, setPinnedView] = useState<'card' | 'list'>('card')
 
 	return (
@@ -48,7 +52,7 @@ export function PinnedSection({ items }: { items: MockItem[] }) {
 			<div className='mb-4 flex items-center justify-between'>
 				<h2 className='flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
 					<Pin className='size-3.5' />
-					EN TU TABLERO
+					{title}
 				</h2>
 				<div className='flex items-center gap-1 rounded-lg border border-border bg-card p-0.5'>
 					<button
@@ -83,7 +87,6 @@ export function PinnedSection({ items }: { items: MockItem[] }) {
 			) : pinnedView === 'card' ? (
 				<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
 					{items.map(item => {
-						const type = getItemTypeById(item.typeId)
 						return (
 							<div
 								key={item.id}
@@ -91,16 +94,16 @@ export function PinnedSection({ items }: { items: MockItem[] }) {
 							>
 								<div className='flex items-start justify-between p-4'>
 									<div className='flex min-w-0 flex-1 items-start gap-3'>
-										<span className='mt-0.5 shrink-0' style={{ color: type?.color }}>
-											{getItemTypeIcon(type, 'size-5')}
-										</span>
+									<span className='mt-0.5 shrink-0'>
+										{getItemTypeIcon(item.type.icon, item.type.color, 'size-5')}
+									</span>
 										<div className='min-w-0 space-y-1'>
 											<h3 className='truncate text-sm font-medium text-foreground'>{item.title}</h3>
 											{item.description && (
 												<p className='line-clamp-2 text-xs text-muted-foreground'>{item.description}</p>
 											)}
 											<div className='flex items-center gap-2 text-[11px] text-muted-foreground'>
-												{type && <span>{type.name}</span>}
+												<span>{item.type.label}</span>
 												{item.language && (
 													<>
 														<span>·</span>
@@ -140,18 +143,17 @@ export function PinnedSection({ items }: { items: MockItem[] }) {
 			) : (
 				<div className='divide-y divide-border overflow-hidden rounded-xl border border-border'>
 					{items.map(item => {
-						const type = getItemTypeById(item.typeId)
 						return (
 							<div
 								key={item.id}
 								className='group flex items-center gap-3 bg-card px-4 py-3 transition-colors hover:bg-accent/50'
 							>
-								<span className='shrink-0' style={{ color: type?.color }}>
-									{getItemTypeIcon(type, 'size-4')}
-								</span>
+							<span className='shrink-0'>
+								{getItemTypeIcon(item.type.icon, item.type.color, 'size-4')}
+							</span>
 								<div className='flex min-w-0 flex-1 items-center gap-3'>
 									<span className='truncate text-sm font-medium text-foreground'>{item.title}</span>
-									{type && <span className='shrink-0 text-xs text-muted-foreground'>{type.name}</span>}
+									<span className='shrink-0 text-xs text-muted-foreground'>{item.type.label}</span>
 									{item.language && (
 										<span className='shrink-0 text-xs text-muted-foreground'>{item.language}</span>
 									)}
