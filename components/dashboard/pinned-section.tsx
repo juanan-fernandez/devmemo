@@ -91,6 +91,7 @@ export function PinnedSection({ items, title }: { items: DashboardItem[]; title:
 							<div
 								key={item.id}
 								className='group rounded-xl border border-border bg-card transition-colors hover:bg-accent/50'
+								style={{ borderLeftColor: item.type.color ?? undefined, borderLeftWidth: '4px' }}
 							>
 								<div className='flex items-start justify-between p-4'>
 									<div className='flex min-w-0 flex-1 items-start gap-3'>
