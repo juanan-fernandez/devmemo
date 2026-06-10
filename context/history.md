@@ -73,3 +73,10 @@
 - Actualizado `app/dashboard/page.tsx` para cargar la sección de items directamente en el Server Component junto con el resumen y las colecciones.
 - Adaptado `components/dashboard/pinned-section.tsx` para renderizar items reales de la base, mantener el diseño actual y mostrar tipos en español.
 - La sección ahora muestra todos los items fijados si existen; si no, renderiza los 6 items más recientes con el título `ÚLTIMOS ITEMS`.
+
+## 2026-06-10 :: 19:45 - Sidebar desde Prisma
+
+- Reemplazados los mocks del sidebar por lecturas reales desde Prisma/Supabase para tipos de item y colecciones.
+- Añadidas `getSidebarItemTypes` en `lib/db/items.ts` y `getSidebarCollections` en `lib/db/collections.ts`, con orden de tipos sistema primero, conteos por tipo y 6 colecciones recientes.
+- Convertido `app/dashboard/layout.tsx` en Server Component para obtener los datos del sidebar en el servidor y pasarlos al shell cliente.
+- Actualizado `components/dashboard/sidebar.tsx` para renderizar links reales, mostrar el contador a la izquierda y colorear los bullets de colecciones según el tipo predominante.
