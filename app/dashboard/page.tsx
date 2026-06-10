@@ -12,11 +12,13 @@ import {
 	Star,
 	TerminalSquare
 } from 'lucide-react'
-import { mockCollections, mockItems, mockItemTypes, type MockItemType } from '@/lib/mockdata'
+import { getDashboardSummary, getLatestCollections } from '@/lib/db/collections'
+import { mockItems, type MockItemType } from '@/lib/mockdata'
 
 import Link from 'next/link'
 import { PinnedSection } from '@/components/dashboard/pinned-section'
 
+// Icon map for mock items (pinned section — temporary)
 const iconMap: Record<string, React.ElementType> = {
 	'code-2': Code2,
 	sparkles: Sparkles,
@@ -27,58 +29,64 @@ const iconMap: Record<string, React.ElementType> = {
 	link: LinkIcon
 }
 
+// Icon map for system types coming from the database
+const systemIconMap: Record<string, React.ElementType> = {
+	Braces: Code2,
+	MessageSquare: Sparkles,
+	Terminal: TerminalSquare,
+	StickyNote: NotebookPen,
+	FileText: FileText,
+	Image: Image,
+	Link: LinkIcon
+}
+
 function getItemTypeIcon(type: MockItemType | undefined, className?: string) {
 	if (!type) return <MoreHorizontal className={className} />
 	const Icon = iconMap[type.icon] || MoreHorizontal
 	return <Icon className={className} />
 }
 
-function getPredominantType(collectionId: string): MockItemType | undefined {
-	const collectionItems = mockItems.filter(i => i.collectionId === collectionId)
-	if (collectionItems.length === 0) return undefined
-
-	const typeCounts: Record<string, number> = {}
-	collectionItems.forEach(i => {
-		typeCounts[i.typeId] = (typeCounts[i.typeId] || 0) + 1
-	})
-	const predominantTypeId = Object.entries(typeCounts).sort(([, a], [, b]) => b - a)[0][0]
-	return mockItemTypes.find(t => t.id === predominantTypeId)
+function getSystemTypeIcon(iconName: string | null, className?: string) {
+	if (!iconName) return <MoreHorizontal className={className} />
+	const Icon = systemIconMap[iconName] || MoreHorizontal
+	return <Icon className={className} />
 }
 
-const summaryCards = [
-	{
-		label: 'Total de elementos',
-		value: mockItems.length,
-		color: '#84CC16',
-		icon: Archive
-	},
-	{
-		label: 'Colecciones',
-		value: mockCollections.length,
-		color: '#06B6D4',
-		icon: FolderHeart
-	},
-	{
-		label: 'Elementos favoritos',
-		value: mockItems.filter(i => i.isFavorite).length,
-		color: '#EC4899',
-		icon: BookHeart
-	},
-	{
-		label: 'Colecciones favoritas',
-		value: mockCollections.filter(c => c.isFavorite).length,
-		color: '#F59E0B',
-		icon: Star
-	}
-]
+export default async function DashboardPage() {
+	const [summary, collections] = await Promise.all([
+		getDashboardSummary(),
+		getLatestCollections()
+	])
 
-const latestCollections = [...mockCollections]
-	.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-	.slice(0, 3)
+	const summaryCards = [
+		{
+			label: 'Total de elementos',
+			value: summary.totalItems,
+			color: '#84CC16',
+			icon: Archive
+		},
+		{
+			label: 'Colecciones',
+			value: summary.totalCollections,
+			color: '#06B6D4',
+			icon: FolderHeart
+		},
+		{
+			label: 'Elementos favoritos',
+			value: summary.favoriteItems,
+			color: '#EC4899',
+			icon: BookHeart
+		},
+		{
+			label: 'Colecciones favoritas',
+			value: summary.favoriteCollections,
+			color: '#F59E0B',
+			icon: Star
+		}
+	]
 
-const pinnedItems = mockItems.filter(i => i.isPinned)
+	const pinnedItems = mockItems.filter(i => i.isPinned)
 
-export default function DashboardPage() {
 	return (
 		<div className='space-y-8 px-8 py-6 md:px-10 xl:px-12'>
 			{/* Row 1: Summary cards */}
@@ -115,20 +123,33 @@ export default function DashboardPage() {
 					</Link>
 				</div>
 				<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-					{latestCollections.map(col => {
-						const predominantType = getPredominantType(col.id)
-						const typeColor = predominantType?.color ?? '#666'
+					{collections.map(col => {
+						const typeColor = col.predominantType?.color ?? '#666'
 						return (
 							<div key={col.id} className='overflow-hidden rounded-xl border border-border bg-card'>
 								<div className='h-1.5 w-full' style={{ backgroundColor: typeColor }} />
 								<div className='space-y-2 p-4'>
 									<div className='flex items-center gap-2'>
-										<span style={{ color: typeColor }}>{getItemTypeIcon(predominantType, 'size-5')}</span>
+										<span style={{ color: typeColor }}>
+											{getSystemTypeIcon(col.predominantType?.icon ?? null, 'size-5')}
+										</span>
 										<h3 className='font-semibold text-foreground'>{col.name}</h3>
 									</div>
 									<p className='line-clamp-2 text-sm text-muted-foreground'>{col.description}</p>
+									{col.typeIcons.length > 0 && (
+										<div className='flex items-center gap-1.5'>
+											{col.typeIcons.map((ti, i) => (
+												<div
+													key={i}
+													className='size-3.5 rounded'
+													style={{ backgroundColor: ti.color ?? '#666' }}
+													title={ti.name}
+												/>
+											))}
+										</div>
+									)}
 									<div className='flex items-center gap-3 text-xs text-muted-foreground'>
-										<span>{mockItems.filter(i => i.collectionId === col.id).length} elementos</span>
+										<span>{col.itemCount} elementos</span>
 										{col.isFavorite && (
 											<span className='flex items-center gap-1'>
 												<Star className='size-3 fill-yellow-500 text-yellow-500' />
