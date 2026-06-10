@@ -7,17 +7,20 @@ import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/dashboard/sidebar'
 import type { SidebarItemType } from '@/lib/db/items'
 import type { SidebarCollectionsData } from '@/lib/db/collections'
+import type { SidebarUser } from '@/lib/db/user'
 
 type DashboardLayoutShellProps = {
 	children: React.ReactNode
 	sidebarItemTypes: SidebarItemType[]
 	sidebarCollections: SidebarCollectionsData
+	sidebarUser: SidebarUser | null
 }
 
 export function DashboardLayoutShell({
 	children,
 	sidebarItemTypes,
-	sidebarCollections
+	sidebarCollections,
+	sidebarUser
 }: DashboardLayoutShellProps) {
 	const [collapsed, setCollapsed] = useState(false)
 	const [mobileOpen, setMobileOpen] = useState(false)
@@ -31,6 +34,7 @@ export function DashboardLayoutShell({
 				onCloseMobile={() => setMobileOpen(false)}
 				itemTypes={sidebarItemTypes}
 				collections={sidebarCollections}
+				user={sidebarUser}
 			/>
 			<div className='flex min-w-0 flex-1 flex-col'>
 				<header className='flex shrink-0 items-center gap-4 border-b border-border px-4 py-3 md:px-6'>

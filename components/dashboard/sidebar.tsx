@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { mockUser } from '@/lib/mockdata'
+import type { SidebarUser } from '@/lib/db/user'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import type { SidebarItemType } from '@/lib/db/items'
@@ -48,6 +48,7 @@ export type SidebarProps = {
 	onCloseMobile: () => void
 	itemTypes: SidebarItemType[]
 	collections: SidebarCollectionsData
+	user: SidebarUser | null
 }
 
 export function Sidebar({
@@ -56,7 +57,8 @@ export function Sidebar({
 	onToggleCollapse,
 	onCloseMobile,
 	itemTypes,
-	collections
+	collections,
+	user
 }: SidebarProps) {
 	const [collectionsOpen, setCollectionsOpen] = useState(true)
 
@@ -176,13 +178,17 @@ export function Sidebar({
 					)}
 				>
 					<div className={cn('flex items-center gap-3', collapsed && 'flex-col')}>
-						<div className='flex size-8 items-center justify-center rounded-full bg-sidebar-accent'>
-							<User className='size-4 text-sidebar-foreground/60' />
+						<div className='flex size-8 items-center justify-center overflow-hidden rounded-full bg-sidebar-accent'>
+							{user?.image ? (
+								<img src={user.image} alt='' className='size-full object-cover' />
+							) : (
+								<User className='size-4 text-sidebar-foreground/60' />
+							)}
 						</div>
 						{!collapsed && (
 							<div className='min-w-0'>
-								<p className='truncate text-sm font-medium text-sidebar-foreground'>{mockUser.email}</p>
-								<p className='truncate text-xs text-sidebar-foreground/50'>Demo</p>
+								<p className='truncate text-sm font-medium text-sidebar-foreground'>{user?.email ?? 'Usuario'}</p>
+								{user?.name && <p className='truncate text-xs text-sidebar-foreground/50'>{user.name}</p>}
 							</div>
 						)}
 					</div>
