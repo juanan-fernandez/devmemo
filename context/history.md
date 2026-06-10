@@ -44,3 +44,7 @@
 - Instalado `bcryptjs` para guardar la contraseña hasheada del usuario demo con 12 rounds.
 - Reescrito `prisma/seed.ts` para asegurar los system item types y recrear el dataset demo desde `@lib/mockdata.ts` usando ids reales de la base.
 - Verificado el seed: usuario `demo@devmemo.com` creado correctamente con 5 colecciones, 8 tags y 10 items.
+
+## 2026-06-10 :: 17:58 - Verificación de lectura BD
+
+- Actualizado `scripts/test-db.ts` para consultar una fila de cada tabla con Prisma y confirmar que las lecturas funcionan también cuando una tabla está vacía.
