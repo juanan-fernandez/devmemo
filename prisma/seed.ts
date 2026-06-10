@@ -1,9 +1,15 @@
 import 'dotenv/config'
+import { hash } from 'bcryptjs'
 import { PrismaPg } from '@prisma/adapter-pg'
+import {
+  mockCollections,
+  mockItems,
+  mockItemTags,
+  mockTags,
+} from '../lib/mockdata'
 import { PrismaClient } from '../src/lib/generated/prisma/client'
 
-const connectionString =
-  process.env.DIRECT_URL ?? process.env.DATABASE_URL
+const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL
 
 if (!connectionString) {
   throw new Error('DIRECT_URL or DATABASE_URL is required')
@@ -11,6 +17,14 @@ if (!connectionString) {
 
 const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter })
+
+const DEMO_USER = {
+  email: 'demo@devmemo.com',
+  name: 'Demo User',
+  password: '12345678',
+  image:
+    'https://gravatar.com/avatar/6e876962302db3a50286689eb0bef3c5?s=200&d=robohash&r=x',
+} as const
 
 const SYSTEM_ITEM_TYPES = [
   { name: 'Snippet', icon: 'Braces', color: '#3B82F6' },
@@ -22,33 +36,169 @@ const SYSTEM_ITEM_TYPES = [
   { name: 'URL', icon: 'Link', color: '#06B6D4' },
 ] as const
 
-async function main() {
-  console.log('🌱  Seeding system item types...')
+const MOCK_TYPE_TO_SYSTEM_NAME: Record<string, (typeof SYSTEM_ITEM_TYPES)[number]['name']> = {
+  type_snippets: 'Snippet',
+  type_prompts: 'Prompt',
+  type_comandos: 'Command',
+  type_notas: 'Note',
+  type_archivos: 'File',
+  type_imagenes: 'Image',
+  type_enlaces: 'URL',
+}
 
-  const existing = await prisma.itemType.count({
+function toDate(value: string) {
+  return new Date(value)
+}
+
+async function ensureSystemItemTypes() {
+  const existing = await prisma.itemType.findMany({
     where: { isSystem: true, userId: null },
   })
 
-  if (existing > 0) {
-    console.log(`ℹ️  ${existing} system item types already exist — skipping`)
-    return
+  const existingNames = new Set(existing.map((type) => type.name))
+  const missingTypes = SYSTEM_ITEM_TYPES.filter(
+    (type) => !existingNames.has(type.name)
+  )
+
+  if (missingTypes.length > 0) {
+    await prisma.itemType.createMany({
+      data: missingTypes.map((type) => ({
+        name: type.name,
+        icon: type.icon,
+        color: type.color,
+        isSystem: true,
+      })),
+    })
   }
 
-  await prisma.itemType.createMany({
-    data: SYSTEM_ITEM_TYPES.map((type) => ({
-      name: type.name,
-      icon: type.icon,
-      color: type.color,
-      isSystem: true,
-    })),
+  const systemTypes = await prisma.itemType.findMany({
+    where: { isSystem: true, userId: null },
   })
 
-  console.log(`✅  Created ${SYSTEM_ITEM_TYPES.length} system item types`)
+  return new Map(systemTypes.map((type) => [type.name, type]))
+}
+
+async function reseedDemoData(
+  systemTypes: Awaited<ReturnType<typeof ensureSystemItemTypes>>
+) {
+  const password = await hash(DEMO_USER.password, 12)
+
+  await prisma.$transaction(async (tx) => {
+    const existingUser = await tx.user.findUnique({
+      where: { email: DEMO_USER.email },
+    })
+
+    if (existingUser) {
+      await tx.user.delete({ where: { id: existingUser.id } })
+    }
+
+    const user = await tx.user.create({
+      data: {
+        email: DEMO_USER.email,
+        name: DEMO_USER.name,
+        password,
+        emailVerified: new Date(),
+        image: DEMO_USER.image,
+      },
+    })
+
+    const collectionIdMap = new Map<string, string>()
+
+    for (const collection of mockCollections) {
+      const createdCollection = await tx.collection.create({
+        data: {
+          name: collection.name,
+          description: collection.description,
+          isFavorite: collection.isFavorite,
+          userId: user.id,
+          createdAt: toDate(collection.createdAt),
+          updatedAt: toDate(collection.updatedAt),
+        },
+      })
+
+      collectionIdMap.set(collection.id, createdCollection.id)
+    }
+
+    const tagIdMap = new Map<string, string>()
+
+    for (const tag of mockTags) {
+      const createdTag = await tx.tag.create({
+        data: {
+          name: tag.name,
+          userId: user.id,
+        },
+      })
+
+      tagIdMap.set(tag.id, createdTag.id)
+    }
+
+    const itemIdMap = new Map<string, string>()
+
+    for (const item of mockItems) {
+      const systemTypeName = MOCK_TYPE_TO_SYSTEM_NAME[item.typeId]
+      const systemType = systemTypes.get(systemTypeName)
+
+      if (!systemType) {
+        throw new Error(`Missing system item type: ${systemTypeName}`)
+      }
+
+      const createdItem = await tx.item.create({
+        data: {
+          title: item.title,
+          contentType: item.contentType,
+          content: item.content,
+          fileUrl: item.fileUrl,
+          fileName: item.fileName,
+          fileSize: item.fileSize,
+          url: item.url,
+          description: item.description,
+          isFavorite: item.isFavorite,
+          isPinned: item.isPinned,
+          language: item.language,
+          userId: user.id,
+          typeId: systemType.id,
+          collectionId: item.collectionId
+            ? collectionIdMap.get(item.collectionId) ?? null
+            : null,
+          createdAt: toDate(item.createdAt),
+          updatedAt: toDate(item.updatedAt),
+        },
+      })
+
+      itemIdMap.set(item.id, createdItem.id)
+    }
+
+    for (const itemTag of mockItemTags) {
+      const itemId = itemIdMap.get(itemTag.itemId)
+      const tagId = tagIdMap.get(itemTag.tagId)
+
+      if (!itemId || !tagId) {
+        throw new Error(`Missing item/tag relation for ${itemTag.itemId}:${itemTag.tagId}`)
+      }
+
+      await tx.itemTag.create({
+        data: {
+          itemId,
+          tagId,
+        },
+      })
+    }
+  })
+}
+
+async function main() {
+  console.log('🌱  Seeding system item types...')
+  const systemTypes = await ensureSystemItemTypes()
+  console.log(`✅  System item types ready: ${systemTypes.size}`)
+
+  console.log('👤  Seeding demo user, collections, tags, and items...')
+  await reseedDemoData(systemTypes)
+  console.log('✅  Demo dataset ready')
 }
 
 main()
-  .catch((e) => {
-    console.error('❌  Seed failed:', e)
+  .catch((error) => {
+    console.error('❌  Seed failed:', error)
     process.exit(1)
   })
   .finally(async () => {
