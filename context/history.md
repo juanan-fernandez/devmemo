@@ -48,3 +48,21 @@
 ## 2026-06-10 :: 17:58 - Verificación de lectura BD
 
 - Actualizado `scripts/test-db.ts` para consultar una fila de cada tabla con Prisma y confirmar que las lecturas funcionan también cuando una tabla está vacía.
+
+## 2026-06-10 :: 18:35 - Corregida ruta db collections
+
+- Representación en el dashboard de los datos de colecciones leidos de la db
+- Movido el módulo de colecciones del dashboard desde `src/lib/db/collections.ts` a `lib/db/collections.ts` para respetar la convención del proyecto.
+- Actualizado `app/dashboard/page.tsx` para importar desde `@/lib/db/collections`.
+
+## 2026-06-10 :: 18:45 - Migración global de lib
+
+- Movido `src/lib/prisma.ts` a `lib/prisma.ts` y actualizados los imports para usar la convención raíz `lib/`.
+- Reconfigurado Prisma para generar el cliente en `lib/generated/prisma` y ajustados `prisma/seed.ts` y `scripts/test-db.ts`.
+- Eliminado el árbol obsoleto `src/lib/` tras completar la migración de rutas.
+
+## 2026-06-10 :: 18:58 - Cleanup Prisma en lib/db
+
+- Movido el singleton de Prisma a `lib/db/prisma.ts` para dejar toda la lógica de base de datos bajo `lib/db`.
+- Actualizado `prisma/schema.prisma` para generar el cliente en `lib/db/generated/prisma` y ajustados los imports de runtime y scripts.
+- Preparado el reemplazo del cliente generado obsoleto en `lib/db/prisma/` por la nueva salida en `lib/db/generated/prisma`.
