@@ -1,6 +1,6 @@
 import {
 	Archive,
-	BookHeart,
+	Heart,
 	Code2,
 	FileText,
 	FolderHeart,
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
 			label: 'Elementos favoritos',
 			value: summary.favoriteItems,
 			color: '#EC4899',
-			icon: BookHeart
+			icon: Heart
 		},
 		{
 			label: 'Colecciones favoritas',
