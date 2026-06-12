@@ -2,18 +2,10 @@
 
 import {
 	ChevronRight,
-	Code2,
-	FileText,
 	Folder,
-	Image as ImageIcon,
-	Link as LinkIcon,
-	MoreHorizontal,
-	NotebookPen,
 	PanelLeftClose,
 	PanelLeftOpen,
-	Sparkles,
 	Star,
-	TerminalSquare,
 	User
 } from 'lucide-react'
 import Link from 'next/link'
@@ -24,23 +16,7 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import type { SidebarItemType } from '@/lib/db/items'
 import type { SidebarCollectionsData } from '@/lib/db/collections'
-
-const iconMap: Record<string, React.ElementType> = {
-	Braces: Code2,
-	MessageSquare: Sparkles,
-	Terminal: TerminalSquare,
-	StickyNote: NotebookPen,
-	FileText: FileText,
-	Image: ImageIcon,
-	Link: LinkIcon,
-	'code-2': Code2,
-	sparkles: Sparkles,
-	'terminal-square': TerminalSquare,
-	'notebook-pen': NotebookPen,
-	'file-text': FileText,
-	image: ImageIcon,
-	link: LinkIcon
-}
+import { ItemTypeIcon } from '@/lib/item-type-icons'
 
 export type SidebarProps = {
 	collapsed: boolean
@@ -94,7 +70,6 @@ export function Sidebar({
 				<nav className='flex-1 overflow-y-auto px-2 py-3'>
 					<ul className='space-y-1'>
 						{itemTypes.map(type => {
-							const Icon = type.icon ? iconMap[type.icon] || MoreHorizontal : MoreHorizontal
 							return (
 								<li key={type.id}>
 									<Link
@@ -105,8 +80,8 @@ export function Sidebar({
 										)}
 										title={collapsed ? type.name : undefined}
 									>
-										<Icon className='size-5 shrink-0' style={{ color: type.color }} />
-										{!collapsed && <span>{type.label}</span>}
+										<ItemTypeIcon iconName={type.icon} className='size-5 shrink-0' color={type.color} />
+										{!collapsed && <span>{type.name}</span>}
 										{!collapsed && (
 											<span className='ml-auto text-right text-xs text-sidebar-foreground/50'>
 												{type.itemCount}

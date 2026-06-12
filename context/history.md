@@ -86,3 +86,10 @@
 - Creado `lib/db/user.ts` para obtener los datos del usuario del sidebar desde Prisma/Supabase.
 - Actualizado `app/dashboard/layout.tsx` para cargar los datos del usuario en el servidor junto con los del sidebar.
 - Actualizado `components/dashboard/dashboard-layout-shell.tsx` y `components/dashboard/sidebar.tsx` para usar datos reales de base de datos (email, nombre, avatar).
+
+## 2026-06-10 :: 20:35 - Cleanup dashboard y tipos
+
+- Extraído el registro compartido de iconos de tipos a `lib/item-type-icons.tsx` para reutilizarlo en dashboard, sidebar y pinned items.
+- Unificada la metadata de item types en `lib/item-types.ts`, tomando `lib/mockdata.ts` como referencia canónica para labels, iconos, colores y hrefs.
+- Simplificados `lib/db/items.ts` y `lib/db/collections.ts` para reutilizar helpers compartidos y reducir shapes ad hoc.
+- Divididos componentes grandes del dashboard en piezas presentacionales más pequeñas y limpiado el ruido de lint en `.agents/skills/tailwind-v4-shadcn/templates/theme-provider.tsx`.

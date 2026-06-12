@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma'
+import { toAppItemType, type AppItemType } from '@/lib/item-types'
 
 export type DashboardSummary = {
 	totalItems: number
@@ -25,16 +26,29 @@ export type DashboardCollection = {
 	isFavorite: boolean
 	createdAt: Date
 	itemCount: number
-	predominantType: { id: string; name: string; icon: string | null; color: string | null } | null
-	typeIcons: { icon: string | null; color: string | null; name: string }[]
+	predominantType: AppItemType | null
+	typeIcons: AppItemType[]
 }
 
-function getPredominantType(
-	items: { type: { id: string; name: string; icon: string | null; color: string | null } }[]
-) {
+type CollectionItemType = {
+	id: string
+	name: string
+	icon: string | null
+	color: string | null
+	isSystem: boolean
+	userId: string | null
+}
+
+function toCollectionAppItemType(type: CollectionItemType) {
+	return toAppItemType({
+		...type,
+	})
+}
+
+function getPredominantType(items: { type: CollectionItemType }[]) {
 	const typeCounts = new Map<
 		string,
-		{ count: number; type: { id: string; name: string; icon: string | null; color: string | null } }
+		{ count: number; type: CollectionItemType }
 	>()
 
 	for (const item of items) {
@@ -46,7 +60,7 @@ function getPredominantType(
 		}
 	}
 
-	let predominantType: { id: string; name: string; icon: string | null; color: string | null } | null = null
+	let predominantType: CollectionItemType | null = null
 	let maxCount = 0
 
 	for (const [, entry] of typeCounts) {
@@ -56,7 +70,7 @@ function getPredominantType(
 		}
 	}
 
-	return predominantType
+	return predominantType ? toCollectionAppItemType(predominantType) : null
 }
 
 export async function getDashboardSummary(): Promise<DashboardSummary> {
@@ -114,13 +128,13 @@ export async function getLatestCollections(): Promise<DashboardCollection[]> {
 
 		const predominantType = getPredominantType(collection.items)
 
-		const typeIcons: { icon: string | null; color: string | null; name: string }[] = []
+		const typeIcons: AppItemType[] = []
 		const seenIds = new Set<string>()
 
 		for (const item of collection.items) {
 			if (!seenIds.has(item.type.id)) {
 				seenIds.add(item.type.id)
-				typeIcons.push({ icon: item.type.icon, color: item.type.color, name: item.type.name })
+				typeIcons.push(toCollectionAppItemType(item.type))
 			}
 		}
 

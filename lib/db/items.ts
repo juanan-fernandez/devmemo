@@ -1,6 +1,26 @@
 import { prisma } from '@/lib/db/prisma'
+import { toAppItemType, type AppItemType, type SidebarAppItemType } from '@/lib/item-types'
 
 export type DashboardItem = {
+	id: string
+	title: string
+	description: string | null
+	isFavorite: boolean
+	isPinned: boolean
+	language: string | null
+	createdAt: Date
+	type: AppItemType
+}
+
+export type DashboardItemsSection = {
+	title: 'EN TU TABLERO' | 'ÚLTIMOS ITEMS'
+	items: DashboardItem[]
+	mode: 'pinned' | 'recent'
+}
+
+export type SidebarItemType = SidebarAppItemType
+
+function mapDashboardItem(item: {
 	id: string
 	title: string
 	description: string | null
@@ -11,70 +31,11 @@ export type DashboardItem = {
 	type: {
 		id: string
 		name: string
-		label: string
 		icon: string | null
 		color: string | null
+		isSystem: boolean
+		userId: string | null
 	}
-}
-
-export type DashboardItemsSection = {
-	title: 'EN TU TABLERO' | 'ÚLTIMOS ITEMS'
-	items: DashboardItem[]
-	mode: 'pinned' | 'recent'
-}
-
-export type SidebarItemType = {
-	id: string
-	name: string
-	label: string
-	icon: string | null
-	color: string | null
-	itemCount: number
-	isSystem: boolean
-	href: string
-}
-
-const ITEM_TYPE_LABELS: Record<string, string> = {
-	Snippet: 'Snippet',
-	Prompt: 'Prompt',
-	Note: 'Nota',
-	Command: 'Comando',
-	File: 'Archivo',
-	Image: 'Imagen',
-	URL: 'Enlace'
-}
-
-const SIDEBAR_ITEM_TYPE_LABELS: Record<string, string> = {
-	Snippet: 'Snippets',
-	Prompt: 'Prompts',
-	Note: 'Notas',
-	Command: 'Comandos',
-	File: 'Archivos',
-	Image: 'Imágenes',
-	URL: 'Enlaces'
-}
-
-function getItemTypeHref(name: string) {
-	const slug = name
-		.normalize('NFD')
-		.replace(/\p{Diacritic}/gu, '')
-		.toLowerCase()
-		.trim()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
-
-	return `/items/${slug}`
-}
-
-function mapDashboardItem(item: {
-	id: string
-	title: string
-	description: string | null
-	isFavorite: boolean
-	isPinned: boolean
-	language: string | null
-	createdAt: Date
-	type: { id: string; name: string; icon: string | null; color: string | null }
 }): DashboardItem {
 	return {
 		id: item.id,
@@ -84,13 +45,14 @@ function mapDashboardItem(item: {
 		isPinned: item.isPinned,
 		language: item.language,
 		createdAt: item.createdAt,
-		type: {
+			type: toAppItemType({
 			id: item.type.id,
 			name: item.type.name,
-			label: ITEM_TYPE_LABELS[item.type.name] ?? item.type.name,
 			icon: item.type.icon,
-			color: item.type.color
-		}
+			color: item.type.color,
+			isSystem: item.type.isSystem,
+			userId: item.type.userId
+		})
 	}
 }
 
@@ -107,14 +69,15 @@ export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
 	})
 
 	return itemTypes.map(type => ({
-		id: type.id,
-		name: type.name,
-		label: SIDEBAR_ITEM_TYPE_LABELS[type.name] ?? type.name,
-		icon: type.icon,
-		color: type.color,
+		...toAppItemType({
+			id: type.id,
+			name: type.name,
+			icon: type.icon,
+			color: type.color,
+			isSystem: type.isSystem,
+			userId: type.userId
+		}),
 		itemCount: type._count.items,
-		isSystem: type.isSystem,
-		href: getItemTypeHref(type.name)
 	}))
 }
 
