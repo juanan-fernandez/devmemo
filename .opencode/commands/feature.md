@@ -29,13 +29,14 @@ A workflow command for implementing features end-to-end: from specification to m
 
 **Purpose:** Load a feature specification file and populate `@context/current-feature.md`.
 
-**Argument:** Path to a spec file inside `@context/feature/`. Example:
+**Argument:** Filename to a spec file inside `@context/feature/`. Must look for the file in this path. Example:
 
 ```
-/feature instructions @context/feature/user-spec.md
+/feature instructions user-spec.md
 ```
 
-**If no argument is provided:** Stop immediately and ask the user to include a spec file path.
+**If no argument is provided:** Stop immediately and ask the user to include a spec file.
+Tell the user the spec file must be inside context/feature path.
 
 **Steps:**
 
