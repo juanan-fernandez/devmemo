@@ -1,0 +1,25 @@
+import NextAuth from 'next-auth'
+import { NextResponse } from 'next/server'
+
+import authConfig from '@/auth/auth.config'
+
+const { auth } = NextAuth(authConfig)
+
+export const proxy = auth(request => {
+	const isDashboardRoute =
+		request.nextUrl.pathname === '/dashboard' ||
+		request.nextUrl.pathname.startsWith('/dashboard/')
+
+	if (!request.auth && isDashboardRoute) {
+		const signInUrl = new URL('/api/auth/signin', request.nextUrl)
+		signInUrl.searchParams.set('callbackUrl', request.nextUrl.href)
+
+		return NextResponse.redirect(signInUrl)
+	}
+
+	return NextResponse.next()
+})
+
+export const config = {
+	matcher: ['/dashboard', '/dashboard/:path*']
+}
