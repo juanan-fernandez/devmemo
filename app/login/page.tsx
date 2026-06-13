@@ -12,6 +12,7 @@ type LoginPageProps = {
 		error?: string
 		code?: string
 		registered?: string
+		reset?: string
 	}>
 }
 
@@ -26,6 +27,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 	const emailVerificationEnabled = isEmailVerificationEnabled()
 	const errorMessage = getAuthErrorMessage(params.error, params.code)
 	const showRegisteredMessage = emailVerificationEnabled && params.registered === 'true'
+	const showResetMessage = params.reset === 'true'
 
 	return (
 		<AuthLayoutShell
@@ -48,6 +50,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 				errorMessage={errorMessage}
 				emailVerificationEnabled={emailVerificationEnabled}
 				showRegisteredMessage={showRegisteredMessage}
+				showResetMessage={showResetMessage}
 			/>
 		</AuthLayoutShell>
 	)

@@ -102,6 +102,14 @@
 - Actualizado `app/dashboard/layout.tsx` para cargar los datos del usuario en el servidor junto con los del sidebar.
 - Actualizado `components/dashboard/dashboard-layout-shell.tsx` y `components/dashboard/sidebar.tsx` para usar datos reales de base de datos (email, nombre, avatar).
 
+## 2026-06-13 :: 22:25 - Reset de contraseña
+
+- Feature password-reset-spec: implementado flujo completo de reset de contraseña con Resend, tokens seguros de un solo uso con hash y expiración de 1 hora.
+- Creadas páginas `/forgot-password` y `/reset-password` con Server Actions, UI en español, campos con iconos de ojo y validación de contraseña.
+- Añadido modelo `PasswordResetToken` en Prisma con migración, política de contraseñas centralizada en `lib/auth/password-policy.ts`, y mensajes de reset en español.
+- Invalidados tokens previos del mismo email al crear uno nuevo; redirección a `/login?reset=true` tras éxito.
+- Corregido error de Next.js 16: los archivos `use server` no pueden exportar valores no-funcionales.
+
 ## 2026-06-13 :: 20:30 - Credentials y registro
 
 - Feature auth-2-spec: añadido Credentials provider con split pattern edge-safe.

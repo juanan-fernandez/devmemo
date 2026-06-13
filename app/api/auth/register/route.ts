@@ -7,10 +7,8 @@ import {
 } from '@/lib/auth/email-verification'
 import { REGISTRATION_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
+import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-policy'
 import { prisma } from '@/lib/db/prisma'
-
-const PASSWORD_ERROR =
-	'La contraseña debe tener al menos 8 caracteres y un número o símbolo.'
 
 type RegisterRequestBody = {
 	name?: unknown
@@ -25,10 +23,6 @@ function isNonEmptyString(value: unknown): value is string {
 
 function isValidEmail(email: string) {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-function isValidPassword(password: string) {
-	return password.length >= 8 && /[\d\W_]/.test(password)
 }
 
 function isUniqueConstraintError(error: unknown) {
@@ -68,7 +62,7 @@ export async function POST(request: Request) {
 	}
 
 	if (!isValidPassword(password)) {
-		return NextResponse.json({ error: PASSWORD_ERROR }, { status: 400 })
+		return NextResponse.json({ error: PASSWORD_ERROR_MESSAGE }, { status: 400 })
 	}
 
 	if (password !== passwordConfirm) {

@@ -6,6 +6,7 @@ import { useId, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-policy'
 
 type FieldErrors = Partial<Record<'name' | 'email' | 'password' | 'passwordConfirm', string>>
 
@@ -42,10 +43,8 @@ function validateValues(values: RegisterFormValues) {
 
 	if (!values.password) {
 		errors.password = 'Escribe una contraseña.'
-	} else if (values.password.length < 8) {
-		errors.password = 'La contraseña debe tener al menos 8 caracteres.'
-	} else if (!/[\d\W_]/.test(values.password)) {
-		errors.password = 'Añade al menos un número o símbolo a la contraseña.'
+	} else if (!isValidPassword(values.password)) {
+		errors.password = PASSWORD_ERROR_MESSAGE
 	}
 
 	if (!values.passwordConfirm) {
@@ -71,8 +70,8 @@ function getApiErrorMessage(status: number, payload: unknown) {
 			return 'Escribe un correo electrónico válido.'
 		}
 
-		if (payload.error === 'La contraseña debe tener al menos 8 caracteres y un número o símbolo.') {
-			return 'La contraseña debe tener al menos 8 caracteres y un número o símbolo.'
+		if (payload.error === PASSWORD_ERROR_MESSAGE) {
+			return PASSWORD_ERROR_MESSAGE
 		}
 
 		if (payload.error === 'Las contraseñas no coinciden.') {
@@ -234,7 +233,7 @@ export function RegisterForm() {
 						aria-describedby={errors.password ? `${passwordId}-error` : `${passwordId}-hint`}
 					/>
 					<p id={`${passwordId}-hint`} className='text-xs text-muted-foreground'>
-						Usa al menos 8 caracteres e incluye un número o símbolo.
+						{PASSWORD_ERROR_MESSAGE}
 					</p>
 					{errors.password ? (
 						<p id={`${passwordId}-error`} className='text-sm text-destructive'>
