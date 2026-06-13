@@ -9,8 +9,9 @@ export const proxy = auth(request => {
 	const isDashboardRoute =
 		request.nextUrl.pathname === '/dashboard' ||
 		request.nextUrl.pathname.startsWith('/dashboard/')
+	const isProfileRoute = request.nextUrl.pathname === '/profile'
 
-	if (!request.auth && isDashboardRoute) {
+	if (!request.auth && (isDashboardRoute || isProfileRoute)) {
 		const signInUrl = new URL('/login', request.nextUrl)
 
 		return NextResponse.redirect(signInUrl)
@@ -20,5 +21,5 @@ export const proxy = auth(request => {
 })
 
 export const config = {
-	matcher: ['/dashboard', '/dashboard/:path*']
+	matcher: ['/dashboard', '/dashboard/:path*', '/profile']
 }

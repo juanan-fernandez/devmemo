@@ -10,6 +10,14 @@
 
 <!-- Keep this updated. Earliest to latest -->
 
+## 2026-06-14 :: 00:20 - Página de perfil
+
+- Feature profile-page-spec: añadida la página protegida `/profile` reutilizando el shell visual del dashboard.
+- Creado componente reutilizable `Avatar` con fallback a iniciales o email cuando no hay imagen.
+- Implementado cambio de contraseña para usuarios credentials mediante Server Action con validación de contraseña actual, política reutilizada y hash bcrypt.
+- Añadida tarjeta de estadísticas con total de items, colecciones y desglose por tipo usando iconos y colores compartidos.
+- Actualizado `proxy.ts` para proteger `/profile` y mantenido el botón de eliminar cuenta como placeholder sin funcionalidad.
+
 ## 2026-06-13 :: 15:50 - Verificación por e-mail
 
 - Feature email-verification-spec: añadida verificación de e-mail con Resend para usuarios registrados por credentials.
