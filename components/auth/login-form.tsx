@@ -6,10 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useActionState, useId, useState } from 'react'
 import { signIn } from 'next-auth/react'
 
-import {
-	INITIAL_RESEND_VERIFICATION_STATE,
-	resendVerificationAction
-} from '@/actions/auth/resend-verification'
+import { resendVerificationAction } from '@/actions/auth/resend-verification'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GitHubMark } from '@/components/auth/github-mark'
@@ -17,17 +14,25 @@ import {
 	REGISTRATION_VERIFICATION_MESSAGE,
 	UNVERIFIED_LOGIN_MESSAGE
 } from '@/lib/auth/email-verification-messages'
+import { PASSWORD_RESET_SUCCESS_MESSAGE } from '@/lib/auth/password-reset-messages'
+
+const INITIAL_RESEND_VERIFICATION_STATE = {
+	message: null,
+	error: null
+}
 
 type LoginFormProps = {
 	errorMessage: string | null
 	emailVerificationEnabled: boolean
 	showRegisteredMessage: boolean
+	showResetMessage: boolean
 }
 
 export function LoginForm({
 	errorMessage,
 	emailVerificationEnabled,
-	showRegisteredMessage
+	showRegisteredMessage,
+	showResetMessage
 }: LoginFormProps) {
 	const router = useRouter()
 	const emailId = useId()
@@ -96,6 +101,16 @@ export function LoginForm({
 
 	return (
 		<div className='space-y-6'>
+			{showResetMessage ? (
+				<div
+					className='rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100'
+					role='status'
+					aria-live='polite'
+				>
+					{PASSWORD_RESET_SUCCESS_MESSAGE}
+				</div>
+			) : null}
+
 			{emailVerificationEnabled && showRegisteredMessage ? (
 				<div
 					className='rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100'
