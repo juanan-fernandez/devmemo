@@ -56,13 +56,18 @@ function mapDashboardItem(item: {
 	}
 }
 
-export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
+export async function getSidebarItemTypes(userId: string): Promise<SidebarItemType[]> {
 	const itemTypes = await prisma.itemType.findMany({
 		orderBy: [{ isSystem: 'desc' }, { name: 'asc' }],
+		where: {
+			OR: [{ isSystem: true }, { userId }]
+		},
 		include: {
 			_count: {
 				select: {
-					items: true
+					items: {
+						where: { userId }
+					}
 				}
 			}
 		}
@@ -81,9 +86,9 @@ export async function getSidebarItemTypes(): Promise<SidebarItemType[]> {
 	}))
 }
 
-export async function getDashboardItemsSection(): Promise<DashboardItemsSection> {
+export async function getDashboardItemsSection(userId: string): Promise<DashboardItemsSection> {
 	const pinnedItems = await prisma.item.findMany({
-		where: { isPinned: true },
+		where: { userId, isPinned: true },
 		orderBy: { createdAt: 'desc' },
 		include: { type: true }
 	})
@@ -97,6 +102,7 @@ export async function getDashboardItemsSection(): Promise<DashboardItemsSection>
 	}
 
 	const recentItems = await prisma.item.findMany({
+		where: { userId },
 		orderBy: { createdAt: 'desc' },
 		take: 6,
 		include: { type: true }

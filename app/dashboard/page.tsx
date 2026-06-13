@@ -4,6 +4,7 @@ import {
 	FolderHeart,
 	Star,
 } from 'lucide-react'
+import { auth } from '@/auth/auth'
 import { getDashboardSummary, getLatestCollections } from '@/lib/db/collections'
 import { getDashboardItemsSection } from '@/lib/db/items'
 
@@ -13,10 +14,26 @@ import { LatestCollectionCard } from '@/components/dashboard/latest-collection-c
 import { PinnedSection } from '@/components/dashboard/pinned-section'
 
 export default async function DashboardPage() {
+	const session = await auth()
+	const userId = session?.user?.id
+
+	const emptySummary = {
+		totalItems: 0,
+		totalCollections: 0,
+		favoriteItems: 0,
+		favoriteCollections: 0
+	}
+
+	const emptyItemsSection = {
+		title: 'ÚLTIMOS ITEMS' as const,
+		mode: 'recent' as const,
+		items: []
+	}
+
 	const [summary, collections, itemsSection] = await Promise.all([
-		getDashboardSummary(),
-		getLatestCollections(),
-		getDashboardItemsSection()
+		userId ? getDashboardSummary(userId) : Promise.resolve(emptySummary),
+		userId ? getLatestCollections(userId) : Promise.resolve([]),
+		userId ? getDashboardItemsSection(userId) : Promise.resolve(emptyItemsSection)
 	])
 
 	const summaryCards = [

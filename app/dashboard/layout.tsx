@@ -13,8 +13,10 @@ export default async function DashboardLayout({
 	const userId = session?.user?.id
 
 	const [sidebarItemTypes, sidebarCollections, sidebarUser] = await Promise.all([
-		getSidebarItemTypes(),
-		getSidebarCollections(),
+		userId ? getSidebarItemTypes(userId) : Promise.resolve([]),
+		userId
+			? getSidebarCollections(userId)
+			: Promise.resolve({ favoriteCollectionsCount: 0, recentCollections: [] }),
 		userId ? getSidebarUser(userId) : Promise.resolve(null)
 	])
 
