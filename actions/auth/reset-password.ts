@@ -46,9 +46,9 @@ export async function resetPasswordAction(
 		if (!result.success) {
 			return { error: result.message }
 		}
-
-		redirect('/login?reset=true')
 	} catch {
 		return { error: 'No pudimos actualizar tu contraseña. Inténtalo de nuevo en unos minutos.' }
 	}
+
+	redirect('/login?reset=true')
 }
