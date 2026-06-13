@@ -35,14 +35,17 @@ export async function getUserProfile(userId: string): Promise<ProfileUserData | 
 
 	if (!user) return null
 
-	const credentialsAccount = await prisma.account.findFirst({
-		where: { userId, provider: 'credentials' },
+	// Users registered via email/password have no Account records.
+	// OAuth users (e.g. GitHub) have an Account created by Auth.js.
+	// If the user has zero accounts, they are a credentials-only user with a known password.
+	const oauthAccount = await prisma.account.findFirst({
+		where: { userId },
 		select: { id: true }
 	})
 
 	return {
 		...user,
-		hasPassword: credentialsAccount !== null
+		hasPassword: oauthAccount === null
 	}
 }
 

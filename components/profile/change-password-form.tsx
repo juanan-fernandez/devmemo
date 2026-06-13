@@ -1,7 +1,7 @@
 'use client'
 
 import { AlertCircle, CheckCircle2, Eye, EyeOff, LoaderCircle } from 'lucide-react'
-import { useActionState, useId, useState } from 'react'
+import { useActionState, useEffect, useId, useRef, useState } from 'react'
 
 import { changePasswordAction } from '@/actions/auth/change-password'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,12 @@ const INITIAL_CHANGE_PASSWORD_STATE = {
 	successful: false
 }
 
-export function ChangePasswordForm() {
+type ChangePasswordFormProps = {
+	onSuccess?: () => void
+}
+
+export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
+	const prevSuccessfulRef = useRef(false)
 	const formId = useId()
 	const [showCurrent, setShowCurrent] = useState(false)
 	const [showNew, setShowNew] = useState(false)
@@ -23,6 +28,15 @@ export function ChangePasswordForm() {
 		changePasswordAction,
 		INITIAL_CHANGE_PASSWORD_STATE
 	)
+
+	useEffect(() => {
+		const isSuccessful = state.successful ?? false
+
+		if (isSuccessful && !prevSuccessfulRef.current) {
+			onSuccess?.()
+		}
+		prevSuccessfulRef.current = isSuccessful
+	}, [state.successful, onSuccess])
 
 	if (state.successful) {
 		return (
