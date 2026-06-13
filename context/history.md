@@ -10,6 +10,14 @@
 
 <!-- Keep this updated. Earliest to latest -->
 
+## 2026-06-13 :: 15:50 - Verificación por e-mail
+
+- Feature email-verification-spec: añadida verificación de e-mail con Resend para usuarios registrados por credentials.
+- Creado flujo de tokens de verificación de un solo uso con hash, expiración e invalidación de tokens previos.
+- Añadida página `/verify-email` para validar el enlace, marcar `User.emailVerified` y mostrar mensajes en español.
+- Bloqueado el login por credentials cuando el e-mail no está verificado y añadido reenvío del enlace desde la experiencia de login.
+- Actualizados Prisma, `.env.example` y utilidades server-only para soportar el envío y validación del flujo de verificación.
+
 ## 2026-06-13 :: 13:23 - UI auth personalizada
 
 - Feature auth-3-spec: reemplazadas las páginas por defecto de NextAuth con UI custom en español para `/login` y `/register`.

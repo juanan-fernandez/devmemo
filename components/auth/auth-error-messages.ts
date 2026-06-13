@@ -1,3 +1,5 @@
+import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
+
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
 	AccessDenied: 'No tienes permiso para acceder con esa cuenta.',
 	CallbackRouteError: 'No pudimos completar el inicio de sesión. Inténtalo de nuevo.',
@@ -11,9 +13,14 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 	Verification: 'La verificación ya no es válida. Solicita un nuevo acceso.'
 }
 
-export function getAuthErrorMessage(error?: string | null) {
+
+export function getAuthErrorMessage(error?: string | null, code?: string | null) {
 	if (!error) {
 		return null
+	}
+
+	if (error === 'CredentialsSignin' && code === 'email_not_verified') {
+		return UNVERIFIED_LOGIN_MESSAGE
 	}
 
 	return AUTH_ERROR_MESSAGES[error] ?? AUTH_ERROR_MESSAGES.Default

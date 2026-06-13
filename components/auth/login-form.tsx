@@ -3,12 +3,20 @@
 import { AlertCircle, LoaderCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useId, useState } from 'react'
+import { useActionState, useId, useState } from 'react'
 import { signIn } from 'next-auth/react'
 
+import {
+	INITIAL_RESEND_VERIFICATION_STATE,
+	resendVerificationAction
+} from '@/actions/auth/resend-verification'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GitHubMark } from '@/components/auth/github-mark'
+import {
+	REGISTRATION_VERIFICATION_MESSAGE,
+	UNVERIFIED_LOGIN_MESSAGE
+} from '@/lib/auth/email-verification-messages'
 
 type LoginFormProps = {
 	errorMessage: string | null
@@ -18,10 +26,19 @@ type LoginFormProps = {
 export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProps) {
 	const router = useRouter()
 	const emailId = useId()
+	const resendEmailId = useId()
 	const passwordId = useId()
 	const [formError, setFormError] = useState<string | null>(errorMessage)
+	const [emailValue, setEmailValue] = useState('')
+	const [attemptedEmail, setAttemptedEmail] = useState('')
 	const [isCredentialsPending, setIsCredentialsPending] = useState(false)
 	const [isGitHubPending, setIsGitHubPending] = useState(false)
+	const [resendState, resendAction, isResendPending] = useActionState(
+		resendVerificationAction,
+		INITIAL_RESEND_VERIFICATION_STATE
+	)
+
+	const showResendForm = formError === UNVERIFIED_LOGIN_MESSAGE
 
 	async function handleCredentialsSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
@@ -38,6 +55,8 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 			return
 		}
 
+		setAttemptedEmail(email)
+
 		const result = await signIn('credentials', {
 			email,
 			password,
@@ -46,7 +65,11 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 		})
 
 		if (!result || result.error) {
-			setFormError('Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.')
+			setFormError(
+				result?.code === 'email_not_verified'
+					? UNVERIFIED_LOGIN_MESSAGE
+					: 'Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.'
+			)
 			setIsCredentialsPending(false)
 			return
 		}
@@ -74,7 +97,7 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 					role='status'
 					aria-live='polite'
 				>
-					Tu cuenta se creó correctamente. Ya puedes iniciar sesión.
+					{REGISTRATION_VERIFICATION_MESSAGE}
 				</div>
 			) : null}
 
@@ -94,7 +117,7 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 				variant='outline'
 				size='lg'
 				onClick={handleGitHubSignIn}
-				disabled={isCredentialsPending || isGitHubPending}
+				disabled={isCredentialsPending || isGitHubPending || isResendPending}
 				className='h-12 w-full justify-center rounded-2xl border-border/80 bg-background/70 text-sm font-semibold hover:bg-accent'
 				aria-label='Continuar con GitHub'
 			>
@@ -128,7 +151,9 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 						type='email'
 						autoComplete='email'
 						required
-						disabled={isCredentialsPending || isGitHubPending}
+						disabled={isCredentialsPending || isGitHubPending || isResendPending}
+						value={emailValue}
+						onChange={event => setEmailValue(event.target.value)}
 						placeholder='tu@correo.com'
 						className='h-12 rounded-2xl bg-background/60 px-4'
 					/>
@@ -167,13 +192,56 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 				<Button
 					type='submit'
 					size='lg'
-					disabled={isCredentialsPending || isGitHubPending}
+					disabled={isCredentialsPending || isGitHubPending || isResendPending}
 					className='h-12 w-full rounded-2xl bg-primary text-primary-foreground hover:bg-primary/85'
 				>
 					{isCredentialsPending ? <LoaderCircle className='size-4 animate-spin' /> : null}
 					Iniciar sesión
 				</Button>
 			</form>
+
+			{showResendForm ? (
+				<form
+					key={attemptedEmail || emailValue || 'resend-verification'}
+					action={resendAction}
+					className='space-y-3 rounded-2xl border border-border/70 bg-background/30 p-4'
+				>
+					<div className='space-y-2'>
+						<label htmlFor={resendEmailId} className='text-sm font-medium text-foreground'>
+							Reenviar enlace de verificación
+						</label>
+						<Input
+							id={resendEmailId}
+							name='email'
+							type='email'
+							autoComplete='email'
+							required
+							defaultValue={attemptedEmail || emailValue}
+							disabled={isCredentialsPending || isGitHubPending || isResendPending}
+							placeholder='tu@correo.com'
+							className='h-12 rounded-2xl bg-background/60 px-4'
+						/>
+					</div>
+
+					{resendState.error ? <p className='text-sm text-destructive'>{resendState.error}</p> : null}
+					{resendState.message ? (
+						<p className='text-sm text-emerald-100' role='status'>
+							{resendState.message}
+						</p>
+					) : null}
+
+					<Button
+						type='submit'
+						variant='outline'
+						size='lg'
+						disabled={isCredentialsPending || isGitHubPending || isResendPending}
+						className='h-12 w-full rounded-2xl border-border/80 bg-background/60 hover:bg-accent'
+					>
+						{isResendPending ? <LoaderCircle className='size-4 animate-spin' /> : null}
+						Reenviar enlace
+					</Button>
+				</form>
+			) : null}
 		</div>
 	)
 }

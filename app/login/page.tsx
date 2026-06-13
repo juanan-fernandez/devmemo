@@ -9,6 +9,7 @@ import { LoginForm } from '@/components/auth/login-form'
 type LoginPageProps = {
 	searchParams: Promise<{
 		error?: string
+		code?: string
 		registered?: string
 	}>
 }
@@ -21,7 +22,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 	}
 
 	const params = await searchParams
-	const errorMessage = getAuthErrorMessage(params.error)
+	const errorMessage = getAuthErrorMessage(params.error, params.code)
 	const showRegisteredMessage = params.registered === 'true'
 
 	return (

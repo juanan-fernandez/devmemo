@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
+import { CredentialsSignin } from '@auth/core/errors'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { compare, hash } from 'bcryptjs'
 import NextAuth from 'next-auth'
@@ -7,10 +8,19 @@ import type { Adapter } from 'next-auth/adapters'
 import Credentials from 'next-auth/providers/credentials'
 
 import authConfig from '@/auth/auth.config'
+import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { prisma } from '@/lib/db/prisma'
 
 function normalizeEmail(email: string) {
 	return email.trim().toLowerCase()
+}
+
+class EmailNotVerifiedError extends CredentialsSignin {
+	code = 'email_not_verified'
+
+	constructor() {
+		super(UNVERIFIED_LOGIN_MESSAGE)
+	}
 }
 
 const adapter = {
@@ -58,7 +68,8 @@ const credentialsProvider = Credentials({
 				id: true,
 				name: true,
 				email: true,
-				password: true
+				password: true,
+				emailVerified: true
 			}
 		})
 
@@ -70,6 +81,10 @@ const credentialsProvider = Credentials({
 
 		if (!isPasswordValid) {
 			return null
+		}
+
+		if (!user.emailVerified) {
+			throw new EmailNotVerifiedError()
 		}
 
 		return {

@@ -1,6 +1,11 @@
 import { hash } from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
+import {
+	normalizeEmail,
+	sendVerificationEmail
+} from '@/lib/auth/email-verification'
+import { REGISTRATION_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { prisma } from '@/lib/db/prisma'
 
 const PASSWORD_ERROR =
@@ -11,10 +16,6 @@ type RegisterRequestBody = {
 	email?: unknown
 	password?: unknown
 	passwordConfirm?: unknown
-}
-
-function normalizeEmail(email: string) {
-	return email.trim().toLowerCase()
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -89,7 +90,8 @@ export async function POST(request: Request) {
 			data: {
 				name: normalizedName,
 				email: normalizedEmail,
-				password: passwordHash
+				password: passwordHash,
+				emailVerified: null
 			},
 			select: {
 				id: true,
@@ -98,9 +100,14 @@ export async function POST(request: Request) {
 			}
 		})
 
+		await sendVerificationEmail({
+			email: user.email,
+			name: user.name
+		})
+
 		return NextResponse.json(
 			{
-				message: 'Registro completado correctamente.',
+				message: REGISTRATION_VERIFICATION_MESSAGE,
 				user
 			},
 			{ status: 201 }
