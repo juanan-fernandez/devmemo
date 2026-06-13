@@ -3,6 +3,9 @@ import Credentials from 'next-auth/providers/credentials'
 import GitHub from 'next-auth/providers/github'
 
 const authConfig = {
+	pages: {
+		signIn: '/login'
+	},
 	providers: [
 		GitHub,
 		Credentials({

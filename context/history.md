@@ -10,6 +10,13 @@
 
 <!-- Keep this updated. Earliest to latest -->
 
+## 2026-06-13 :: 13:23 - UI auth personalizada
+
+- Feature auth-3-spec: reemplazadas las páginas por defecto de NextAuth con UI custom en español para `/login` y `/register`.
+- Creados formularios de login y registro con validaciones, estados de carga, manejo de errores amigables y redirección de registro exitoso a `/login?registered=true`.
+- Añadido perfil fijo en el sidebar con avatar por imagen o iniciales, link a `/profile` y acción visible de `Cerrar sesión` con redirección a `/`.
+- Ajustado el wiring de auth para usar la página custom de login, soporte de imágenes remotas y datos reales del usuario autenticado en el sidebar.
+
 ## 2026-06-09 :: 17:53 - Dashboard fase 1
 
 - dashboard fase 1: creada la ruta `/dashboard`, top bar con búsqueda y placeholders de `Menu` y `Main`.
