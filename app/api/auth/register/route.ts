@@ -1,10 +1,7 @@
 import { hash } from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import {
-	normalizeEmail,
-	sendVerificationEmail
-} from '@/lib/auth/email-verification'
+import { normalizeEmail, sendVerificationEmail } from '@/lib/auth/email-verification'
 import { REGISTRATION_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-policy'
@@ -26,12 +23,7 @@ function isValidEmail(email: string) {
 }
 
 function isUniqueConstraintError(error: unknown) {
-	return (
-		typeof error === 'object' &&
-		error !== null &&
-		'code' in error &&
-		error.code === 'P2002'
-	)
+	return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002'
 }
 
 export async function POST(request: Request) {
@@ -79,7 +71,7 @@ export async function POST(request: Request) {
 	}
 
 	try {
-		const passwordHash = await hash(password, 10)
+		const passwordHash = await hash(password, 12)
 		const emailVerificationEnabled = isEmailVerificationEnabled()
 
 		const user = await prisma.user.create({
