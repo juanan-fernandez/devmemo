@@ -16,6 +16,10 @@ type RegisterFormValues = {
 	passwordConfirm: string
 }
 
+type RegisterSuccessResponse = {
+	requiresEmailVerification?: boolean
+}
+
 const INITIAL_VALUES: RegisterFormValues = {
 	name: '',
 	email: '',
@@ -136,7 +140,10 @@ export function RegisterForm() {
 				return
 			}
 
-			router.push('/login?registered=true')
+			const payload = (await response.json().catch(() => null)) as RegisterSuccessResponse | null
+			const loginUrl = payload?.requiresEmailVerification ? '/login?registered=true' : '/login'
+
+			router.push(loginUrl)
 			router.refresh()
 		} catch {
 			setSubmitError('No pudimos crear tu cuenta. Revisa tu conexión e inténtalo de nuevo.')

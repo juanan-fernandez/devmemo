@@ -20,10 +20,15 @@ import {
 
 type LoginFormProps = {
 	errorMessage: string | null
+	emailVerificationEnabled: boolean
 	showRegisteredMessage: boolean
 }
 
-export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProps) {
+export function LoginForm({
+	errorMessage,
+	emailVerificationEnabled,
+	showRegisteredMessage
+}: LoginFormProps) {
 	const router = useRouter()
 	const emailId = useId()
 	const resendEmailId = useId()
@@ -38,7 +43,7 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 		INITIAL_RESEND_VERIFICATION_STATE
 	)
 
-	const showResendForm = formError === UNVERIFIED_LOGIN_MESSAGE
+	const showResendForm = emailVerificationEnabled && formError === UNVERIFIED_LOGIN_MESSAGE
 
 	async function handleCredentialsSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
@@ -66,7 +71,7 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 
 		if (!result || result.error) {
 			setFormError(
-				result?.code === 'email_not_verified'
+				emailVerificationEnabled && result?.code === 'email_not_verified'
 					? UNVERIFIED_LOGIN_MESSAGE
 					: 'Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.'
 			)
@@ -91,7 +96,7 @@ export function LoginForm({ errorMessage, showRegisteredMessage }: LoginFormProp
 
 	return (
 		<div className='space-y-6'>
-			{showRegisteredMessage ? (
+			{emailVerificationEnabled && showRegisteredMessage ? (
 				<div
 					className='rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100'
 					role='status'

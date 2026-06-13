@@ -6,6 +6,7 @@ import {
 	VERIFICATION_ERROR_MESSAGE,
 	VERIFICATION_SUCCESS_MESSAGE
 } from '@/lib/auth/email-verification-messages'
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { prisma } from '@/lib/db/prisma'
 import { sendMail } from '@/lib/mail/resend'
 
@@ -147,6 +148,13 @@ export async function verifyEmailToken(rawToken: string) {
 }
 
 export async function resendVerificationEmail(email: string) {
+	if (!isEmailVerificationEnabled()) {
+		return {
+			success: true as const,
+			message: RESEND_VERIFICATION_MESSAGE
+		}
+	}
+
 	const normalizedEmail = normalizeEmail(email)
 	const user = await prisma.user.findUnique({
 		where: { email: normalizedEmail },

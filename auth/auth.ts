@@ -8,6 +8,7 @@ import type { Adapter } from 'next-auth/adapters'
 import Credentials from 'next-auth/providers/credentials'
 
 import authConfig from '@/auth/auth.config'
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { prisma } from '@/lib/db/prisma'
 
@@ -83,7 +84,7 @@ const credentialsProvider = Credentials({
 			return null
 		}
 
-		if (!user.emailVerified) {
+		if (isEmailVerificationEnabled() && !user.emailVerified) {
 			throw new EmailNotVerifiedError()
 		}
 

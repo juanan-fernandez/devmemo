@@ -1,3 +1,4 @@
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -19,7 +20,7 @@ export function getAuthErrorMessage(error?: string | null, code?: string | null)
 		return null
 	}
 
-	if (error === 'CredentialsSignin' && code === 'email_not_verified') {
+	if (isEmailVerificationEnabled() && error === 'CredentialsSignin' && code === 'email_not_verified') {
 		return UNVERIFIED_LOGIN_MESSAGE
 	}
 

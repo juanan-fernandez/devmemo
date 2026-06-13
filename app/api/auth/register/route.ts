@@ -6,6 +6,7 @@ import {
 	sendVerificationEmail
 } from '@/lib/auth/email-verification'
 import { REGISTRATION_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { prisma } from '@/lib/db/prisma'
 
 const PASSWORD_ERROR =
@@ -85,13 +86,14 @@ export async function POST(request: Request) {
 
 	try {
 		const passwordHash = await hash(password, 10)
+		const emailVerificationEnabled = isEmailVerificationEnabled()
 
 		const user = await prisma.user.create({
 			data: {
 				name: normalizedName,
 				email: normalizedEmail,
 				password: passwordHash,
-				emailVerified: null
+				emailVerified: emailVerificationEnabled ? null : new Date()
 			},
 			select: {
 				id: true,
@@ -100,14 +102,17 @@ export async function POST(request: Request) {
 			}
 		})
 
-		await sendVerificationEmail({
-			email: user.email,
-			name: user.name
-		})
+		if (emailVerificationEnabled) {
+			await sendVerificationEmail({
+				email: user.email,
+				name: user.name
+			})
+		}
 
 		return NextResponse.json(
 			{
-				message: REGISTRATION_VERIFICATION_MESSAGE,
+				message: emailVerificationEnabled ? REGISTRATION_VERIFICATION_MESSAGE : null,
+				requiresEmailVerification: emailVerificationEnabled,
 				user
 			},
 			{ status: 201 }

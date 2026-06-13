@@ -5,6 +5,7 @@ import { auth } from '@/auth/auth'
 import { AuthLayoutShell } from '@/components/auth/auth-layout-shell'
 import { getAuthErrorMessage } from '@/components/auth/auth-error-messages'
 import { LoginForm } from '@/components/auth/login-form'
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 
 type LoginPageProps = {
 	searchParams: Promise<{
@@ -22,8 +23,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 	}
 
 	const params = await searchParams
+	const emailVerificationEnabled = isEmailVerificationEnabled()
 	const errorMessage = getAuthErrorMessage(params.error, params.code)
-	const showRegisteredMessage = params.registered === 'true'
+	const showRegisteredMessage = emailVerificationEnabled && params.registered === 'true'
 
 	return (
 		<AuthLayoutShell
@@ -42,7 +44,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 				</p>
 			}
 		>
-			<LoginForm errorMessage={errorMessage} showRegisteredMessage={showRegisteredMessage} />
+			<LoginForm
+				errorMessage={errorMessage}
+				emailVerificationEnabled={emailVerificationEnabled}
+				showRegisteredMessage={showRegisteredMessage}
+			/>
 		</AuthLayoutShell>
 	)
 }

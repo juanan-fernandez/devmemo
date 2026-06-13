@@ -1,6 +1,9 @@
 'use server'
 
-import { resendVerificationEmail } from '@/lib/auth/email-verification'
+import {
+	resendVerificationEmail
+} from '@/lib/auth/email-verification'
+import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { RESEND_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
 
 export type ResendVerificationState = {
@@ -21,6 +24,10 @@ export async function resendVerificationAction(
 	_previousState: ResendVerificationState,
 	formData: FormData
 ): Promise<ResendVerificationState> {
+	if (!isEmailVerificationEnabled()) {
+		return INITIAL_RESEND_VERIFICATION_STATE
+	}
+
 	const email = formData.get('email')
 
 	if (typeof email !== 'string' || !isValidEmail(email.trim())) {
