@@ -73,21 +73,22 @@ function getPredominantType(items: { type: CollectionItemType }[]) {
 	return predominantType ? toCollectionAppItemType(predominantType) : null
 }
 
-export async function getDashboardSummary(): Promise<DashboardSummary> {
+export async function getDashboardSummary(userId: string): Promise<DashboardSummary> {
 	const [totalItems, totalCollections, favoriteItems, favoriteCollections] = await Promise.all([
-		prisma.item.count(),
-		prisma.collection.count(),
-		prisma.item.count({ where: { isFavorite: true } }),
-		prisma.collection.count({ where: { isFavorite: true } })
+		prisma.item.count({ where: { userId } }),
+		prisma.collection.count({ where: { userId } }),
+		prisma.item.count({ where: { userId, isFavorite: true } }),
+		prisma.collection.count({ where: { userId, isFavorite: true } })
 	])
 
 	return { totalItems, totalCollections, favoriteItems, favoriteCollections }
 }
 
-export async function getSidebarCollections(): Promise<SidebarCollectionsData> {
+export async function getSidebarCollections(userId: string): Promise<SidebarCollectionsData> {
 	const [favoriteCollectionsCount, recentCollections] = await Promise.all([
-		prisma.collection.count({ where: { isFavorite: true } }),
+		prisma.collection.count({ where: { userId, isFavorite: true } }),
 		prisma.collection.findMany({
+			where: { userId },
 			orderBy: { createdAt: 'desc' },
 			take: 6,
 			include: {
@@ -110,8 +111,9 @@ export async function getSidebarCollections(): Promise<SidebarCollectionsData> {
 	}
 }
 
-export async function getLatestCollections(): Promise<DashboardCollection[]> {
+export async function getLatestCollections(userId: string): Promise<DashboardCollection[]> {
 	const collections = await prisma.collection.findMany({
+		where: { userId },
 		orderBy: { createdAt: 'desc' },
 		take: 6,
 		include: {

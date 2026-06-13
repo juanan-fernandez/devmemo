@@ -32,8 +32,8 @@ export default async function ProfilePage() {
 	}
 
 	const [sidebarItemTypes, sidebarCollections, sidebarUser, profile, stats] = await Promise.all([
-		getSidebarItemTypes(),
-		getSidebarCollections(),
+		getSidebarItemTypes(userId),
+		getSidebarCollections(userId),
 		getSidebarUser(userId),
 		getUserProfile(userId),
 		getUserUsageStats(userId)
