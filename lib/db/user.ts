@@ -6,9 +6,9 @@ export type SidebarUser = {
 	image: string | null
 }
 
-export async function getSidebarUser(): Promise<SidebarUser | null> {
-	const user = await prisma.user.findFirst({
-		where: { email: 'demo@devmemo.com' },
+export async function getSidebarUser(userId: string): Promise<SidebarUser | null> {
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
 		select: { email: true, name: true, image: true }
 	})
 

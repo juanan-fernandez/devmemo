@@ -5,11 +5,9 @@ import {
 	Folder,
 	PanelLeftClose,
 	PanelLeftOpen,
-	Star,
-	User
+	Star
 } from 'lucide-react'
 import Link from 'next/link'
-import NextImage from 'next/image'
 import { cn } from '@/lib/utils'
 import type { SidebarUser } from '@/lib/db/user'
 import { Button } from '@/components/ui/button'
@@ -17,6 +15,7 @@ import { useState } from 'react'
 import type { SidebarItemType } from '@/lib/db/items'
 import type { SidebarCollectionsData } from '@/lib/db/collections'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
+import { UserProfile } from '@/components/dashboard/user-profile'
 
 export type SidebarProps = {
 	collapsed: boolean
@@ -149,33 +148,11 @@ export function Sidebar({
 
 				<div
 					className={cn(
-						'flex shrink-0 items-center border-t border-sidebar-border p-3',
+						'flex shrink-0 border-t border-sidebar-border p-3',
 						collapsed && 'justify-center'
 					)}
 				>
-					<div className={cn('flex items-center gap-3', collapsed && 'flex-col')}>
-						<div className='flex size-8 items-center justify-center overflow-hidden rounded-full bg-sidebar-accent'>
-							{user?.image ? (
-								<NextImage
-									src={user.image}
-									alt={user.name ? `Avatar de ${user.name}` : 'Avatar de usuario'}
-									width={32}
-									height={32}
-									className='size-full object-cover'
-								/>
-							) : (
-								<User className='size-4 text-sidebar-foreground/60' />
-							)}
-						</div>
-						{!collapsed && (
-							<div className='min-w-0'>
-								<p className='truncate text-sm font-medium text-sidebar-foreground'>
-									{user?.email ?? 'Usuario'}
-								</p>
-								{user?.name && <p className='truncate text-xs text-sidebar-foreground/50'>{user.name}</p>}
-							</div>
-						)}
-					</div>
+					<UserProfile user={user} collapsed={collapsed} />
 				</div>
 			</aside>
 		</>
