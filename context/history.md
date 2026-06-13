@@ -87,6 +87,15 @@
 - Actualizado `app/dashboard/layout.tsx` para cargar los datos del usuario en el servidor junto con los del sidebar.
 - Actualizado `components/dashboard/dashboard-layout-shell.tsx` y `components/dashboard/sidebar.tsx` para usar datos reales de base de datos (email, nombre, avatar).
 
+## 2026-06-13 :: 18:13 - Auth setup NextAuth GitHub
+
+- Feature auth-1-spec: implementado NextAuth v5 con split config edge-safe.
+- Creados `auth/auth.config.ts` (edge-safe, solo GitHub provider) y `auth/auth.ts` (PrismaAdapter + JWT + session.id).
+- Creado `proxy.ts` para proteger `/dashboard/*` con redirect a sign-in.
+- Creado `app/api/auth/[...nextauth]/route.ts` y `auth/next-auth.d.ts` (type augmentation).
+- Instalados `next-auth@beta ^5.0.0-beta.31` y `@auth/prisma-adapter ^2.11.2`.
+- Añadidas variables `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET` a `.env` y `.env.example`.
+
 ## 2026-06-10 :: 20:35 - Cleanup dashboard y tipos
 
 - Extraído el registro compartido de iconos de tipos a `lib/item-type-icons.tsx` para reutilizarlo en dashboard, sidebar y pinned items.
