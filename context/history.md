@@ -87,6 +87,13 @@
 - Actualizado `app/dashboard/layout.tsx` para cargar los datos del usuario en el servidor junto con los del sidebar.
 - Actualizado `components/dashboard/dashboard-layout-shell.tsx` y `components/dashboard/sidebar.tsx` para usar datos reales de base de datos (email, nombre, avatar).
 
+## 2026-06-13 :: 20:30 - Credentials y registro
+
+- Feature auth-2-spec: añadido Credentials provider con split pattern edge-safe.
+- Actualizado `auth/auth.config.ts` con placeholder de Credentials.
+- Actualizado `auth/auth.ts` con lógica real de authorize: validación email/password, bcrypt compare, normalización email, retorno NextAuth-compatible.
+- Creado `app/api/auth/register/route.ts` para registro público con validación, password policy, 409 en duplicado, hash bcrypt (10 rounds) y 201 sin exponer hash.
+
 ## 2026-06-13 :: 18:13 - Auth setup NextAuth GitHub
 
 - Feature auth-1-spec: implementado NextAuth v5 con split config edge-safe.
