@@ -1,11 +1,11 @@
 'use client'
 
 import { LoaderCircle, LogOut } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
 
+import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import type { SidebarUser } from '@/lib/db/user'
 import { cn } from '@/lib/utils'
@@ -15,19 +15,8 @@ type UserProfileProps = {
 	collapsed: boolean
 }
 
-function getInitials(name: string | null, email: string | null) {
-	const source = name?.trim() || email?.trim() || 'Usuario'
-	const words = source
-		.split(/\s+/)
-		.filter(Boolean)
-		.slice(0, 2)
-
-	return words.map(word => word[0]?.toUpperCase() ?? '').join('') || 'U'
-}
-
 export function UserProfile({ user, collapsed }: UserProfileProps) {
 	const [isSigningOut, setIsSigningOut] = useState(false)
-	const initials = getInitials(user?.name ?? null, user?.email ?? null)
 
 	async function handleSignOut() {
 		setIsSigningOut(true)
@@ -44,19 +33,13 @@ export function UserProfile({ user, collapsed }: UserProfileProps) {
 					collapsed && 'justify-center'
 				)}
 			>
-				<div className='flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-sidebar-border/70 bg-background text-sm font-semibold text-sidebar-foreground'>
-					{user?.image ? (
-						<Image
-							src={user.image}
-							alt={user.name ? `Avatar de ${user.name}` : 'Avatar de usuario'}
-							width={44}
-							height={44}
-							className='size-full object-cover'
-						/>
-					) : (
-						<span aria-hidden='true'>{initials}</span>
-					)}
-				</div>
+				<Avatar
+					src={user?.image}
+					name={user?.name}
+					email={user?.email}
+					size={44}
+					className='size-11 border border-sidebar-border/70'
+				/>
 
 				{!collapsed ? (
 					<div className='min-w-0 flex-1'>
