@@ -48,3 +48,5 @@ next-env.d.ts
 .opencode/node_modules/
 .opencode/bun.lockb
 .opencode/.bun/
+
+.playwright-mcp/*
