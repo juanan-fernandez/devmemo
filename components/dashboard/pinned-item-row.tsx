@@ -2,7 +2,7 @@
 
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
-import { PinnedItemActions } from '@/components/dashboard/pinned-item-actions'
+import { ItemActions } from '@/components/items/item-actions'
 
 type PinnedItemRowProps = {
 	item: DashboardItem
@@ -19,7 +19,7 @@ export function PinnedItemRow({ item }: PinnedItemRowProps) {
 				<span className='shrink-0 text-xs text-muted-foreground'>{item.type.label}</span>
 				{item.language ? <span className='shrink-0 text-xs text-muted-foreground'>{item.language}</span> : null}
 			</div>
-			<PinnedItemActions isFavorite={item.isFavorite} />
+			<ItemActions isFavorite={item.isFavorite} isPinned={item.isPinned} />
 		</div>
 	)
 }

@@ -1,11 +1,12 @@
-import { PinOff, Star, Trash2 } from 'lucide-react'
+import { Pin, PinOff, Star, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type PinnedItemActionsProps = {
+type ItemActionsProps = {
 	isFavorite: boolean
+	isPinned: boolean
 }
 
-export function PinnedItemActions({ isFavorite }: PinnedItemActionsProps) {
+export function ItemActions({ isFavorite, isPinned }: ItemActionsProps) {
 	return (
 		<div className='flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
 			<button
@@ -16,9 +17,9 @@ export function PinnedItemActions({ isFavorite }: PinnedItemActionsProps) {
 			</button>
 			<button
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-				aria-label='Desfijar'
+				aria-label={isPinned ? 'Desfijar' : 'Fijar'}
 			>
-				<PinOff className='size-4' />
+				{isPinned ? <PinOff className='size-4' /> : <Pin className='size-4' />}
 			</button>
 			<button
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-destructive'

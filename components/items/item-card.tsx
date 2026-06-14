@@ -2,7 +2,7 @@
 
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
-import { PinnedItemActions } from '@/components/dashboard/pinned-item-actions'
+import { ItemActions } from '@/components/items/item-actions'
 
 type ItemCardProps = {
 	item: DashboardItem
@@ -35,7 +35,7 @@ export function ItemCard({ item }: ItemCardProps) {
 						</div>
 					</div>
 				</div>
-				<PinnedItemActions isFavorite={item.isFavorite} />
+				<ItemActions isFavorite={item.isFavorite} isPinned={item.isPinned} />
 			</div>
 		</div>
 	)
