@@ -195,3 +195,14 @@
 - Actualizados `components/items/item-card.tsx` y `components/dashboard/pinned-item-row.tsx` para abrir el Sheet al hacer click y reutilizar `ItemActions` dentro del detalle.
 - Añadidos `components/ui/sheet.tsx` y `components/items/item-detail-sheet.tsx` con loading skeleton, copy en español, scroll interno y animación real basada en keyframes.
 - Corregida la interacción por teclado para que los botones de acciones no abran el Sheet al pulsar `Enter` o `Space`.
+
+## 2026-06-14 :: 19:18 - Edición de items en el Sheet
+
+- Feature item-edit-spec: añadido modo edición al Sheet de detalle de items con formulario controlado por estado local.
+- Creada la Server Action `actions/items/update-item.ts` con validación Zod, verificación de autenticación/ownership y whitelist de campos editables.
+- Añadidos helpers en `lib/items/editable-item.ts` para capacidades por tipo de item, parseo de tags y lista mantenible de lenguajes.
+- Creado el componente shadcn `components/ui/select.tsx` para el selector de lenguaje de snippets y commands.
+- Actualizado `components/items/item-detail-sheet.tsx` con botón `Editar`, botones `Guardar`/`Cancelar`, errores de validación en español, mensaje de éxito visible y refresco de UI tras guardar.
+- Corregida la animación del Sheet para que el panel entre y salga desde fuera de la pantalla y se eviten saltos visuales al cambiar de estado.
+- Reorganizado el encabezado del Sheet en dos líneas para evitar que los iconos de acción se solapen con el botón de cierre.
+- Añadidos tests en `__tests__/lib/editable-item.test.ts` para validar la lógica de parseo de tags y capacidades editables.
