@@ -47,6 +47,7 @@ Three real issues were found: **no rate limiting anywhere** (the most impactful)
 ### [HIGH] — No rate limiting on any auth endpoint
 
 **Files:**
+
 - `auth/auth.ts:50-97` (credentials login)
 - `app/api/auth/register/route.ts:37-121` (registration)
 - `actions/auth/request-password-reset.ts:15-41` (request password reset)
@@ -55,6 +56,7 @@ Three real issues were found: **no rate limiting anywhere** (the most impactful)
 - `components/auth/login-form.tsx:53-89` (client-side signIn call)
 
 **Issue:** None of the authentication endpoints implement any form of rate limiting. An attacker can:
+
 - Brute-force credentials login at full speed (bcrypt cost 10-12 slows per-attempt to ~100-200ms, but that is not enough to stop a sustained attack).
 - Perform password spraying across many accounts.
 - Flood a user with password-reset emails or verification resends (both consume third-party email API quota).
@@ -63,7 +65,8 @@ Three real issues were found: **no rate limiting anywhere** (the most impactful)
 **Risk:** HIGH. Without rate limiting, the only protection against brute force is bcrypt's computational cost. At cost 10, an attacker can still attempt ~10 passwords/second on a single core, and much more with parallel requests. Password spraying (trying `Password123!` against 10,000 accounts) would complete in minutes.
 
 **Fix:** Implement rate limiting on all auth endpoints. For a Next.js App Router app, options include:
-- Middleware-based rate limiting using an in-memory store (e.g., `@upstash/ratelimit` with Redis/Upstash, or `express-rate-limit` equivalent).
+
+- Middleware-based rate limiting using an in-memory store (e.g., `@upstash/ratelimit` with Redis/Upstash).
 - Database-level tracking of failed attempts per email/IP with exponential backoff.
 - CAPTCHA (e.g., Cloudflare Turnstile) on login and register pages.
 
@@ -74,18 +77,18 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
 const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(5, '60 s'),
-  analytics: true,
+	redis: Redis.fromEnv(),
+	limiter: Ratelimit.slidingWindow(5, '60 s'),
+	analytics: true
 })
 
 export async function POST(request: Request) {
-  const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = await ratelimit.limit(ip)
-  if (!success) {
-    return NextResponse.json({ error: 'Demasiados intentos. Inténtalo más tarde.' }, { status: 429 })
-  }
-  // ... proceed
+	const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
+	const { success } = await ratelimit.limit(ip)
+	if (!success) {
+		return NextResponse.json({ error: 'Demasiados intentos. Inténtalo más tarde.' }, { status: 429 })
+	}
+	// ... proceed
 }
 ```
 
@@ -111,6 +114,7 @@ Note: This introduces a trade-off — legitimate users registering with a known 
 ### [MEDIUM] — JWT sessions not invalidated on password change
 
 **Files:**
+
 - `auth/auth.ts:110-112` (JWT session strategy)
 - `actions/auth/change-password.ts:64-69` (password update)
 - `lib/auth/password-reset.ts:138-149` (password reset via token)
@@ -122,13 +126,18 @@ Note: This introduces a trade-off — legitimate users registering with a known 
 **Fix Options (trade-offs noted):**
 
 1. **Switch to database session strategy** (`session: { strategy: 'database' }`) — this allows instant invalidation. Required change:
+
    ```ts
    // auth/auth.ts
-   session: { strategy: 'database' }
+   session: {
+   	strategy: 'database'
+   }
    ```
+
    And add a `tokenVersion` or `lastPasswordChange` field to the user model, checked in the `session` callback. This adds a DB read per request.
 
 2. **Add a JWT token version** — add `tokenVersion: number` to the User model, include it in the JWT, and increment it on password change. Check it in the `jwt` callback:
+
    ```ts
    callbacks: {
      async jwt({ token, user }) {
@@ -170,10 +179,12 @@ The `hasPassword` flag is derived from `account === null`. If a user registered 
 Fix: query for a non-empty `password` field directly, or check that no Credentials-type account exists rather than the absence of any account.
 
 ```ts
-const hasPassword = !!(await prisma.user.findUnique({
-  where: { id: userId },
-  select: { password: true }
-}))?.password
+const hasPassword = !!(
+	await prisma.user.findUnique({
+		where: { id: userId },
+		select: { password: true }
+	})
+)?.password
 ```
 
 ### R4 — Password reset flow allows OAuth users to set a password without explicit confirmation
