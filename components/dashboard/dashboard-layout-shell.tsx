@@ -47,7 +47,7 @@ export function DashboardLayoutShell({
 					</div>
 				</header>
 				<main className='flex-1 overflow-auto'>
-					<div className='mx-auto max-w-6xl px-6 py-6 md:px-12 xl:px-20'>{children}</div>
+					<div className='mx-auto max-w-5xl px-6 py-6 md:px-12 xl:px-20'>{children}</div>
 				</main>
 			</div>
 		</div>
