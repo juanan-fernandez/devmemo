@@ -156,3 +156,10 @@
 - Creada la Server Action `actions/profile/delete-account.ts` para borrar únicamente al usuario autenticado, limpiar datos relacionados y cerrar sesión antes de redirigir a `/`.
 - Protegido el usuario demo `demo@devmemo.com`, mostrando el mensaje `El usuario demo no se puede eliminar` sin borrar datos.
 - Actualizada la home (`app/page.tsx`) para mostrar el mensaje `Tu cuenta se ha eliminado correctamente.` tras el redirect de éxito.
+
+## 2026-06-14 :: 11:39 - Linking GitHub por email
+
+- Feature fix-account-linking: corregido el error `OAuthAccountNotLinked` para usuarios registrados con email/contraseña que luego inician sesión con GitHub usando el mismo correo.
+- Actualizado `auth/auth.config.ts` para configurar el provider GitHub con `allowDangerousEmailAccountLinking: true`.
+- Mantenido el alcance mínimo: sin cambios de UI, sin tocar otros providers y sin migraciones de base de datos.
+- Añadido `context/features/fix-account-linking.md` al repo como spec de referencia para este ajuste puntual.

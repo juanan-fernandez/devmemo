@@ -7,7 +7,7 @@ const authConfig = {
 		signIn: '/login'
 	},
 	providers: [
-		GitHub,
+		GitHub({ allowDangerousEmailAccountLinking: true }),
 		Credentials({
 			credentials: {
 				email: {
