@@ -8,7 +8,7 @@
 
 ## History
 
-<!-- Keep this updated. Earliest to latest -->
+<!-- Mantener el history.md actualizado en orden cronológio ascendente. Earliest to latest -->
 
 ## 2026-06-09 :: 17:55 - Dashboard fase 2
 
