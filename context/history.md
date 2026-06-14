@@ -163,3 +163,19 @@
 - Actualizado `auth/auth.config.ts` para configurar el provider GitHub con `allowDangerousEmailAccountLinking: true`.
 - Mantenido el alcance mínimo: sin cambios de UI, sin tocar otros providers y sin migraciones de base de datos.
 - Añadido `context/features/fix-account-linking.md` al repo como spec de referencia para este ajuste puntual.
+
+## 2026-06-14 :: 14:03 - Items list view por tipo
+
+- Feature item-list-spec: creada la ruta dinámica `/items/[type]` para mostrar items filtrados por tipo.
+- Añadido `getCanonicalItemTypeBySlug()` en `lib/item-types.ts` para resolver slugs a tipos canónicos, incluyendo campo `gender` para concordancia gramatical (Nueva Nota, Nuevo Snippet).
+- Añadido `getItemsByTypeName()` en `lib/db/items.ts` para consultar items filtrados por tipo con conteo total.
+- Creado `app/items/[type]/page.tsx` con grid responsive de ItemCard, empty state con botón "Nuevo/Nueva {tipo}", y notFound() para slugs inválidos.
+- Ajustado margen y centrado del main del dashboard layout (max-w-5xl, padding progresivo).
+- Renombrado PinnedItemCard a ItemCard y PinnedItemActions a ItemActions, movidos a `components/items/`.
+- Añadido `isPinned` toggle al componente ItemActions (muestra Pin/PinOff según estado).
+
+## 2026-06-14 :: 14:03 - Refactor componentes items
+
+- Renombrado `PinnedItemCard` → `ItemCard` y movido de `components/dashboard/` a `components/items/`.
+- Renombrado `PinnedItemActions` → `ItemActions`, movido a `components/items/`, añadida prop `isPinned` con toggle PinOff/Pin.
+- Actualizado `pinned-section.tsx` e `item-card.tsx` para usar los nuevos nombres y pasar `isPinned`.

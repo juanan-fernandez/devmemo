@@ -86,6 +86,32 @@ export async function getSidebarItemTypes(userId: string): Promise<SidebarItemTy
 	}))
 }
 
+export type ItemsByTypePage = {
+	items: DashboardItem[]
+	totalCount: number
+}
+
+export async function getItemsByTypeName(
+	userId: string,
+	typeName: string
+): Promise<ItemsByTypePage> {
+	const [items, totalCount] = await Promise.all([
+		prisma.item.findMany({
+			where: { userId, type: { name: typeName } },
+			orderBy: { createdAt: 'desc' },
+			include: { type: true }
+		}),
+		prisma.item.count({
+			where: { userId, type: { name: typeName } }
+		})
+	])
+
+	return {
+		items: items.map(mapDashboardItem),
+		totalCount
+	}
+}
+
 export async function getDashboardItemsSection(userId: string): Promise<DashboardItemsSection> {
 	const pinnedItems = await prisma.item.findMany({
 		where: { userId, isPinned: true },

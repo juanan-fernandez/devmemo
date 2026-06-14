@@ -7,6 +7,8 @@ export type SystemItemTypeKey =
 	| 'image'
 	| 'url'
 
+export type ItemGender = 'masculine' | 'feminine'
+
 export type CanonicalSystemItemType = {
 	mockId: string
 	name: string
@@ -17,6 +19,7 @@ export type CanonicalSystemItemType = {
 	key: SystemItemTypeKey
 	dbName: string
 	singularLabel: string
+	gender: ItemGender
 	href: string
 }
 
@@ -40,15 +43,17 @@ export type SidebarAppItemType = AppItemType & {
 
 function createCanonicalSystemItemType(
 	key: SystemItemTypeKey,
-	definition: Omit<CanonicalSystemItemType, 'key' | 'dbName' | 'singularLabel' | 'href'>,
+	definition: Omit<CanonicalSystemItemType, 'key' | 'dbName' | 'singularLabel' | 'href' | 'gender'>,
 	dbName: string,
-	singularLabel: string
+	singularLabel: string,
+	gender: ItemGender
 ): CanonicalSystemItemType {
 	return {
 		...definition,
 		key,
 		dbName,
 		singularLabel,
+		gender,
 		href: getItemTypeHref(definition.name)
 	}
 }
@@ -65,7 +70,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'Snippet',
-		'Snippet'
+		'Snippet',
+		'masculine'
 	),
 	createCanonicalSystemItemType(
 		'prompt',
@@ -78,7 +84,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'Prompt',
-		'Prompt'
+		'Prompt',
+		'masculine'
 	),
 	createCanonicalSystemItemType(
 		'command',
@@ -91,7 +98,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'Command',
-		'Comando'
+		'Comando',
+		'masculine'
 	),
 	createCanonicalSystemItemType(
 		'note',
@@ -104,7 +112,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'Note',
-		'Nota'
+		'Nota',
+		'feminine'
 	),
 	createCanonicalSystemItemType(
 		'file',
@@ -117,7 +126,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'File',
-		'Archivo'
+		'Archivo',
+		'masculine'
 	),
 	createCanonicalSystemItemType(
 		'image',
@@ -130,7 +140,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'Image',
-		'Imagen'
+		'Imagen',
+		'feminine'
 	),
 	createCanonicalSystemItemType(
 		'url',
@@ -143,7 +154,8 @@ export const CANONICAL_SYSTEM_ITEM_TYPES = [
 			userId: null
 		},
 		'URL',
-		'Enlace'
+		'Enlace',
+		'masculine'
 	)
 ] as const satisfies readonly CanonicalSystemItemType[]
 
@@ -153,6 +165,10 @@ const CANONICAL_ITEM_TYPES_BY_DB_NAME = new Map(
 
 const CANONICAL_ITEM_TYPES_BY_MOCK_ID = new Map(
 	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.mockId, itemType])
+)
+
+const CANONICAL_ITEM_TYPES_BY_HREF = new Map(
+	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.href, itemType])
 )
 
 export const MOCK_ITEM_TYPES = CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => ({
@@ -182,6 +198,10 @@ export function getCanonicalItemType(name: string) {
 
 export function getCanonicalItemTypeByMockId(mockId: string) {
 	return CANONICAL_ITEM_TYPES_BY_MOCK_ID.get(mockId) ?? null
+}
+
+export function getCanonicalItemTypeBySlug(slug: string) {
+	return CANONICAL_ITEM_TYPES_BY_HREF.get(`/items/${slug}`) ?? null
 }
 
 export function toAppItemType(source: ItemTypeSource): AppItemType {
