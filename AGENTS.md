@@ -3,7 +3,7 @@
 ## Snapshot
 
 - `README.md` is still generic create-next-app scaffolding; trust `package.json`, `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, and files under `app/` instead.
-- This is a single-package Next.js 16 App Router app. There is no monorepo layout, CI workflow, test suite, or repo-local `opencode.json` at the root.
+- This is a single-package Next.js 16 App Router app. There is no monorepo layout, CI workflow, or repo-local `opencode.json` at the root.
 
 ## Project overview
 
@@ -25,7 +25,9 @@ These are the context files referenced by the CLAUDE.md file. Only the four root
 - Start dev server: `npm run dev`
 - Build production app: `npm run build`
 - Start production server: `npm run start`
-- Verification: `npm run lint` (`package.json` has no dedicated `typecheck` or `test` script)
+- Verification: `npm run lint`, `npm run test` (Vitest, unit tests only)
+- Test runner: Vitest — config in `vitest.config.ts`, test files in `__tests__/`
+- Test scope: server actions and utility functions only (no UI/component tests)
 
 ## Code Map
 
