@@ -64,7 +64,7 @@ export default async function DashboardPage() {
 	]
 
 	return (
-		<div className='space-y-8 px-8 py-6 md:px-10 xl:px-12'>
+		<div className='space-y-8'>
 			<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
 				{summaryCards.map(card => (
 					<DashboardSummaryCard key={card.label} {...card} />

@@ -51,7 +51,9 @@ export function DashboardLayoutShell({
 						<Input type='search' placeholder='Buscar snippets, comandos, notas...' className='pl-9' />
 					</div>
 				</header>
-				<main className='flex-1 overflow-auto'>{children}</main>
+				<main className='flex-1 overflow-auto'>
+				<div className='mx-auto max-w-6xl px-6 py-6 md:px-10 xl:px-14'>{children}</div>
+			</main>
 			</div>
 		</div>
 	)
