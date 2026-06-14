@@ -1,32 +1,68 @@
-import { Pin, PinOff, Star, Trash2 } from 'lucide-react'
+'use client'
+
+import { Pin, PinOff, Star } from 'lucide-react'
+import { useState } from 'react'
+
+import { toggleFavoriteAction } from '@/actions/items/toggle-favorite'
+import { togglePinnedAction } from '@/actions/items/toggle-pinned'
+import { DeleteItemDialog } from '@/components/items/delete-item-dialog'
 import { cn } from '@/lib/utils'
 
 type ItemActionsProps = {
+	itemId: string
+	itemTitle: string
 	isFavorite: boolean
 	isPinned: boolean
+	onDelete: () => void
 }
 
-export function ItemActions({ isFavorite, isPinned }: ItemActionsProps) {
+export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete }: ItemActionsProps) {
+	const [favoriteState, setFavoriteState] = useState(isFavorite)
+	const [pinnedState, setPinnedState] = useState(isPinned)
+
+	async function handleToggleFavorite() {
+		const optimisticState = !favoriteState
+		setFavoriteState(optimisticState)
+
+		const result = await toggleFavoriteAction(itemId, favoriteState, {})
+
+		if (!result.successful) {
+			setFavoriteState(isFavorite)
+			alert(result.error || 'Error al actualizar favorito')
+		}
+	}
+
+	async function handleTogglePinned() {
+		const optimisticState = !pinnedState
+		setPinnedState(optimisticState)
+
+		const result = await togglePinnedAction(itemId, pinnedState, {})
+
+		if (!result.successful) {
+			setPinnedState(isPinned)
+			alert(result.error || 'Error al actualizar fijado')
+		}
+	}
+
 	return (
 		<div className='flex shrink-0 items-center gap-1'>
 			<button
+				type='button'
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-				aria-label='Favorito'
+				aria-label={favoriteState ? 'Quitar de favoritos' : 'Marcar como favorito'}
+				onClick={handleToggleFavorite}
 			>
-				<Star className={cn('size-4', isFavorite && 'fill-yellow-500 text-yellow-500')} />
+				<Star className={cn('size-4', favoriteState && 'fill-yellow-500 text-yellow-500')} />
 			</button>
 			<button
+				type='button'
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-				aria-label={isPinned ? 'Desfijar' : 'Fijar'}
+				aria-label={pinnedState ? 'Quitar item fijado' : 'Fijar item'}
+				onClick={handleTogglePinned}
 			>
-				{isPinned ? <PinOff className='size-4' /> : <Pin className='size-4' />}
+				{pinnedState ? <PinOff className='size-4' /> : <Pin className='size-4' />}
 			</button>
-			<button
-				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-destructive'
-				aria-label='Eliminar'
-			>
-				<Trash2 className='size-4' />
-			</button>
+			<DeleteItemDialog itemId={itemId} itemTitle={itemTitle} onDelete={onDelete} />
 		</div>
 	)
 }

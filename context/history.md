@@ -179,3 +179,11 @@
 - Renombrado `PinnedItemCard` → `ItemCard` y movido de `components/dashboard/` a `components/items/`.
 - Renombrado `PinnedItemActions` → `ItemActions`, movido a `components/items/`, añadida prop `isPinned` con toggle PinOff/Pin.
 - Actualizado `pinned-section.tsx` e `item-card.tsx` para usar los nuevos nombres y pasar `isPinned`.
+
+## 2026-06-14 :: 16:53 - Acciones server-side en item cards
+
+- Feature item-card-actions-spec: implementadas acciones reales para eliminar items, marcar favoritos y fijar/desfijar desde `ItemCard` y `PinnedItemRow`.
+- Creadas server actions en `actions/items/` con verificación de autenticación, ownership del item y revalidación de rutas afectadas.
+- Añadido `components/items/delete-item-dialog.tsx` para confirmar la eliminación con UI accesible y copy en español.
+- Actualizado `components/items/item-actions.tsx` para usar toggles optimistas de favorito/fijado y el flujo de borrado con confirmación.
+- Actualizados `components/items/item-card.tsx` y `components/dashboard/pinned-item-row.tsx` para reemplazar el item borrado por un mensaje temporal de éxito antes de refrescar la UI.

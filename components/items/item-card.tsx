@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
 import { ItemActions } from '@/components/items/item-actions'
@@ -9,6 +11,26 @@ type ItemCardProps = {
 }
 
 export function ItemCard({ item }: ItemCardProps) {
+	const [isDeleted, setIsDeleted] = useState(false)
+	const [showMessage, setShowMessage] = useState(false)
+
+	function handleDelete() {
+		setIsDeleted(true)
+		setShowMessage(true)
+
+		setTimeout(() => {
+			setShowMessage(false)
+		}, 2000)
+	}
+
+	if (isDeleted) {
+		return showMessage ? (
+			<div className='rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-center text-sm text-green-600'>
+				Item eliminado correctamente.
+			</div>
+		) : null
+	}
+
 	return (
 		<div
 			className='group rounded-xl border border-border bg-card transition-colors hover:bg-accent/50'
@@ -18,7 +40,13 @@ export function ItemCard({ item }: ItemCardProps) {
 				<span className='shrink-0'>
 					<ItemTypeIcon iconName={item.type.icon} className='size-5' color={item.type.color} />
 				</span>
-				<ItemActions isFavorite={item.isFavorite} isPinned={item.isPinned} />
+				<ItemActions
+					itemId={item.id}
+					itemTitle={item.title}
+					isFavorite={item.isFavorite}
+					isPinned={item.isPinned}
+					onDelete={handleDelete}
+				/>
 			</div>
 			<div className='px-5 pb-4 pt-1'>
 				<h3 className='truncate text-base font-medium text-foreground'>{item.title}</h3>
