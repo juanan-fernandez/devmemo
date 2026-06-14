@@ -55,7 +55,7 @@ export function Sidebar({
 						collapsed ? 'justify-center' : 'justify-between'
 					)}
 				>
-					{!collapsed && <span className='font-heading text-base font-bold text-sidebar-foreground'>DevMemo</span>}
+					{!collapsed && <Link href='/dashboard' className='font-heading text-base font-bold text-sidebar-foreground hover:text-sidebar-foreground/80'>DevMemo</Link>}
 					<Button
 						variant='ghost'
 						size='icon'
