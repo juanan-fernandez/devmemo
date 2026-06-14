@@ -129,7 +129,7 @@ Not Started
 
 1. Read `@context/current-feature.md` to understand what was built.
 2. Identify all **server actions** and **utility functions** added as part of this feature.
-3. Check whether tests already exist for each of them.
+3. Check whether tests already exist for each of them. If not, create it.
 4. For functions that contain testable logic and are **not yet covered**, write unit tests using **Vitest**:
    - Focus on **server actions** and **utility functions** (not UI components).
    - Cover the **happy path** (expected inputs → expected outputs).
