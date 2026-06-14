@@ -148,3 +148,11 @@
 - Actualizado `auth/auth.ts` y `app/api/auth/register/route.ts` para bloquear intentos excedidos con mensajes en español y `Retry-After` en el registro.
 - Adaptadas las Server Actions de auth para devolver errores estructurados con el tiempo exacto de espera antes del siguiente intento.
 - Añadidas variables Upstash a `.env.example` y ajustada la UI de login para mostrar mensajes dinámicos como "Inténtalo de nuevo en 5 minutos".
+
+## 2026-06-14 :: 11:26 - Borrado de cuenta
+
+- Feature delete-account-spec: implementado el flujo de eliminación de cuenta dentro de `/profile` con confirmación explícita.
+- Añadido un modal en español con advertencia irreversible, input obligatorio `BORRAR` y botón `Continuar` deshabilitado hasta validación exacta.
+- Creada la Server Action `actions/profile/delete-account.ts` para borrar únicamente al usuario autenticado, limpiar datos relacionados y cerrar sesión antes de redirigir a `/`.
+- Protegido el usuario demo `demo@devmemo.com`, mostrando el mensaje `El usuario demo no se puede eliminar` sin borrar datos.
+- Actualizada la home (`app/page.tsx`) para mostrar el mensaje `Tu cuenta se ha eliminado correctamente.` tras el redirect de éxito.

@@ -1,9 +1,10 @@
 'use client'
 
-import { CalendarDays, Key, Trash2 } from 'lucide-react'
+import { CalendarDays, Key } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 
 import { ChangePasswordForm } from '@/components/profile/change-password-form'
+import { DeleteAccountDialog } from '@/components/profile/delete-account-dialog'
 import { UsageStatsCard } from '@/components/profile/usage-stats-card'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -82,10 +83,7 @@ export function ProfileContent({ profile, stats }: ProfileContentProps) {
 								Cambiar contraseña
 							</Button>
 						)}
-						<Button variant='outline' size='sm' disabled className='rounded-xl opacity-50'>
-							<Trash2 className='size-3.5' />
-							Eliminar cuenta
-						</Button>
+						<DeleteAccountDialog email={profile.email} />
 					</div>
 				</div>
 			</section>
