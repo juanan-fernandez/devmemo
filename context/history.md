@@ -10,31 +10,6 @@
 
 <!-- Keep this updated. Earliest to latest -->
 
-## 2026-06-14 :: 00:20 - Página de perfil
-
-- Feature profile-page-spec: añadida la página protegida `/profile` reutilizando el shell visual del dashboard.
-- Creado componente reutilizable `Avatar` con fallback a iniciales o email cuando no hay imagen.
-- Implementado cambio de contraseña para usuarios credentials mediante Server Action con validación de contraseña actual, política reutilizada y hash bcrypt.
-- Añadida tarjeta de estadísticas con total de items, colecciones y desglose por tipo usando iconos y colores compartidos.
-- Actualizado `proxy.ts` para proteger `/profile` y mantenido el botón de eliminar cuenta como placeholder sin funcionalidad.
-
-## 2026-06-13 :: 15:50 - Verificación por e-mail
-
-- Feature email-verification-spec: añadida verificación de e-mail con Resend para usuarios registrados por credentials.
-- Creado flujo de tokens de verificación de un solo uso con hash, expiración e invalidación de tokens previos.
-- Añadida página `/verify-email` para validar el enlace, marcar `User.emailVerified` y mostrar mensajes en español.
-- Bloqueado el login por credentials cuando el e-mail no está verificado y añadido reenvío del enlace desde la experiencia de login.
-- Actualizados Prisma, `.env.example` y utilidades server-only para soportar el envío y validación del flujo de verificación.
-
-## 2026-06-13 :: 13:23 - UI auth personalizada
-
-- Feature auth-3-spec: reemplazadas las páginas por defecto de NextAuth con UI custom en español para `/login` y `/register`.
-- Creados formularios de login y registro con validaciones, estados de carga, manejo de errores amigables y redirección de registro exitoso a `/login?registered=true`.
-- Añadido perfil fijo en el sidebar con avatar por imagen o iniciales, link a `/profile` y acción visible de `Cerrar sesión` con redirección a `/`.
-- Ajustado el wiring de auth para usar la página custom de login, soporte de imágenes remotas y datos reales del usuario autenticado en el sidebar.## 2026-06-09 :: 17:53 - Dashboard fase 1
-
-- dashboard fase 1: creada la ruta `/dashboard`, top bar con búsqueda y placeholders de `Menu` y `Main`.
-
 ## 2026-06-09 :: 17:55 - Dashboard fase 2
 
 - Dashboard fase 2: se implementó un layout con sidebar colapsable, drawer para mobile, listado de tipos de item con icono y color, sección desplegable de colecciones con las 3 más recientes, enlace a favoritas y “Ver todas”, además del usuario activo al pie del menú.
@@ -115,6 +90,23 @@
 - Simplificados `lib/db/items.ts` y `lib/db/collections.ts` para reutilizar helpers compartidos y reducir shapes ad hoc.
 - Divididos componentes grandes del dashboard en piezas presentacionales más pequeñas y limpiado el ruido de lint en `.agents/skills/tailwind-v4-shadcn/templates/theme-provider.tsx`.
 
+## 2026-06-13 :: 13:23 - UI auth personalizada
+
+- Feature auth-3-spec: reemplazadas las páginas por defecto de NextAuth con UI custom en español para `/login` y `/register`.
+- Creados formularios de login y registro con validaciones, estados de carga, manejo de errores amigables y redirección de registro exitoso a `/login?registered=true`.
+- Añadido perfil fijo en el sidebar con avatar por imagen o iniciales, link a `/profile` y acción visible de `Cerrar sesión` con redirección a `/`.
+- Ajustado el wiring de auth para usar la página custom de login, soporte de imágenes remotas y datos reales del usuario autenticado en el sidebar.## 2026-06-09 :: 17:53 - Dashboard fase 1
+
+- dashboard fase 1: creada la ruta `/dashboard`, top bar con búsqueda y placeholders de `Menu` y `Main`.
+
+## 2026-06-13 :: 15:50 - Verificación por e-mail
+
+- Feature email-verification-spec: añadida verificación de e-mail con Resend para usuarios registrados por credentials.
+- Creado flujo de tokens de verificación de un solo uso con hash, expiración e invalidación de tokens previos.
+- Añadida página `/verify-email` para validar el enlace, marcar `User.emailVerified` y mostrar mensajes en español.
+- Bloqueado el login por credentials cuando el e-mail no está verificado y añadido reenvío del enlace desde la experiencia de login.
+- Actualizados Prisma, `.env.example` y utilidades server-only para soportar el envío y validación del flujo de verificación.
+
 ## 2026-06-13 :: 18:13 - Auth setup NextAuth GitHub
 
 - Feature auth-1-spec: implementado NextAuth v5 con split config edge-safe.
@@ -138,6 +130,14 @@
 - Añadido modelo `PasswordResetToken` en Prisma con migración, política de contraseñas centralizada en `lib/auth/password-policy.ts`, y mensajes de reset en español.
 - Invalidados tokens previos del mismo email al crear uno nuevo; redirección a `/login?reset=true` tras éxito.
 - Corregido error de Next.js 16: los archivos `use server` no pueden exportar valores no-funcionales.
+
+## 2026-06-14 :: 00:20 - Página de perfil
+
+- Feature profile-page-spec: añadida la página protegida `/profile` reutilizando el shell visual del dashboard.
+- Creado componente reutilizable `Avatar` con fallback a iniciales o email cuando no hay imagen.
+- Implementado cambio de contraseña para usuarios credentials mediante Server Action con validación de contraseña actual, política reutilizada y hash bcrypt.
+- Añadida tarjeta de estadísticas con total de items, colecciones y desglose por tipo usando iconos y colores compartidos.
+- Actualizado `proxy.ts` para proteger `/profile` y mantenido el botón de eliminar cuenta como placeholder sin funcionalidad.
 
 ## 2026-06-14 :: 10:45 - Rate limiting auth
 
