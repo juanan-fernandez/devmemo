@@ -12,6 +12,24 @@ export type DashboardItem = {
 	type: AppItemType
 }
 
+export type ItemDetail = DashboardItem & {
+	contentType: string
+	content: string | null
+	fileUrl: string | null
+	fileName: string | null
+	fileSize: number | null
+	url: string | null
+	collection: {
+		id: string
+		name: string
+	} | null
+	tags: {
+		id: string
+		name: string
+	}[]
+	updatedAt: Date
+}
+
 export type DashboardItemsSection = {
 	title: 'EN TU TABLERO' | 'ÚLTIMOS ITEMS'
 	items: DashboardItem[]
@@ -53,6 +71,54 @@ function mapDashboardItem(item: {
 			isSystem: item.type.isSystem,
 			userId: item.type.userId
 		})
+	}
+}
+
+function mapItemDetail(item: {
+	id: string
+	title: string
+	description: string | null
+	isFavorite: boolean
+	isPinned: boolean
+	language: string | null
+	createdAt: Date
+	updatedAt: Date
+	contentType: string
+	content: string | null
+	fileUrl: string | null
+	fileName: string | null
+	fileSize: number | null
+	url: string | null
+	type: {
+		id: string
+		name: string
+		icon: string | null
+		color: string | null
+		isSystem: boolean
+		userId: string | null
+	}
+	collection: {
+		id: string
+		name: string
+	} | null
+	tags: {
+		tag: {
+			id: string
+			name: string
+		}
+	}[]
+}): ItemDetail {
+	return {
+		...mapDashboardItem(item),
+		updatedAt: item.updatedAt,
+		contentType: item.contentType,
+		content: item.content,
+		fileUrl: item.fileUrl,
+		fileName: item.fileName,
+		fileSize: item.fileSize,
+		url: item.url,
+		collection: item.collection,
+		tags: item.tags.map(itemTag => itemTag.tag)
 	}
 }
 
@@ -110,6 +176,36 @@ export async function getItemsByTypeName(
 		items: items.map(mapDashboardItem),
 		totalCount
 	}
+}
+
+export async function getItemDetailById(userId: string, itemId: string): Promise<ItemDetail | null> {
+	const item = await prisma.item.findFirst({
+		where: {
+			id: itemId,
+			userId
+		},
+		include: {
+			type: true,
+			collection: {
+				select: {
+					id: true,
+					name: true
+				}
+			},
+			tags: {
+				include: {
+					tag: {
+						select: {
+							id: true,
+							name: true
+						}
+					}
+				}
+			}
+		}
+	})
+
+	return item ? mapItemDetail(item) : null
 }
 
 export async function getDashboardItemsSection(userId: string): Promise<DashboardItemsSection> {

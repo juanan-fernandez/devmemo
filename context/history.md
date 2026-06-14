@@ -187,3 +187,11 @@
 - Añadido `components/items/delete-item-dialog.tsx` para confirmar la eliminación con UI accesible y copy en español.
 - Actualizado `components/items/item-actions.tsx` para usar toggles optimistas de favorito/fijado y el flujo de borrado con confirmación.
 - Actualizados `components/items/item-card.tsx` y `components/dashboard/pinned-item-row.tsx` para reemplazar el item borrado por un mensaje temporal de éxito antes de refrescar la UI.
+
+## 2026-06-14 :: 18:08 - Sheet de detalle de items
+
+- Feature item-detail-spec: añadida la vista de detalle de item en un Sheet lateral reutilizable, sin crear una página separada para el detalle.
+- Creado `app/api/items/[id]/route.ts` y ampliado `lib/db/items.ts` con la consulta autenticada para cargar el detalle completo del item bajo demanda.
+- Actualizados `components/items/item-card.tsx` y `components/dashboard/pinned-item-row.tsx` para abrir el Sheet al hacer click y reutilizar `ItemActions` dentro del detalle.
+- Añadidos `components/ui/sheet.tsx` y `components/items/item-detail-sheet.tsx` con loading skeleton, copy en español, scroll interno y animación real basada en keyframes.
+- Corregida la interacción por teclado para que los botones de acciones no abran el Sheet al pulsar `Enter` o `Space`.

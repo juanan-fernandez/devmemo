@@ -2,6 +2,7 @@
 
 import { Pin, PinOff, Star } from 'lucide-react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { toggleFavoriteAction } from '@/actions/items/toggle-favorite'
 import { togglePinnedAction } from '@/actions/items/toggle-pinned'
@@ -17,6 +18,7 @@ type ItemActionsProps = {
 }
 
 export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete }: ItemActionsProps) {
+	const router = useRouter()
 	const [favoriteState, setFavoriteState] = useState(isFavorite)
 	const [pinnedState, setPinnedState] = useState(isPinned)
 
@@ -29,7 +31,10 @@ export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete 
 		if (!result.successful) {
 			setFavoriteState(isFavorite)
 			alert(result.error || 'Error al actualizar favorito')
+			return
 		}
+
+		router.refresh()
 	}
 
 	async function handleTogglePinned() {
@@ -41,11 +46,18 @@ export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete 
 		if (!result.successful) {
 			setPinnedState(isPinned)
 			alert(result.error || 'Error al actualizar fijado')
+			return
 		}
+
+		router.refresh()
 	}
 
 	return (
-		<div className='flex shrink-0 items-center gap-1'>
+		<div
+			className='flex shrink-0 items-center gap-1'
+			onClick={event => event.stopPropagation()}
+			onKeyDown={event => event.stopPropagation()}
+		>
 			<button
 				type='button'
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
