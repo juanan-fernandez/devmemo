@@ -1,6 +1,10 @@
 import 'dotenv/config'
 import { hash } from 'bcryptjs'
 import { PrismaPg } from '@prisma/adapter-pg'
+import {
+	CANONICAL_SYSTEM_ITEM_TYPES,
+	getCanonicalItemTypeByMockId
+} from '../lib/item-types'
 import { mockCollections, mockItems, mockItemTags, mockTags } from '../lib/mockdata'
 import { PrismaClient } from '../lib/db/generated/prisma/client'
 
@@ -20,26 +24,6 @@ const DEMO_USER = {
 	image: 'https://gravatar.com/avatar/6e876962302db3a50286689eb0bef3c5?s=200&d=robohash&r=x'
 } as const
 
-const SYSTEM_ITEM_TYPES = [
-	{ name: 'Snippet', icon: 'Braces', color: '#3B82F6' },
-	{ name: 'Prompt', icon: 'MessageSquare', color: '#22C55E' },
-	{ name: 'Note', icon: 'StickyNote', color: '#EAB308' },
-	{ name: 'Command', icon: 'Terminal', color: '#6B7280' },
-	{ name: 'File', icon: 'FileText', color: '#F97316' },
-	{ name: 'Image', icon: 'Image', color: '#EC4899' },
-	{ name: 'URL', icon: 'Link', color: '#06B6D4' }
-] as const
-
-const MOCK_TYPE_TO_SYSTEM_NAME: Record<string, (typeof SYSTEM_ITEM_TYPES)[number]['name']> = {
-	type_snippets: 'Snippet',
-	type_prompts: 'Prompt',
-	type_comandos: 'Command',
-	type_notas: 'Note',
-	type_archivos: 'File',
-	type_imagenes: 'Image',
-	type_enlaces: 'URL'
-}
-
 function toDate(value: string) {
 	return new Date(value)
 }
@@ -50,12 +34,12 @@ async function ensureSystemItemTypes() {
 	})
 
 	const existingNames = new Set(existing.map(type => type.name))
-	const missingTypes = SYSTEM_ITEM_TYPES.filter(type => !existingNames.has(type.name))
+	const missingTypes = CANONICAL_SYSTEM_ITEM_TYPES.filter(type => !existingNames.has(type.dbName))
 
 	if (missingTypes.length > 0) {
 		await prisma.itemType.createMany({
 			data: missingTypes.map(type => ({
-				name: type.name,
+				name: type.dbName,
 				icon: type.icon,
 				color: type.color,
 				isSystem: true
@@ -125,11 +109,16 @@ async function reseedDemoData(systemTypes: Awaited<ReturnType<typeof ensureSyste
 		const itemIdMap = new Map<string, string>()
 
 		for (const item of mockItems) {
-			const systemTypeName = MOCK_TYPE_TO_SYSTEM_NAME[item.typeId]
-			const systemType = systemTypes.get(systemTypeName)
+			const canonicalType = getCanonicalItemTypeByMockId(item.typeId)
+
+			if (!canonicalType) {
+				throw new Error(`Missing canonical item type for mock type: ${item.typeId}`)
+			}
+
+			const systemType = systemTypes.get(canonicalType.dbName)
 
 			if (!systemType) {
-				throw new Error(`Missing system item type: ${systemTypeName}`)
+				throw new Error(`Missing system item type: ${canonicalType.dbName}`)
 			}
 
 			const createdItem = await tx.item.create({

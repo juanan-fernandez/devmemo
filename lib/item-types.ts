@@ -1,6 +1,4 @@
-import { mockItemTypes, type MockItemType } from '@/lib/mockdata'
-
-type SystemItemTypeKey =
+export type SystemItemTypeKey =
 	| 'snippet'
 	| 'prompt'
 	| 'command'
@@ -9,7 +7,13 @@ type SystemItemTypeKey =
 	| 'image'
 	| 'url'
 
-type CanonicalSystemItemType = MockItemType & {
+export type CanonicalSystemItemType = {
+	mockId: string
+	name: string
+	icon: string
+	color: string
+	isSystem: true
+	userId: null
 	key: SystemItemTypeKey
 	dbName: string
 	singularLabel: string
@@ -36,7 +40,7 @@ export type SidebarAppItemType = AppItemType & {
 
 function createCanonicalSystemItemType(
 	key: SystemItemTypeKey,
-	definition: MockItemType,
+	definition: Omit<CanonicalSystemItemType, 'key' | 'dbName' | 'singularLabel' | 'href'>,
 	dbName: string,
 	singularLabel: string
 ): CanonicalSystemItemType {
@@ -49,21 +53,116 @@ function createCanonicalSystemItemType(
 	}
 }
 
-const [snippets, prompts, commands, notes, files, images, links] = mockItemTypes
-
-const CANONICAL_SYSTEM_ITEM_TYPES = [
-	createCanonicalSystemItemType('snippet', snippets, 'Snippet', 'Snippet'),
-	createCanonicalSystemItemType('prompt', prompts, 'Prompt', 'Prompt'),
-	createCanonicalSystemItemType('command', commands, 'Command', 'Comando'),
-	createCanonicalSystemItemType('note', notes, 'Note', 'Nota'),
-	createCanonicalSystemItemType('file', files, 'File', 'Archivo'),
-	createCanonicalSystemItemType('image', images, 'Image', 'Imagen'),
-	createCanonicalSystemItemType('url', links, 'URL', 'Enlace')
+export const CANONICAL_SYSTEM_ITEM_TYPES = [
+	createCanonicalSystemItemType(
+		'snippet',
+		{
+			mockId: 'type_snippets',
+			name: 'Snippets',
+			icon: 'code-2',
+			color: '#84CC16',
+			isSystem: true,
+			userId: null
+		},
+		'Snippet',
+		'Snippet'
+	),
+	createCanonicalSystemItemType(
+		'prompt',
+		{
+			mockId: 'type_prompts',
+			name: 'Prompts',
+			icon: 'sparkles',
+			color: '#8B5CF6',
+			isSystem: true,
+			userId: null
+		},
+		'Prompt',
+		'Prompt'
+	),
+	createCanonicalSystemItemType(
+		'command',
+		{
+			mockId: 'type_comandos',
+			name: 'Comandos',
+			icon: 'terminal-square',
+			color: '#F97316',
+			isSystem: true,
+			userId: null
+		},
+		'Command',
+		'Comando'
+	),
+	createCanonicalSystemItemType(
+		'note',
+		{
+			mockId: 'type_notas',
+			name: 'Notas',
+			icon: 'notebook-pen',
+			color: '#06B6D4',
+			isSystem: true,
+			userId: null
+		},
+		'Note',
+		'Nota'
+	),
+	createCanonicalSystemItemType(
+		'file',
+		{
+			mockId: 'type_archivos',
+			name: 'Archivos',
+			icon: 'file-text',
+			color: '#F59E0B',
+			isSystem: true,
+			userId: null
+		},
+		'File',
+		'Archivo'
+	),
+	createCanonicalSystemItemType(
+		'image',
+		{
+			mockId: 'type_imagenes',
+			name: 'Imágenes',
+			icon: 'image',
+			color: '#EC4899',
+			isSystem: true,
+			userId: null
+		},
+		'Image',
+		'Imagen'
+	),
+	createCanonicalSystemItemType(
+		'url',
+		{
+			mockId: 'type_enlaces',
+			name: 'Enlaces',
+			icon: 'link',
+			color: '#3B82F6',
+			isSystem: true,
+			userId: null
+		},
+		'URL',
+		'Enlace'
+	)
 ] as const satisfies readonly CanonicalSystemItemType[]
 
 const CANONICAL_ITEM_TYPES_BY_DB_NAME = new Map(
 	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.dbName, itemType])
 )
+
+const CANONICAL_ITEM_TYPES_BY_MOCK_ID = new Map(
+	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.mockId, itemType])
+)
+
+export const MOCK_ITEM_TYPES = CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => ({
+	id: itemType.mockId,
+	name: itemType.name,
+	icon: itemType.icon,
+	color: itemType.color,
+	isSystem: itemType.isSystem,
+	userId: itemType.userId
+}))
 
 export function getItemTypeHref(name: string) {
 	const slug = name
@@ -79,6 +178,10 @@ export function getItemTypeHref(name: string) {
 
 export function getCanonicalItemType(name: string) {
 	return CANONICAL_ITEM_TYPES_BY_DB_NAME.get(name) ?? null
+}
+
+export function getCanonicalItemTypeByMockId(mockId: string) {
+	return CANONICAL_ITEM_TYPES_BY_MOCK_ID.get(mockId) ?? null
 }
 
 export function toAppItemType(source: ItemTypeSource): AppItemType {

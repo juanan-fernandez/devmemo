@@ -1,3 +1,5 @@
+import { MOCK_ITEM_TYPES } from '@/lib/item-types'
+
 export type MockUser = {
   id: string;
   email: string;
@@ -79,64 +81,7 @@ export const mockUser: MockUser = {
   ...timestamps,
 };
 
-export const mockItemTypes: MockItemType[] = [
-  {
-    id: "type_snippets",
-    name: "Snippets",
-    icon: "code-2",
-    color: "#84CC16",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_prompts",
-    name: "Prompts",
-    icon: "sparkles",
-    color: "#8B5CF6",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_comandos",
-    name: "Comandos",
-    icon: "terminal-square",
-    color: "#F97316",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_notas",
-    name: "Notas",
-    icon: "notebook-pen",
-    color: "#06B6D4",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_archivos",
-    name: "Archivos",
-    icon: "file-text",
-    color: "#F59E0B",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_imagenes",
-    name: "Imágenes",
-    icon: "image",
-    color: "#EC4899",
-    isSystem: true,
-    userId: null,
-  },
-  {
-    id: "type_enlaces",
-    name: "Enlaces",
-    icon: "link",
-    color: "#3B82F6",
-    isSystem: true,
-    userId: null,
-  },
-];
+export const mockItemTypes: MockItemType[] = [...MOCK_ITEM_TYPES];
 
 export const mockCollections: MockCollection[] = [
   {
