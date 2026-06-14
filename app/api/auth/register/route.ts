@@ -3,9 +3,15 @@ import { NextResponse } from 'next/server'
 
 import { normalizeEmail, sendVerificationEmail } from '@/lib/auth/email-verification'
 import { REGISTRATION_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
+import {
+	buildAuthRateLimitMessage,
+	getRateLimitRetryAfterSeconds
+} from '@/lib/auth/rate-limit-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-policy'
 import { prisma } from '@/lib/db/prisma'
+import { getIPFromRequest } from '@/lib/get-ip'
+import { rateLimiters } from '@/lib/rate-limit'
 
 type RegisterRequestBody = {
 	name?: unknown
@@ -27,6 +33,25 @@ function isUniqueConstraintError(error: unknown) {
 }
 
 export async function POST(request: Request) {
+	const ip = getIPFromRequest(request)
+	const { success, reset } = await rateLimiters.register.limit(`register:${ip}`)
+
+	if (!success) {
+		const retryAfterSeconds = getRateLimitRetryAfterSeconds(reset)
+
+		return NextResponse.json(
+			{ error: buildAuthRateLimitMessage(reset) },
+			{
+				status: 429,
+				headers: {
+					'Retry-After': retryAfterSeconds.toString(),
+					'X-RateLimit-Limit': '3',
+					'X-RateLimit-Remaining': '0'
+				}
+			}
+		)
+	}
+
 	let body: RegisterRequestBody
 
 	try {

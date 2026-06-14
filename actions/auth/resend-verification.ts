@@ -5,6 +5,9 @@ import {
 } from '@/lib/auth/email-verification'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { RESEND_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messages'
+import { buildAuthRateLimitMessage } from '@/lib/auth/rate-limit-messages'
+import { getIPFromHeaders } from '@/lib/get-ip'
+import { rateLimiters } from '@/lib/rate-limit'
 
 type ResendVerificationState = {
 	message: string | null
@@ -23,6 +26,18 @@ export async function resendVerificationAction(
 		return {
 			message: null,
 			error: null
+		}
+	}
+
+	const ip = await getIPFromHeaders()
+	const { success, reset } = await rateLimiters.resendVerification.limit(
+		`resend-verification:${ip}`
+	)
+
+	if (!success) {
+		return {
+			message: null,
+			error: buildAuthRateLimitMessage(reset)
 		}
 	}
 

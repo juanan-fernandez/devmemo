@@ -140,3 +140,11 @@
 - Unificada la metadata de item types en `lib/item-types.ts`, tomando `lib/mockdata.ts` como referencia canónica para labels, iconos, colores y hrefs.
 - Simplificados `lib/db/items.ts` y `lib/db/collections.ts` para reutilizar helpers compartidos y reducir shapes ad hoc.
 - Divididos componentes grandes del dashboard en piezas presentacionales más pequeñas y limpiado el ruido de lint en `.agents/skills/tailwind-v4-shadcn/templates/theme-provider.tsx`.
+
+## 2026-06-14 :: 10:45 - Rate limiting auth
+
+- Feature rate-limiting-spec: añadido rate limiting server-side con Upstash Redis para login, registro, reset de contraseña, reenvío de verificación y cambio de contraseña.
+- Creados `lib/rate-limit.ts` y `lib/get-ip.ts` para centralizar los limitadores sliding-window y la extracción compartida de IP en API Routes y Server Actions.
+- Actualizado `auth/auth.ts` y `app/api/auth/register/route.ts` para bloquear intentos excedidos con mensajes en español y `Retry-After` en el registro.
+- Adaptadas las Server Actions de auth para devolver errores estructurados con el tiempo exacto de espera antes del siguiente intento.
+- Añadidas variables Upstash a `.env.example` y ajustada la UI de login para mostrar mensajes dinámicos como "Inténtalo de nuevo en 5 minutos".

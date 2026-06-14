@@ -3,8 +3,10 @@
 import { compare, hash } from 'bcryptjs'
 
 import { auth } from '@/auth/auth'
-import { prisma } from '@/lib/db/prisma'
+import { buildAuthRateLimitMessage } from '@/lib/auth/rate-limit-messages'
 import { validatePassword } from '@/lib/auth/password-policy'
+import { prisma } from '@/lib/db/prisma'
+import { rateLimiters } from '@/lib/rate-limit'
 
 type ChangePasswordState = {
 	success?: string
@@ -16,10 +18,20 @@ export async function changePasswordAction(
 	prevState: ChangePasswordState,
 	formData: FormData
 ): Promise<ChangePasswordState> {
+	void prevState
+
 	const session = await auth()
 
 	if (!session?.user?.id) {
 		return { error: 'Debes iniciar sesión para cambiar tu contraseña.' }
+	}
+
+	const { success, reset } = await rateLimiters.changePassword.limit(
+		`change-password:${session.user.id}`
+	)
+
+	if (!success) {
+		return { error: buildAuthRateLimitMessage(reset) }
 	}
 
 	const currentPassword = formData.get('currentPassword')

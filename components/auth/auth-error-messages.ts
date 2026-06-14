@@ -1,5 +1,9 @@
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
+import {
+	AUTH_RATE_LIMIT_CODE,
+	getRateLimitMessageFromCode
+} from '@/lib/auth/rate-limit-messages'
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
 	AccessDenied: 'No tienes permiso para acceder con esa cuenta.',
@@ -18,6 +22,10 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 export function getAuthErrorMessage(error?: string | null, code?: string | null) {
 	if (!error) {
 		return null
+	}
+
+	if (error === 'CredentialsSignin' && code?.startsWith(AUTH_RATE_LIMIT_CODE)) {
+		return getRateLimitMessageFromCode(code)
 	}
 
 	if (isEmailVerificationEnabled() && error === 'CredentialsSignin' && code === 'email_not_verified') {

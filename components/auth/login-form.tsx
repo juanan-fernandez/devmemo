@@ -14,6 +14,10 @@ import {
 	REGISTRATION_VERIFICATION_MESSAGE,
 	UNVERIFIED_LOGIN_MESSAGE
 } from '@/lib/auth/email-verification-messages'
+import {
+	AUTH_RATE_LIMIT_CODE,
+	getRateLimitMessageFromCode
+} from '@/lib/auth/rate-limit-messages'
 import { PASSWORD_RESET_SUCCESS_MESSAGE } from '@/lib/auth/password-reset-messages'
 
 const INITIAL_RESEND_VERIFICATION_STATE = {
@@ -75,10 +79,14 @@ export function LoginForm({
 		})
 
 		if (!result || result.error) {
+			const rateLimitMessage = getRateLimitMessageFromCode(result?.code)
+
 			setFormError(
-				emailVerificationEnabled && result?.code === 'email_not_verified'
-					? UNVERIFIED_LOGIN_MESSAGE
-					: 'Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.'
+				result?.error === 'CredentialsSignin' && result?.code?.startsWith(AUTH_RATE_LIMIT_CODE)
+					? rateLimitMessage
+					: emailVerificationEnabled && result?.code === 'email_not_verified'
+						? UNVERIFIED_LOGIN_MESSAGE
+						: 'Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.'
 			)
 			setIsCredentialsPending(false)
 			return

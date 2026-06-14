@@ -8,9 +8,16 @@ import type { Adapter } from 'next-auth/adapters'
 import Credentials from 'next-auth/providers/credentials'
 
 import authConfig from '@/auth/auth.config'
+import {
+	AUTH_RATE_LIMIT_CODE,
+	buildAuthRateLimitMessage,
+	buildRateLimitErrorCode
+} from '@/lib/auth/rate-limit-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { UNVERIFIED_LOGIN_MESSAGE } from '@/lib/auth/email-verification-messages'
 import { prisma } from '@/lib/db/prisma'
+import { getIPFromHeaders } from '@/lib/get-ip'
+import { rateLimiters } from '@/lib/rate-limit'
 
 function normalizeEmail(email: string) {
 	return email.trim().toLowerCase()
@@ -21,6 +28,15 @@ class EmailNotVerifiedError extends CredentialsSignin {
 
 	constructor() {
 		super(UNVERIFIED_LOGIN_MESSAGE)
+	}
+}
+
+class RateLimitExceededError extends CredentialsSignin {
+	code = AUTH_RATE_LIMIT_CODE
+
+	constructor(reset: number) {
+		super(buildAuthRateLimitMessage(reset))
+		this.code = buildRateLimitErrorCode(reset)
 	}
 }
 
@@ -48,6 +64,13 @@ const credentialsProvider = Credentials({
 		}
 	},
 	authorize: async credentials => {
+		const ip = await getIPFromHeaders()
+		const { success, reset } = await rateLimiters.login.limit(`login:${ip}`)
+
+		if (!success) {
+			throw new RateLimitExceededError(reset)
+		}
+
 		if (
 			!credentials ||
 			typeof credentials.email !== 'string' ||

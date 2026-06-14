@@ -1,7 +1,10 @@
 'use server'
 
+import { buildAuthRateLimitMessage } from '@/lib/auth/rate-limit-messages'
+import { getIPFromHeaders } from '@/lib/get-ip'
 import { requestPasswordReset } from '@/lib/auth/password-reset'
 import { FORGOT_PASSWORD_SUCCESS_MESSAGE } from '@/lib/auth/password-reset-messages'
+import { rateLimiters } from '@/lib/rate-limit'
 
 type RequestPasswordResetState = {
 	message: string | null
@@ -17,6 +20,16 @@ export async function requestPasswordResetAction(
 	formData: FormData
 ): Promise<RequestPasswordResetState> {
 	try {
+		const ip = await getIPFromHeaders()
+		const { success, reset } = await rateLimiters.passwordReset.limit(`reset:${ip}`)
+
+		if (!success) {
+			return {
+				message: null,
+				error: buildAuthRateLimitMessage(reset)
+			}
+		}
+
 		const email = formData.get('email')
 
 		if (typeof email !== 'string' || !isValidEmail(email.trim().toLowerCase())) {
