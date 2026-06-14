@@ -38,12 +38,7 @@ export function DashboardLayoutShell({
 			/>
 			<div className='flex min-w-0 flex-1 flex-col'>
 				<header className='flex shrink-0 items-center gap-4 border-b border-border px-4 py-3 md:px-6'>
-					<Button
-						variant='ghost'
-						size='icon'
-						className='md:hidden'
-						onClick={() => setMobileOpen(!mobileOpen)}
-					>
+					<Button variant='ghost' size='icon' className='md:hidden' onClick={() => setMobileOpen(!mobileOpen)}>
 						<Menu className='size-5' />
 					</Button>
 					<div className='relative ml-auto max-w-md flex-1'>
@@ -52,8 +47,8 @@ export function DashboardLayoutShell({
 					</div>
 				</header>
 				<main className='flex-1 overflow-auto'>
-				<div className='mx-auto max-w-5xl px-8 py-8 md:px-16 xl:px-24'>{children}</div>
-			</main>
+					<div className='mx-auto max-w-6xl px-6 py-6 md:px-12 xl:px-20'>{children}</div>
+				</main>
 			</div>
 		</div>
 	)
