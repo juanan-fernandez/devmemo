@@ -2,15 +2,13 @@
 
 ## Goal
 
-Prepare a reusable modal to display the details of a saved item.
-
-The modal should be opened from the item list/card UI when the user wants to view an item in detail.
+Use the Shadcn Sheet component to create a right-side slide-in drawer that opens when clicking an item card. This is the item detail view — there is no separate item page.
 
 ## Requirements
 
-### 1. Modal Component
+### 1. Sheet Component
 
-Use de Dialog component of Shadcn library
+Use de Sheet component of Shadcn library
 
 
 ### 2. Data to Display
@@ -35,6 +33,7 @@ The modal must show the main item information:
 Adapt the displayed fields to the item type.
 
 If some fields do not exist for a given item type, do not render empty sections.
+The extras like the code editor and item-specific stuff will come later. For now, let's just work on the drawer details display.
 
 ### 2b. Data fetching
 
@@ -59,28 +58,26 @@ Do not hardcode item type metadata blindly.
 
 ### 4. UI Behavior
 
-- Modal shows a skeleton/loading state while fetching
-- The modal must be responsive.
+- Sheet component shows a skeleton/loading state while fetching
+- The ui must be responsive.
 - It must work well on desktop and mobile.
 - Long content should be scrollable inside the modal.
-- The modal must have a clear close button.
-- Pressing Escape or clicking outside should close it if this matches the project’s existing modal behavior.
+- Clear close button.
+- Pressing Escape or clicking outside should close it.
 - Keep the visual style consistent with the rest of the app.
 
 ### 5. Accessibility
 
-- Use semantic dialog/modal markup from the existing UI library.
-- Provide a clear modal title.
 - Ensure keyboard navigation works.
 - Ensure the close button has an accessible label.
 
 ### 6. Integration
 
-Add the modal trigger to the item card/list UI.
+Add the dra trigger to the item card/list UI.
 
 When a user clicks an item or a “view details” action:
 
-- Open the modal.
+- Open the sheet component.
 - Pass the selected item to the modal.
 - Do not navigate away from the current page.
 
@@ -106,11 +103,11 @@ Cerrar
 ### 8. Acceptance Criteria
 
 - A reusable item detail modal component exists.
-- The modal opens from the item list/card UI.
-- The modal displays item details according to the item type.
+- The Sheet opens from the item list/card UI.
+- The Sheet displays item details according to the item type.
 - Type icon and color match existing item type definitions.
 - Empty or missing fields are not shown.
 - Long content is readable and scrollable.
-- The modal is responsive and accessible.
-- The modal can be closed properly.
+- The UI is responsive and accessible.
+- The Sheet can be closed properly.
 - Code passes lint, typecheck, and build.
