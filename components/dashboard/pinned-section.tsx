@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Columns3, LayoutList, Pin } from 'lucide-react'
 import type { DashboardItem } from '@/lib/db/items'
 import { cn } from '@/lib/utils'
-import { PinnedItemCard } from '@/components/dashboard/pinned-item-card'
+import { ItemCard } from '@/components/items/item-card'
 import { PinnedItemRow } from '@/components/dashboard/pinned-item-row'
 
 export function PinnedSection({ items, title }: { items: DashboardItem[]; title: string }) {
@@ -50,7 +50,7 @@ export function PinnedSection({ items, title }: { items: DashboardItem[]; title:
 			) : pinnedView === 'card' ? (
 				<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
 					{items.map(item => (
-						<PinnedItemCard key={item.id} item={item} />
+						<ItemCard key={item.id} item={item} />
 					))}
 				</div>
 			) : (

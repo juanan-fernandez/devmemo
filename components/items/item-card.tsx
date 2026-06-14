@@ -4,11 +4,11 @@ import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
 import { PinnedItemActions } from '@/components/dashboard/pinned-item-actions'
 
-type PinnedItemCardProps = {
+type ItemCardProps = {
 	item: DashboardItem
 }
 
-export function PinnedItemCard({ item }: PinnedItemCardProps) {
+export function ItemCard({ item }: ItemCardProps) {
 	return (
 		<div
 			className='group rounded-xl border border-border bg-card transition-colors hover:bg-accent/50'
