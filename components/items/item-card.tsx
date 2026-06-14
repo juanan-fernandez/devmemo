@@ -14,13 +14,13 @@ export function ItemCard({ item }: ItemCardProps) {
 			className='group rounded-xl border border-border bg-card transition-colors hover:bg-accent/50'
 			style={{ borderLeftColor: item.type.color ?? undefined, borderLeftWidth: '4px' }}
 		>
-			<div className='flex items-start justify-between px-4 pt-3'>
+			<div className='flex items-center justify-between px-5 pt-4'>
 				<span className='shrink-0'>
 					<ItemTypeIcon iconName={item.type.icon} className='size-5' color={item.type.color} />
 				</span>
 				<ItemActions isFavorite={item.isFavorite} isPinned={item.isPinned} />
 			</div>
-			<div className='px-4 pb-3 pt-1'>
+			<div className='px-5 pb-4 pt-1'>
 				<h3 className='truncate text-base font-medium text-foreground'>{item.title}</h3>
 				{item.description ? (
 					<p className='mt-0.5 line-clamp-2 text-sm text-muted-foreground'>{item.description}</p>

@@ -8,7 +8,7 @@ type ItemActionsProps = {
 
 export function ItemActions({ isFavorite, isPinned }: ItemActionsProps) {
 	return (
-		<div className='flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
+		<div className='flex shrink-0 items-center gap-1'>
 			<button
 				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
 				aria-label='Favorito'
