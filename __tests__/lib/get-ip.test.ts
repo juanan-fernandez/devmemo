@@ -1,11 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { extractIp } from '@/lib/get-ip'
-
-// extractIp is not exported, it's a module-private function.
-// We test getIPFromRequest which delegates to extractIp.
-// Since getIPFromRequest takes a Request object, we'll test extractIp directly
-// by importing it — but it's not exported. Let's test via getIPFromRequest.
-
 import { getIPFromRequest } from '@/lib/get-ip'
 
 function makeRequest(headers: Record<string, string>) {
