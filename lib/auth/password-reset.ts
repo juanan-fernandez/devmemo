@@ -132,7 +132,7 @@ export async function resetPassword(rawToken: string, password: string) {
 	}
 
 	const normalizedEmail = normalizeEmail(passwordResetToken.email)
-	const passwordHash = await hash(password, 10)
+	const passwordHash = await hash(password, 12)
 
 	try {
 		await prisma.$transaction([
