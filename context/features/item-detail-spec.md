@@ -1,4 +1,4 @@
-# Code Agent Instructions: Item Detail Modal
+# Code Agent Instructions: Item Detail with Shadcn Sheet component
 
 ## Goal
 
@@ -10,10 +10,9 @@ Use the Shadcn Sheet component to create a right-side slide-in drawer that opens
 
 Use de Sheet component of Shadcn library
 
-
 ### 2. Data to Display
 
-The modal must show the main item information:
+The Sheet component must show the main item information:
 
 - Title or name
 - Type
@@ -37,11 +36,11 @@ The extras like the code editor and item-specific stuff will come later. For now
 
 ### 2b. Data fetching
 
- - Card data (title, description, tags, etc.) is fetched by the server component as before
- - Full item detail (content, collections, language, etc.) is fetched on click via API route (/api/items/[id])
- - Query function lives in lib/db/items.ts, API route calls it with auth check
- - Modal shows a skeleton/loading state while fetching
- 
+- Card data (title, description, tags, etc.) is fetched by the server component as before
+- Full item detail (content, collections, language, etc.) is fetched on click via API route (/api/items/[id])
+- Query function lives in lib/db/items.ts, API route calls it with auth check
+- Drawer shows a skeleton/loading state while fetching
+
 ### 3. Item Types
 
 Inspect the existing item type definitions before implementing.
@@ -61,7 +60,7 @@ Do not hardcode item type metadata blindly.
 - Sheet component shows a skeleton/loading state while fetching
 - The ui must be responsive.
 - It must work well on desktop and mobile.
-- Long content should be scrollable inside the modal.
+- Long content should be scrollable inside the Sheet.
 - Clear close button.
 - Pressing Escape or clicking outside should close it.
 - Keep the visual style consistent with the rest of the app.
@@ -78,7 +77,7 @@ Add the dra trigger to the item card/list UI.
 When a user clicks an item or a “view details” action:
 
 - Open the sheet component.
-- Pass the selected item to the modal.
+- Pass the selected item to the component.
 - Do not navigate away from the current page.
 
 Avoid loading all extra data client-side if the item detail requires server-only data. Use the existing data-fetching pattern if more detail must be loaded.
@@ -102,7 +101,6 @@ Cerrar
 
 ### 8. Acceptance Criteria
 
-- A reusable item detail modal component exists.
 - The Sheet opens from the item list/card UI.
 - The Sheet displays item details according to the item type.
 - Type icon and color match existing item type definitions.
