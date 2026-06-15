@@ -15,6 +15,7 @@ import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { CanonicalSystemItemType } from '@/lib/item-types'
 import { CodeEditor } from '@/components/items/code-editor'
+import { MarkdownEditor } from '@/components/items/markdown-editor'
 import { Button } from '@/components/ui/button'
 import {
 	Dialog,
@@ -110,6 +111,7 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 	const [collectionId, setCollectionId] = useState('none')
 	const capabilities = useMemo(() => getCreateItemCapabilities(canonicalType.key), [canonicalType.key])
 	const usesCodeEditor = useMemo(() => supportsCodeEditor(canonicalType.key), [canonicalType.key])
+	const usesMarkdownEditor = canonicalType.key === 'prompt'
 
 	useEffect(() => {
 		onPendingChange(isPending)
@@ -162,7 +164,9 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 			<input type='hidden' name='type' value={canonicalType.key} />
 			<input type='hidden' name='language' value={language === 'none' ? '' : language} />
 			<input type='hidden' name='collectionId' value={collectionId === 'none' ? '' : collectionId} />
-			{capabilities.canCreateContent && usesCodeEditor ? <input type='hidden' name='content' value={content} /> : null}
+			{capabilities.canCreateContent && (usesCodeEditor || usesMarkdownEditor) ? (
+				<input type='hidden' name='content' value={content} />
+			) : null}
 
 			<DialogHeader className='border-b border-border/70 pr-14'>
 				<div className='flex items-start gap-3'>
@@ -259,6 +263,15 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 									disabled={isPending}
 									invalid={getFieldError('content') || getFieldError('language') ? true : undefined}
 									heightClassName='h-[240px]'
+								/>
+							) : usesMarkdownEditor ? (
+								<MarkdownEditor
+									textareaId={`${formId}-content`}
+									name='content'
+									value={content}
+									onChange={setContent}
+									disabled={isPending}
+									invalid={getFieldError('content') ? true : undefined}
 								/>
 							) : (
 								<>
