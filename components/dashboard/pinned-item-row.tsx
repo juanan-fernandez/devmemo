@@ -17,6 +17,12 @@ export function PinnedItemRow({ item }: PinnedItemRowProps) {
 	const [isDeleted, setIsDeleted] = useState(false)
 	const [showMessage, setShowMessage] = useState(false)
 	const [sheetOpen, setSheetOpen] = useState(false)
+	const [sheetSession, setSheetSession] = useState(0)
+
+	function handleOpenSheet() {
+		setSheetSession(currentSession => currentSession + 1)
+		setSheetOpen(true)
+	}
 
 	function handleDelete() {
 		setSheetOpen(false)
@@ -41,11 +47,11 @@ export function PinnedItemRow({ item }: PinnedItemRowProps) {
 		<>
 			<div
 				className='group cursor-pointer flex items-center gap-3 bg-card px-4 py-3 transition-colors hover:bg-accent/50'
-				onClick={() => setSheetOpen(true)}
+				onClick={handleOpenSheet}
 				onKeyDown={event => {
 					if (event.key === 'Enter' || event.key === ' ') {
 						event.preventDefault()
-						setSheetOpen(true)
+						handleOpenSheet()
 					}
 				}}
 				role='button'
@@ -68,7 +74,13 @@ export function PinnedItemRow({ item }: PinnedItemRowProps) {
 				/>
 			</div>
 
-			<ItemDetailSheet item={item} open={sheetOpen} onOpenChange={setSheetOpen} onDelete={handleDelete} />
+			<ItemDetailSheet
+				key={`${item.id}-${sheetSession}`}
+				item={item}
+				open={sheetOpen}
+				onOpenChange={setSheetOpen}
+				onDelete={handleDelete}
+			/>
 		</>
 	)
 }

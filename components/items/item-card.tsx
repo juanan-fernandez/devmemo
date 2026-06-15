@@ -17,6 +17,12 @@ export function ItemCard({ item }: ItemCardProps) {
 	const [isDeleted, setIsDeleted] = useState(false)
 	const [showMessage, setShowMessage] = useState(false)
 	const [sheetOpen, setSheetOpen] = useState(false)
+	const [sheetSession, setSheetSession] = useState(0)
+
+	function handleOpenSheet() {
+		setSheetSession(currentSession => currentSession + 1)
+		setSheetOpen(true)
+	}
 
 	function handleDelete() {
 		setSheetOpen(false)
@@ -42,11 +48,11 @@ export function ItemCard({ item }: ItemCardProps) {
 			<div
 				className='group cursor-pointer rounded-xl border border-border bg-card transition-colors hover:bg-accent/50'
 				style={{ borderLeftColor: item.type.color ?? undefined, borderLeftWidth: '4px' }}
-				onClick={() => setSheetOpen(true)}
+				onClick={handleOpenSheet}
 				onKeyDown={event => {
 					if (event.key === 'Enter' || event.key === ' ') {
 						event.preventDefault()
-						setSheetOpen(true)
+						handleOpenSheet()
 					}
 				}}
 				role='button'
@@ -81,7 +87,13 @@ export function ItemCard({ item }: ItemCardProps) {
 				</div>
 			</div>
 
-			<ItemDetailSheet item={item} open={sheetOpen} onOpenChange={setSheetOpen} onDelete={handleDelete} />
+			<ItemDetailSheet
+				key={`${item.id}-${sheetSession}`}
+				item={item}
+				open={sheetOpen}
+				onOpenChange={setSheetOpen}
+				onDelete={handleDelete}
+			/>
 		</>
 	)
 }
