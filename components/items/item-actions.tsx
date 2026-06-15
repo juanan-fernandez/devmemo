@@ -1,7 +1,7 @@
 'use client'
 
 import { Pin, Star } from 'lucide-react'
-import { useOptimistic } from 'react'
+import { startTransition, useOptimistic } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { toggleFavoriteAction } from '@/actions/items/toggle-favorite'
@@ -34,12 +34,17 @@ export function ItemActions({
 
 	async function handleToggleFavorite() {
 		const optimisticState = !favoriteState
-		setFavoriteState(optimisticState)
+
+		startTransition(() => {
+			setFavoriteState(optimisticState)
+		})
 
 		const result = await toggleFavoriteAction(itemId, favoriteState, {})
 
 		if (!result.successful) {
-			setFavoriteState(isFavorite)
+			startTransition(() => {
+				setFavoriteState(isFavorite)
+			})
 			alert(result.error || 'Error al actualizar favorito')
 			return
 		}
@@ -53,12 +58,17 @@ export function ItemActions({
 
 	async function handleTogglePinned() {
 		const optimisticState = !pinnedState
-		setPinnedState(optimisticState)
+
+		startTransition(() => {
+			setPinnedState(optimisticState)
+		})
 
 		const result = await togglePinnedAction(itemId, pinnedState, {})
 
 		if (!result.successful) {
-			setPinnedState(isPinned)
+			startTransition(() => {
+				setPinnedState(isPinned)
+			})
 			alert(result.error || 'Error al actualizar fijado')
 			return
 		}

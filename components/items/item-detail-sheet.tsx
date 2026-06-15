@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CheckCircle2, ExternalLink, FileText, LoaderCircle, PencilLine } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -95,6 +95,7 @@ function getCanonicalTypeKey(href: string) {
 
 export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDetailSheetProps) {
 	const router = useRouter()
+	const closeRefreshTimeoutRef = useRef<number | null>(null)
 	const [detail, setDetail] = useState<ItemDetail | null>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -108,6 +109,11 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 
 	function handleSheetOpenChange(nextOpen: boolean) {
 		if (nextOpen) {
+			if (closeRefreshTimeoutRef.current !== null && typeof window !== 'undefined') {
+				window.clearTimeout(closeRefreshTimeoutRef.current)
+				closeRefreshTimeoutRef.current = null
+			}
+
 			setIsEditing(false)
 			setSaveError(null)
 			setFieldErrors({})
@@ -119,9 +125,10 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 
 		if (!nextOpen && hasPendingListRefresh) {
 			if (typeof window !== 'undefined') {
-				window.requestAnimationFrame(() => {
+				closeRefreshTimeoutRef.current = window.setTimeout(() => {
 					router.refresh()
-				})
+					closeRefreshTimeoutRef.current = null
+				}, 340)
 			} else {
 				router.refresh()
 			}
@@ -129,6 +136,14 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 			setHasPendingListRefresh(false)
 		}
 	}
+
+	useEffect(() => {
+		return () => {
+			if (closeRefreshTimeoutRef.current !== null && typeof window !== 'undefined') {
+				window.clearTimeout(closeRefreshTimeoutRef.current)
+			}
+		}
+	}, [])
 
 	const fetchDetail = useCallback(async () => {
 		setLoading(true)
