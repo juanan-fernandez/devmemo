@@ -113,6 +113,7 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 		if (nextOpen) {
 			if (closeRefreshTimeoutRef.current !== null && typeof window !== 'undefined') {
 				window.clearTimeout(closeRefreshTimeoutRef.current)
+				router.refresh()
 				closeRefreshTimeoutRef.current = null
 			}
 
@@ -258,17 +259,39 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 				return
 			}
 
-			const refreshedDetail = await fetchDetail()
-			setDetail(refreshedDetail)
-			setFormValues(buildFormValues(refreshedDetail))
-			router.refresh()
+			setHasPendingListRefresh(true)
+
+			try {
+				const refreshedDetail = await fetchDetail()
+				setDetail(refreshedDetail)
+				setFormValues(buildFormValues(refreshedDetail))
+			} catch {
+				setDetail(currentDetail => {
+					if (!currentDetail) {
+						return currentDetail
+					}
+
+					return {
+						...currentDetail,
+						title: formValues.title,
+						description: formValues.description,
+						content: capabilities.canEditContent ? formValues.content : currentDetail.content,
+						language: capabilities.canEditLanguage ? formValues.language : currentDetail.language,
+						url: capabilities.canEditUrl ? formValues.url : currentDetail.url,
+						tags: parseTagsInput(formValues.tags).map(tagName => ({
+							id: `optimistic-${tagName}`,
+							name: tagName
+						})),
+						updatedAt: new Date()
+					}
+				})
+				setFormValues(currentValues => ({ ...currentValues }))
+			}
+
 			setIsEditing(false)
 			setSuccessMessage(result.success || 'Cambios guardados correctamente.')
 		} catch {
-			// Router refresh will reconcile the visible UI even if the immediate refetch fails.
-			router.refresh()
-			setIsEditing(false)
-			setSuccessMessage('Cambios guardados correctamente.')
+			setSaveError('No se han podido guardar los cambios.')
 		} finally {
 			setIsSaving(false)
 		}
@@ -430,36 +453,36 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 											{renderFieldError('title')}
 										</div>
 
-										<div className='space-y-4'>
-											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-description'>
-												Descripción
-											</label>
-											<textarea
-												id='item-edit-description'
-												value={formValues.description}
-												onChange={event => handleFieldChange('description', event.target.value)}
-												className={textareaClassName}
-												placeholder='Añade una descripción breve'
-												aria-invalid={fieldErrors.description ? true : undefined}
-											/>
-											{renderFieldError('description')}
-										</div>
+									<div className='space-y-2'>
+										<label className='text-sm font-medium text-foreground' htmlFor='item-edit-description'>
+											Descripción
+										</label>
+										<textarea
+											id='item-edit-description'
+											value={formValues.description}
+											onChange={event => handleFieldChange('description', event.target.value)}
+											className='w-full rounded-xl border border-input bg-background/60 px-4 py-2 text-sm leading-5 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 resize-none'
+											rows={2}
+											placeholder='Añade una descripción breve'
+											aria-invalid={fieldErrors.description ? true : undefined}
+										/>
+										{renderFieldError('description')}
+									</div>
 
-										<div className='space-y-4'>
-											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-tags'>
-												Etiquetas
-											</label>
-											<Input
-												id='item-edit-tags'
-												value={formValues.tags}
-												onChange={event => handleFieldChange('tags', event.target.value)}
-												className='h-11 rounded-xl bg-background/60 px-4'
-												placeholder='react, nextjs, prisma'
-												aria-invalid={fieldErrors.tags ? true : undefined}
-											/>
-											<p className='text-xs text-muted-foreground'>Separa las etiquetas con comas.</p>
-											{renderFieldError('tags')}
-										</div>
+									<div className='space-y-2'>
+										<label className='text-sm font-medium text-foreground' htmlFor='item-edit-tags'>
+											Etiquetas
+										</label>
+										<Input
+											id='item-edit-tags'
+											value={formValues.tags}
+											onChange={event => handleFieldChange('tags', event.target.value)}
+											className='h-11 rounded-xl bg-background/60 px-4'
+											placeholder='react, nextjs, prisma (debes separar las etiquetas con comas)'
+											aria-invalid={fieldErrors.tags ? true : undefined}
+										/>
+										{renderFieldError('tags')}
+									</div>
 									</section>
 
 									{capabilities.canEditContent ? (
