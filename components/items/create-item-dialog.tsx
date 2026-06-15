@@ -11,8 +11,10 @@ import {
 	getCreateItemCapabilities,
 	type CreateItemField
 } from '@/lib/items/create-item'
+import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { CanonicalSystemItemType } from '@/lib/item-types'
+import { CodeEditor } from '@/components/items/code-editor'
 import { Button } from '@/components/ui/button'
 import {
 	Dialog,
@@ -107,6 +109,7 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 	const [url, setUrl] = useState('')
 	const [collectionId, setCollectionId] = useState('none')
 	const capabilities = useMemo(() => getCreateItemCapabilities(canonicalType.key), [canonicalType.key])
+	const usesCodeEditor = useMemo(() => supportsCodeEditor(canonicalType.key), [canonicalType.key])
 
 	useEffect(() => {
 		onPendingChange(isPending)
@@ -159,6 +162,7 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 			<input type='hidden' name='type' value={canonicalType.key} />
 			<input type='hidden' name='language' value={language === 'none' ? '' : language} />
 			<input type='hidden' name='collectionId' value={collectionId === 'none' ? '' : collectionId} />
+			{capabilities.canCreateContent && usesCodeEditor ? <input type='hidden' name='content' value={content} /> : null}
 
 			<DialogHeader className='border-b border-border/70 pr-14'>
 				<div className='flex items-start gap-3'>
@@ -245,24 +249,39 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 
 					{capabilities.canCreateContent ? (
 						<section className='flex flex-col gap-4 rounded-3xl border border-border bg-card/60 p-5'>
-							<label htmlFor={`${formId}-content`} className='text-sm font-medium text-foreground'>
-								Contenido
-							</label>
-							<textarea
-								id={`${formId}-content`}
-								name='content'
-								value={content}
-								onChange={event => setContent(event.target.value)}
-								disabled={isPending}
-								className={textareaClassName}
-								placeholder='Escribe el contenido del item'
-								aria-invalid={getFieldError('content') ? true : undefined}
-							/>
+							{usesCodeEditor ? (
+								<CodeEditor
+									value={content}
+									language={language === 'none' ? '' : language}
+									onChange={setContent}
+									onLanguageChange={setLanguage}
+									languageOptions={CREATE_ITEM_LANGUAGE_OPTIONS}
+									disabled={isPending}
+									invalid={getFieldError('content') || getFieldError('language') ? true : undefined}
+									heightClassName='h-[240px]'
+								/>
+							) : (
+								<>
+									<label htmlFor={`${formId}-content`} className='text-sm font-medium text-foreground'>
+										Contenido
+									</label>
+									<textarea
+										id={`${formId}-content`}
+										name='content'
+										value={content}
+										onChange={event => setContent(event.target.value)}
+										disabled={isPending}
+										className={textareaClassName}
+										placeholder='Escribe el contenido del item'
+										aria-invalid={getFieldError('content') ? true : undefined}
+									/>
+								</>
+							)}
 							{getFieldError('content') ? <p className='text-sm text-destructive'>{getFieldError('content')}</p> : null}
 						</section>
 					) : null}
 
-					{capabilities.canCreateLanguage ? (
+					{capabilities.canCreateLanguage && !usesCodeEditor ? (
 						<section className='flex flex-col gap-4 rounded-3xl border border-border bg-card/60 p-5'>
 							<label htmlFor={`${formId}-language`} className='text-sm font-medium text-foreground'>
 								Lenguaje

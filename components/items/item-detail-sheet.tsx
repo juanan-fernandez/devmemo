@@ -11,8 +11,10 @@ import {
 	parseTagsInput,
 	EDITABLE_ITEM_LANGUAGE_OPTIONS
 } from '@/lib/items/editable-item'
+import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
+import { CodeEditor } from '@/components/items/code-editor'
 import { Button } from '@/components/ui/button'
 import {
 	Sheet,
@@ -200,7 +202,9 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	const fileSize = detail ? formatFileSize(detail.fileSize) : null
 	const createdAt = useMemo(() => formatDate(activeItem.createdAt), [activeItem.createdAt])
 	const updatedAt = detail ? formatDate(detail.updatedAt) : null
-	const capabilities = useMemo(() => getEditableItemCapabilities(getCanonicalTypeKey(activeItem.type.href)), [activeItem.type.href])
+	const activeItemTypeKey = useMemo(() => getCanonicalTypeKey(activeItem.type.href), [activeItem.type.href])
+	const capabilities = useMemo(() => getEditableItemCapabilities(activeItemTypeKey), [activeItemTypeKey])
+	const usesCodeEditor = useMemo(() => supportsCodeEditor(activeItemTypeKey), [activeItemTypeKey])
 	const collectionName = detail?.collection?.name ?? 'Sin colección'
 	const tags = detail?.tags ?? []
 
@@ -460,22 +464,38 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 
 									{capabilities.canEditContent ? (
 										<section className='space-y-4 rounded-3xl border border-border bg-card/60 p-5'>
-											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-content'>
-												Contenido
-											</label>
-											<textarea
-												id='item-edit-content'
-												value={formValues.content}
-												onChange={event => handleFieldChange('content', event.target.value)}
-												className={textareaClassName}
-												placeholder='Escribe el contenido del item'
-												aria-invalid={fieldErrors.content ? true : undefined}
-											/>
+											{usesCodeEditor ? (
+												<CodeEditor
+													value={formValues.content}
+													language={formValues.language}
+													onChange={value => handleFieldChange('content', value)}
+													onLanguageChange={value => handleFieldChange('language', value)}
+													languageOptions={EDITABLE_ITEM_LANGUAGE_OPTIONS}
+													disabled={isSaving}
+													invalid={fieldErrors.content || fieldErrors.language ? true : undefined}
+													heightClassName='h-[320px]'
+												/>
+											) : (
+												<>
+													<label className='text-sm font-medium text-foreground' htmlFor='item-edit-content'>
+														Contenido
+													</label>
+													<textarea
+														id='item-edit-content'
+														value={formValues.content}
+														onChange={event => handleFieldChange('content', event.target.value)}
+														className={textareaClassName}
+														placeholder='Escribe el contenido del item'
+														aria-invalid={fieldErrors.content ? true : undefined}
+													/>
+												</>
+											)}
 											{renderFieldError('content')}
+											{usesCodeEditor ? renderFieldError('language') : null}
 										</section>
 									) : null}
 
-									{capabilities.canEditLanguage ? (
+									{capabilities.canEditLanguage && !usesCodeEditor ? (
 										<section className='space-y-4 rounded-3xl border border-border bg-card/60 p-5'>
 											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-language'>
 												Lenguaje
@@ -541,10 +561,21 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 
 							{!isEditing && detail?.content ? (
 								<section className='space-y-2'>
-									<h3 className='text-sm font-semibold text-foreground'>Contenido</h3>
-									<div className='overflow-x-auto rounded-2xl border border-border bg-background p-4'>
-										<pre className='whitespace-pre-wrap break-words text-sm leading-6 text-foreground'>{detail.content}</pre>
-									</div>
+									{usesCodeEditor ? (
+										<CodeEditor
+											value={detail.content}
+											language={detail.language}
+											readOnly
+											heightClassName='h-[320px]'
+										/>
+									) : (
+										<>
+											<h3 className='text-sm font-semibold text-foreground'>Contenido</h3>
+											<div className='overflow-x-auto rounded-2xl border border-border bg-background p-4'>
+												<pre className='whitespace-pre-wrap break-words text-sm leading-6 text-foreground'>{detail.content}</pre>
+											</div>
+										</>
+									)}
 								</section>
 							) : null}
 
