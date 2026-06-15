@@ -104,6 +104,7 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	const [successMessage, setSuccessMessage] = useState<string | null>(null)
 	const [fieldErrors, setFieldErrors] = useState<ItemEditFieldErrors>({})
 	const [formValues, setFormValues] = useState<ItemEditFormValues>(() => buildFormValues(item))
+	const [hasPendingListRefresh, setHasPendingListRefresh] = useState(false)
 
 	function handleSheetOpenChange(nextOpen: boolean) {
 		if (nextOpen) {
@@ -115,6 +116,18 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 		}
 
 		onOpenChange(nextOpen)
+
+		if (!nextOpen && hasPendingListRefresh) {
+			if (typeof window !== 'undefined') {
+				window.requestAnimationFrame(() => {
+					router.refresh()
+				})
+			} else {
+				router.refresh()
+			}
+
+			setHasPendingListRefresh(false)
+		}
 	}
 
 	const fetchDetail = useCallback(async () => {
@@ -169,11 +182,12 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	}, [fetchDetail, open])
 
 	const activeItem = detail ?? item
-	const hasTags = detail?.tags && detail.tags.length > 0
 	const fileSize = detail ? formatFileSize(detail.fileSize) : null
 	const createdAt = useMemo(() => formatDate(activeItem.createdAt), [activeItem.createdAt])
 	const updatedAt = detail ? formatDate(detail.updatedAt) : null
 	const capabilities = useMemo(() => getEditableItemCapabilities(getCanonicalTypeKey(activeItem.type.href)), [activeItem.type.href])
+	const collectionName = detail?.collection?.name ?? 'Sin colección'
+	const tags = detail?.tags ?? []
 
 	function handleStartEditing() {
 		setSuccessMessage(null)
@@ -251,6 +265,22 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 		return <p className='text-sm text-destructive'>{message}</p>
 	}
 
+	function handleSheetActionStatusChange(nextState: { isFavorite?: boolean; isPinned?: boolean }) {
+		setHasPendingListRefresh(true)
+
+		setDetail(currentDetail => {
+			if (!currentDetail) {
+				return currentDetail
+			}
+
+			return {
+				...currentDetail,
+				...(nextState.isFavorite !== undefined ? { isFavorite: nextState.isFavorite } : {}),
+				...(nextState.isPinned !== undefined ? { isPinned: nextState.isPinned } : {})
+			}
+		})
+	}
+
 	return (
 		<Sheet open={open} onOpenChange={handleSheetOpenChange}>
 			<SheetContent className='gap-0 p-0 sm:max-w-2xl'>
@@ -307,6 +337,8 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 									itemTitle={activeItem.title}
 									isFavorite={activeItem.isFavorite}
 									isPinned={activeItem.isPinned}
+									refreshOnSuccess={false}
+									onStatusChange={handleSheetActionStatusChange}
 									onDelete={() => {
 										onOpenChange(false)
 										onDelete?.()
@@ -535,40 +567,39 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 								</section>
 							) : null}
 
-							<div className='grid gap-4 sm:grid-cols-2'>
-								{!isEditing && detail?.collection ? (
-									<section className='rounded-2xl border border-border bg-background p-4'>
-										<h3 className='text-sm font-semibold text-foreground'>Colección</h3>
-										<p className='mt-2 text-sm text-muted-foreground'>{detail.collection.name}</p>
-									</section>
-								) : null}
-
-								{!isEditing && hasTags ? (
-									<section className='rounded-2xl border border-border bg-background p-4'>
-										<h3 className='text-sm font-semibold text-foreground'>Etiquetas</h3>
-										<div className='mt-2 flex flex-wrap gap-2'>
-											{detail.tags.map(tag => (
-												<span key={tag.id} className='rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground'>
-													{tag.name}
-												</span>
-											))}
-										</div>
-									</section>
-								) : null}
-							</div>
-
 							{!isEditing ? (
-								<section className='grid gap-4 sm:grid-cols-2'>
-								<div className='rounded-2xl border border-border bg-background p-4'>
-									<h3 className='text-sm font-semibold text-foreground'>Creado</h3>
-									<p className='mt-2 text-sm text-muted-foreground'>{createdAt}</p>
-								</div>
-								{updatedAt ? (
-									<div className='rounded-2xl border border-border bg-background p-4'>
-										<h3 className='text-sm font-semibold text-foreground'>Actualizado</h3>
-										<p className='mt-2 text-sm text-muted-foreground'>{updatedAt}</p>
+								<section className='rounded-3xl border border-border bg-card/60 p-5'>
+									<div className='grid gap-4 sm:grid-cols-2'>
+										<div>
+											<h3 className='text-sm font-semibold text-foreground'>Creado</h3>
+											<p className='mt-2 text-sm text-muted-foreground'>{createdAt}</p>
+										</div>
+										<div>
+											<h3 className='text-sm font-semibold text-foreground'>Colección</h3>
+											<p className='mt-2 text-sm text-muted-foreground'>{collectionName}</p>
+										</div>
+										{updatedAt ? (
+											<div>
+												<h3 className='text-sm font-semibold text-foreground'>Actualizado</h3>
+												<p className='mt-2 text-sm text-muted-foreground'>{updatedAt}</p>
+											</div>
+										) : null}
 									</div>
-								) : null}
+
+									<div className='mt-5 border-t border-border/70 pt-5'>
+										<h3 className='text-sm font-semibold text-foreground'>Tags</h3>
+										{tags.length > 0 ? (
+											<div className='mt-2 flex flex-wrap gap-2'>
+												{tags.map(tag => (
+													<span key={tag.id} className='rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground'>
+														{tag.name}
+													</span>
+												))}
+											</div>
+										) : (
+											<div className='mt-2 min-h-6' aria-hidden='true' />
+										)}
+									</div>
 								</section>
 							) : null}
 						</div>
