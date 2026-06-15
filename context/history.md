@@ -217,3 +217,10 @@
 - Ampliado `lib/db/collections.ts` con `getCollectionsForUserSelect()` y `lib/item-types.ts` con `getItemTypeIconComponent()`.
 - Placeholder de tags movido al input ("react, nextjs, prisma (debes separar las etiquetas con comas)") eliminando el texto auxiliar debajo.
 - Tests en `__tests__/lib/create-item.test.ts` para validación de campos, capacidades por tipo y parseo de tags.
+
+## 2026-06-15 :: 13:50 - Ajustes Sheet detalle item
+
+- Feature fix-item-detail-sheet-spec: corregido el refresco de la lista al cerrar el Sheet después de cambiar favorito o fijado desde el detalle.
+- Actualizado `components/items/item-actions.tsx` para reutilizar el estado optimista y mantener la chincheta visible en ambos estados, coloreándola cuando el item está fijado.
+- Reorganizado `components/items/item-detail-sheet.tsx` para mostrar la metadata en una sola card con `Creado`, `Colección`, `Actualizado` y una sección `Tags` a ancho completo.
+- Añadido fallback `Sin colección`, mantenida la sección de tags visible aunque esté vacía, y preservada la animación de cierre del Sheet con refresh diferido.

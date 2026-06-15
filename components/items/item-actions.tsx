@@ -1,7 +1,7 @@
 'use client'
 
-import { Pin, PinOff, Star } from 'lucide-react'
-import { useState } from 'react'
+import { Pin, Star } from 'lucide-react'
+import { useOptimistic } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { toggleFavoriteAction } from '@/actions/items/toggle-favorite'
@@ -15,12 +15,22 @@ type ItemActionsProps = {
 	isFavorite: boolean
 	isPinned: boolean
 	onDelete: () => void
+	refreshOnSuccess?: boolean
+	onStatusChange?: (nextState: { isFavorite?: boolean; isPinned?: boolean }) => void
 }
 
-export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete }: ItemActionsProps) {
+export function ItemActions({
+	itemId,
+	itemTitle,
+	isFavorite,
+	isPinned,
+	onDelete,
+	refreshOnSuccess = true,
+	onStatusChange
+}: ItemActionsProps) {
 	const router = useRouter()
-	const [favoriteState, setFavoriteState] = useState(isFavorite)
-	const [pinnedState, setPinnedState] = useState(isPinned)
+	const [favoriteState, setFavoriteState] = useOptimistic(isFavorite)
+	const [pinnedState, setPinnedState] = useOptimistic(isPinned)
 
 	async function handleToggleFavorite() {
 		const optimisticState = !favoriteState
@@ -34,7 +44,11 @@ export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete 
 			return
 		}
 
-		router.refresh()
+		onStatusChange?.({ isFavorite: optimisticState })
+
+		if (refreshOnSuccess) {
+			router.refresh()
+		}
 	}
 
 	async function handleTogglePinned() {
@@ -49,7 +63,11 @@ export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete 
 			return
 		}
 
-		router.refresh()
+		onStatusChange?.({ isPinned: optimisticState })
+
+		if (refreshOnSuccess) {
+			router.refresh()
+		}
 	}
 
 	return (
@@ -68,11 +86,14 @@ export function ItemActions({ itemId, itemTitle, isFavorite, isPinned, onDelete 
 			</button>
 			<button
 				type='button'
-				className='rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+				className={cn(
+					'rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
+					pinnedState && 'text-sky-500 hover:text-sky-500'
+				)}
 				aria-label={pinnedState ? 'Quitar item fijado' : 'Fijar item'}
 				onClick={handleTogglePinned}
 			>
-				{pinnedState ? <PinOff className='size-4' /> : <Pin className='size-4' />}
+				<Pin className='size-4' />
 			</button>
 			<DeleteItemDialog itemId={itemId} itemTitle={itemTitle} onDelete={onDelete} />
 		</div>
