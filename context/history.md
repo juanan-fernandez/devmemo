@@ -206,3 +206,14 @@
 - Corregida la animación del Sheet para que el panel entre y salga desde fuera de la pantalla y se eviten saltos visuales al cambiar de estado.
 - Reorganizado el encabezado del Sheet en dos líneas para evitar que los iconos de acción se solapen con el botón de cierre.
 - Añadidos tests en `__tests__/lib/editable-item.test.ts` para validar la lógica de parseo de tags y capacidades editables.
+
+## 2026-06-15 :: 12:13 - Creación de items con Dialog
+
+- Feature item-create-spec: añadido formulario de creación de items dentro de un shadcn Dialog, lanzado desde el botón "Nuevo/Nueva" en `/items/[type]`.
+- Creada la Server Action `actions/items/create-item.ts` con validación Zod, verificación de autenticación, campos por tipo de item y asociación opcional a colección.
+- Añadidos helpers en `lib/items/create-item.ts` para capacidades, validación de campos y opciones de lenguaje reutilizadas.
+- Creado `components/items/create-item-dialog.tsx` con campos dinámicos por tipo, Select para lenguaje y colección, estado de éxito con auto-cierre y errores en español.
+- Creado `components/ui/dialog.tsx` (shadcn Dialog) para el modal de creación.
+- Ampliado `lib/db/collections.ts` con `getCollectionsForUserSelect()` y `lib/item-types.ts` con `getItemTypeIconComponent()`.
+- Placeholder de tags movido al input ("react, nextjs, prisma (debes separar las etiquetas con comas)") eliminando el texto auxiliar debajo.
+- Tests en `__tests__/lib/create-item.test.ts` para validación de campos, capacidades por tipo y parseo de tags.

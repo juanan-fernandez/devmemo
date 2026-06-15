@@ -1,0 +1,171 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+import { auth } from '@/auth/auth'
+import { prisma } from '@/lib/db/prisma'
+import {
+	createItemInputSchema,
+	getCreateItemCapabilities,
+	mapCreateItemSchemaErrors,
+	parseCreateItemTagsInput,
+	type CreateItemField
+} from '@/lib/items/create-item'
+import { getCanonicalItemTypeByKey } from '@/lib/item-types'
+
+export type CreateItemState = {
+	success?: string
+	error?: string | null
+	successful?: boolean
+	fieldErrors?: Partial<Record<CreateItemField, string>>
+}
+
+export async function createItem(
+	_prevState: CreateItemState,
+	formData: FormData
+): Promise<CreateItemState> {
+	void _prevState
+
+	const session = await auth()
+
+	if (!session?.user?.id) {
+		return { error: 'Debes iniciar sesión para crear items.', successful: false }
+	}
+
+	const parsedInput = createItemInputSchema.safeParse({
+		type: formData.get('type'),
+		title: formData.get('title'),
+		description: formData.get('description'),
+		content: formData.get('content'),
+		language: formData.get('language'),
+		url: formData.get('url'),
+		collectionId: formData.get('collectionId'),
+		tags: parseCreateItemTagsInput(String(formData.get('tags') ?? ''))
+	})
+
+	if (!parsedInput.success) {
+		return {
+			error: 'Revisa los campos del formulario.',
+			fieldErrors: mapCreateItemSchemaErrors(parsedInput.error),
+			successful: false
+		}
+	}
+
+	const { type, title, description, content, language, url, collectionId, tags } = parsedInput.data
+	const canonicalType = getCanonicalItemTypeByKey(type)
+
+	const capabilities = getCreateItemCapabilities(type)
+
+	if (!canonicalType) {
+		return {
+			error: 'No se ha podido crear el item.',
+			fieldErrors: { type: 'Selecciona un tipo de item válido.' },
+			successful: false
+		}
+	}
+
+	const itemType = await prisma.itemType.findFirst({
+		where: {
+			name: canonicalType.dbName,
+			OR: [{ isSystem: true }, { userId: session.user.id }]
+		},
+		select: {
+			id: true
+		}
+	})
+
+	if (!itemType) {
+		return {
+			error: 'No se ha podido crear el item.',
+			successful: false
+		}
+	}
+
+	if (collectionId) {
+		const collection = await prisma.collection.findFirst({
+			where: {
+				id: collectionId,
+				userId: session.user.id
+			},
+			select: {
+				id: true
+			}
+		})
+
+		if (!collection) {
+			return {
+				error: 'Revisa los campos del formulario.',
+				fieldErrors: { collectionId: 'Selecciona una colección válida.' },
+				successful: false
+			}
+		}
+	}
+
+	try {
+		await prisma.$transaction(async tx => {
+			const createdItem = await tx.item.create({
+				data: {
+					title,
+					description,
+					contentType: 'text',
+					content: capabilities.canCreateContent ? content : null,
+					language: capabilities.canCreateLanguage ? language : null,
+					url: capabilities.canCreateUrl ? url : null,
+					collectionId,
+					userId: session.user.id,
+					typeId: itemType.id
+				},
+				select: {
+					id: true
+				}
+			})
+
+			if (tags.length === 0) {
+				return
+			}
+
+			const persistedTags = await Promise.all(
+				tags.map(tagName =>
+					tx.tag.upsert({
+						where: {
+							name_userId: {
+								name: tagName,
+								userId: session.user.id
+							}
+						},
+						update: {},
+						create: {
+							name: tagName,
+							userId: session.user.id
+						},
+						select: {
+							id: true
+						}
+					})
+				)
+			)
+
+			await tx.itemTag.createMany({
+				data: persistedTags.map(tag => ({ itemId: createdItem.id, tagId: tag.id })),
+				skipDuplicates: true
+			})
+		})
+	} catch {
+		return {
+			error: 'No se ha podido crear el item.',
+			successful: false
+		}
+	}
+
+	revalidatePath('/dashboard')
+	revalidatePath('/profile')
+	revalidatePath('/items', 'layout')
+	revalidatePath(canonicalType.href)
+
+	return {
+		success: 'Item creado correctamente.',
+		error: null,
+		successful: true,
+		fieldErrors: {}
+	}
+}

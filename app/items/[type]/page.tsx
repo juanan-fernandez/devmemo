@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation'
-import { Plus } from 'lucide-react'
 import { auth } from '@/auth/auth'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { getItemsByTypeName } from '@/lib/db/items'
 import { getSidebarItemTypes } from '@/lib/db/items'
-import { getSidebarCollections } from '@/lib/db/collections'
+import { getSelectableCollections, getSidebarCollections } from '@/lib/db/collections'
 import { getSidebarUser } from '@/lib/db/user'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
+import { CreateItemDialog } from '@/components/items/create-item-dialog'
 import { ItemCard } from '@/components/items/item-card'
 
 type ItemListPageProps = {
@@ -28,10 +28,11 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 		return null
 	}
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, { items, totalCount }] = await Promise.all([
+	const [sidebarItemTypes, sidebarCollections, sidebarUser, selectableCollections, { items, totalCount }] = await Promise.all([
 		getSidebarItemTypes(userId),
 		getSidebarCollections(userId),
 		getSidebarUser(userId),
+		getSelectableCollections(userId),
 		getItemsByTypeName(userId, canonicalType.dbName)
 	])
 
@@ -46,10 +47,9 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 					<h1 className='text-xl font-semibold text-foreground'>
 						{canonicalType.name}
 					</h1>
-					<button className='inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90'>
-						<Plus className='size-4' />
-						Nue{canonicalType.gender === 'feminine' ? 'va' : 'vo'} {canonicalType.singularLabel}
-					</button>
+					<div className='flex items-center gap-3'>
+						<CreateItemDialog canonicalType={canonicalType} collections={selectableCollections} />
+					</div>
 				</div>
 
 				{items.length === 0 ? (
