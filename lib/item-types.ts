@@ -171,6 +171,10 @@ const CANONICAL_ITEM_TYPES_BY_HREF = new Map(
 	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.href, itemType])
 )
 
+const CANONICAL_ITEM_TYPES_BY_KEY = new Map(
+	CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => [itemType.key, itemType])
+)
+
 export const MOCK_ITEM_TYPES = CANONICAL_SYSTEM_ITEM_TYPES.map(itemType => ({
 	id: itemType.mockId,
 	name: itemType.name,
@@ -202,6 +206,10 @@ export function getCanonicalItemTypeByMockId(mockId: string) {
 
 export function getCanonicalItemTypeBySlug(slug: string) {
 	return CANONICAL_ITEM_TYPES_BY_HREF.get(`/items/${slug}`) ?? null
+}
+
+export function getCanonicalItemTypeByKey(key: SystemItemTypeKey) {
+	return CANONICAL_ITEM_TYPES_BY_KEY.get(key) ?? null
 }
 
 export function toAppItemType(source: ItemTypeSource): AppItemType {

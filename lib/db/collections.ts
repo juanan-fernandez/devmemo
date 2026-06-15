@@ -30,6 +30,11 @@ export type DashboardCollection = {
 	typeIcons: AppItemType[]
 }
 
+export type SelectableCollection = {
+	id: string
+	name: string
+}
+
 type CollectionItemType = {
 	id: string
 	name: string
@@ -149,6 +154,17 @@ export async function getLatestCollections(userId: string): Promise<DashboardCol
 			itemCount,
 			predominantType,
 			typeIcons
+		}
+	})
+}
+
+export async function getSelectableCollections(userId: string): Promise<SelectableCollection[]> {
+	return prisma.collection.findMany({
+		where: { userId },
+		orderBy: { name: 'asc' },
+		select: {
+			id: true,
+			name: true
 		}
 	})
 }
