@@ -224,3 +224,10 @@
 - Actualizado `components/items/item-actions.tsx` para reutilizar el estado optimista y mantener la chincheta visible en ambos estados, coloreándola cuando el item está fijado.
 - Reorganizado `components/items/item-detail-sheet.tsx` para mostrar la metadata en una sola card con `Creado`, `Colección`, `Actualizado` y una sección `Tags` a ancho completo.
 - Añadido fallback `Sin colección`, mantenida la sección de tags visible aunque esté vacía, y preservada la animación de cierre del Sheet con refresh diferido.
+
+## 2026-06-15 :: 21:30 - Markdown para prompts
+
+- Feature markdown-editor-spec: añadido soporte Markdown solo para items de tipo `prompt` en la vista de detalle, edición y creación.
+- Creado `components/items/markdown-editor.tsx` con renderizado mediante `react-markdown` + `remark-gfm`, botón de copiar y conmutador entre `Edición` y `Vista previa`.
+- Actualizados `components/items/item-detail-sheet.tsx` y `components/items/create-item-dialog.tsx` para usar el nuevo flujo Markdown manteniendo el campo existente `content` y sin tocar las Server Actions ni el esquema.
+- Corregido el envío del contenido al crear prompts también cuando el usuario guarda desde la pestaña `Vista previa`.

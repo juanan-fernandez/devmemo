@@ -15,6 +15,7 @@ import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import { CodeEditor } from '@/components/items/code-editor'
+import { MarkdownEditor } from '@/components/items/markdown-editor'
 import { Button } from '@/components/ui/button'
 import {
 	Sheet,
@@ -206,6 +207,7 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	const activeItemTypeKey = useMemo(() => getCanonicalTypeKey(activeItem.type.href), [activeItem.type.href])
 	const capabilities = useMemo(() => getEditableItemCapabilities(activeItemTypeKey), [activeItemTypeKey])
 	const usesCodeEditor = useMemo(() => supportsCodeEditor(activeItemTypeKey), [activeItemTypeKey])
+	const usesMarkdownEditor = activeItemTypeKey === 'prompt'
 	const collectionName = detail?.collection?.name ?? 'Sin colección'
 	const tags = detail?.tags ?? []
 
@@ -498,6 +500,15 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 													invalid={fieldErrors.content || fieldErrors.language ? true : undefined}
 													heightClassName='h-[320px]'
 												/>
+											) : usesMarkdownEditor ? (
+												<MarkdownEditor
+													textareaId='item-edit-content'
+													value={formValues.content}
+													onChange={value => handleFieldChange('content', value)}
+													disabled={isSaving}
+													invalid={fieldErrors.content ? true : undefined}
+													heightClassName='min-h-[280px] max-h-[400px]'
+												/>
 											) : (
 												<>
 													<label className='text-sm font-medium text-foreground' htmlFor='item-edit-content'>
@@ -582,15 +593,17 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 								</section>
 							) : null}
 
-							{!isEditing && detail?.content ? (
+							{!isEditing && detail && (usesMarkdownEditor || detail.content) ? (
 								<section className='space-y-2'>
 									{usesCodeEditor ? (
 										<CodeEditor
-											value={detail.content}
+											value={detail.content ?? ''}
 											language={detail.language}
 											readOnly
 											heightClassName='h-[320px]'
 										/>
+									) : usesMarkdownEditor ? (
+										<MarkdownEditor value={detail.content ?? ''} readOnly heightClassName='max-h-[400px]' />
 									) : (
 										<>
 											<h3 className='text-sm font-semibold text-foreground'>Contenido</h3>
