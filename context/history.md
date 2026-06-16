@@ -260,3 +260,11 @@
 - Preservada la accesibilidad con `htmlFor`/`id`, `role="button"` en el label y `aria-live="polite"` para mensajes dinámicos.
 - Mantenida toda la lógica de subida existente (server/client upload, preview, cambiar/eliminar archivo).
 - Simplificado el mensaje de éxito a `Archivo subido correctamente.` sin distinguir estrategia de subida.
+
+## 2026-06-16 :: 17:00 - Descarga y preview en Sheet
+
+- Feature sheet-preview-download-spec: añadidos botón de descarga y preview de imagen en el Sheet de detalle para items de tipo `file` e `image`.
+- Añadido botón `Descargar archivo` / `Descargar imagen` en el header del Sheet cuando existe `fileUrl`.
+- Corregida la descarga de imágenes: el atributo `download` no funciona con URLs cross-origin (Vercel Blob), por lo que se implementó un helper `downloadFile()` que fetchea el blob y dispara la descarga via object URL.
+- Añadida sección `Vista previa` con `next/image` a ancho completo, padding ligero y bordes redondeados para items de tipo `image`.
+- Preservadas las acciones existentes del Sheet y el modo edición.

@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CheckCircle2, ExternalLink, FileText, LoaderCircle, PencilLine } from 'lucide-react'
+import { CheckCircle2, Download, ExternalLink, FileText, LoaderCircle, PencilLine } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 import { updateItemAction } from '@/actions/items/update-item'
@@ -64,6 +65,27 @@ function formatFileSize(bytes: number | null) {
 	if (bytes < 1024) return `${bytes} B`
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+async function downloadFile(url: string, fileName: string) {
+	try {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error('No se ha podido descargar el archivo.')
+		}
+		const blob = await response.blob()
+		const blobUrl = URL.createObjectURL(blob)
+		const link = document.createElement('a')
+		link.href = blobUrl
+		link.download = fileName
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+		URL.revokeObjectURL(blobUrl)
+	} catch (error) {
+		console.error('Download failed:', error)
+		window.open(url, '_blank', 'noopener,noreferrer')
+	}
 }
 
 function buildFormValues(source: DashboardItem | ItemDetail | null): ItemEditFormValues {
@@ -376,6 +398,20 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 								>
 									<PencilLine className='size-4' />
 								</Button>
+							{detail?.fileUrl && (activeItemTypeKey === 'file' || activeItemTypeKey === 'image') ? (
+								<Button
+									type='button'
+									variant='outline'
+									size='sm'
+									onClick={() => {
+										if (!detail.fileUrl) return
+										downloadFile(detail.fileUrl, detail.fileName ?? activeItem.title)
+									}}
+								>
+									<Download className='size-4' />
+									{activeItemTypeKey === 'image' ? 'Descargar imagen' : 'Descargar archivo'}
+								</Button>
+							) : null}
 								<ItemActions
 									itemId={activeItem.id}
 									itemTitle={activeItem.title}
@@ -629,6 +665,24 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 											<ExternalLink className='size-4' />
 											Abrir enlace
 										</a>
+									</div>
+								</section>
+							) : null}
+
+							{!isEditing && activeItemTypeKey === 'image' && detail?.fileUrl ? (
+								<section className='space-y-3'>
+									<h3 className='text-sm font-semibold text-foreground'>Vista previa</h3>
+									<div className='rounded-2xl border border-border bg-background p-2'>
+										<div className='relative overflow-hidden rounded-2xl'>
+											<Image
+												src={detail.fileUrl}
+												alt={activeItem.title}
+												width={0}
+												height={0}
+												sizes='100vw'
+												className='h-auto w-full'
+											/>
+										</div>
 									</div>
 								</section>
 							) : null}
