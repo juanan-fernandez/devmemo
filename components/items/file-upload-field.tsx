@@ -3,13 +3,14 @@
 import Image from 'next/image'
 import { LoaderCircle, Trash2, Upload } from 'lucide-react'
 import { upload } from '@vercel/blob/client'
-import { useRef, useState, useTransition, type ChangeEvent } from 'react'
+import { useId, useRef, useState, useTransition, type ChangeEvent, type DragEvent } from 'react'
 
 import { deleteFileAction } from '@/actions/storage/delete-file'
 import { createUploadDraftAction } from '@/actions/storage/create-upload-draft'
 import { finalizeClientUploadAction } from '@/actions/storage/finalize-client-upload'
 import { uploadFileAction } from '@/actions/storage/upload-file'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
 	formatBytes,
 	getFileValidationConfig,
@@ -38,10 +39,12 @@ type FileUploadFieldProps = {
 
 export function FileUploadField({ disabled, error, label, typeKey, value, onChange }: FileUploadFieldProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null)
+	const inputId = useId()
 	const [uploadError, setUploadError] = useState<string | null>(null)
 	const [uploadMessage, setUploadMessage] = useState<string | null>(null)
 	const [isUploading, startUploadTransition] = useTransition()
 	const [isDeleting, setIsDeleting] = useState(false)
+	const [isDragging, setIsDragging] = useState(false)
 	const config = getFileValidationConfig(typeKey)
 
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -51,6 +54,10 @@ export function FileUploadField({ disabled, error, label, typeKey, value, onChan
 			return
 		}
 
+		handleSelectedFile(file)
+	}
+
+	async function handleSelectedFile(file: File) {
 		startUploadTransition(async () => {
 			setUploadError(null)
 			setUploadMessage(null)
@@ -78,16 +85,36 @@ export function FileUploadField({ disabled, error, label, typeKey, value, onChan
 					: await uploadFromServer(file, typeKey)
 
 				onChange(nextUpload)
-				setUploadMessage(
-					shouldUseClientUpload(file.size)
-						? 'Archivo subido directamente desde el navegador.'
-						: 'Archivo subido correctamente.'
-				)
+				setUploadMessage('Archivo subido correctamente.')
 			} catch (uploadError) {
 				setUploadError(uploadError instanceof Error ? uploadError.message : 'No se ha podido subir el archivo.')
 				resetInputValue()
 			}
 		})
+	}
+
+	function handleDragOver(event: DragEvent<HTMLLabelElement>) {
+		event.preventDefault()
+		setIsDragging(true)
+	}
+
+	function handleDragEnter(event: DragEvent<HTMLLabelElement>) {
+		event.preventDefault()
+		setIsDragging(true)
+	}
+
+	function handleDragLeave(event: DragEvent<HTMLLabelElement>) {
+		if (event.currentTarget === event.target) {
+			setIsDragging(false)
+		}
+	}
+
+	async function handleDrop(event: DragEvent<HTMLLabelElement>) {
+		event.preventDefault()
+		setIsDragging(false)
+		const file = event.dataTransfer.files?.[0]
+		if (!file) return
+		await handleSelectedFile(file)
 	}
 
 	async function handleDeleteClick() {
@@ -124,28 +151,52 @@ export function FileUploadField({ disabled, error, label, typeKey, value, onChan
 	return (
 		<div className='flex flex-col gap-4 rounded-3xl border border-border bg-card/60 p-5'>
 			<div className='space-y-2'>
-				<label className='text-sm font-medium text-foreground' htmlFor={`file-upload-${typeKey}`}>
+				<label className='text-sm font-medium text-foreground' htmlFor={inputId}>
 					{label}
 				</label>
-				<p className='text-sm text-muted-foreground'>
-					Máximo 10 MB. Las subidas grandes se enviarán directamente desde el navegador.
-				</p>
+				<p className='text-sm text-muted-foreground'>El tamaño máximo para archivos o imágenes es de 10 MB.</p>
 			</div>
 
 			<input
-				id={`file-upload-${typeKey}`}
+				id={inputId}
 				ref={inputRef}
 				type='file'
 				accept={config.accept}
 				disabled={disabled || isUploading || isDeleting}
 				onChange={handleFileChange}
 				aria-invalid={error || uploadError ? true : undefined}
-				className='flex h-auto w-full min-w-0 rounded-2xl border border-input bg-background/60 px-4 py-3 text-sm text-foreground outline-none transition-colors file:mr-4 file:rounded-xl file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+				className='sr-only'
 			/>
+			<label
+				htmlFor={inputId}
+				role='button'
+				onDragOver={handleDragOver}
+				onDragEnter={handleDragEnter}
+				onDragLeave={handleDragLeave}
+				onDrop={handleDrop}
+				className={cn(
+					'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-8 text-center transition-colors',
+					'border-border bg-muted/20 text-muted-foreground hover:bg-muted/30',
+					isDragging && 'border-primary bg-primary/5 ring-2 ring-primary/20',
+					uploadError && 'border-destructive',
+					disabled || isUploading || isDeleting ? 'pointer-events-none opacity-50' : ''
+				)}
+			>
+				<Upload className='size-8' />
+				<span className='text-sm font-medium text-foreground'>
+					{isDragging
+						? 'Suelta el archivo para cargarlo.'
+						: typeKey === 'image'
+							? 'Arrastra y suelta una imagen aquí o haz clic para seleccionarla.'
+							: 'Arrastra y suelta un archivo aquí o haz clic para seleccionarlo.'}
+				</span>
+			</label>
 
-			{uploadMessage ? <p className='text-sm text-emerald-500'>{uploadMessage}</p> : null}
-			{uploadError ? <p className='text-sm text-destructive'>{uploadError}</p> : null}
-			{error ? <p className='text-sm text-destructive'>{error}</p> : null}
+			<div aria-live='polite' className='space-y-2'>
+				{uploadMessage ? <p className='text-sm text-emerald-500'>{uploadMessage}</p> : null}
+				{uploadError ? <p className='text-sm text-destructive'>{uploadError}</p> : null}
+				{error ? <p className='text-sm text-destructive'>{error}</p> : null}
+			</div>
 
 			{isUploading ? (
 				<div className='flex items-center gap-2 rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm text-muted-foreground'>

@@ -6,7 +6,7 @@
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 

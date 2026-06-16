@@ -249,3 +249,14 @@
 - Configurado `next.config.ts` con `remotePatterns` para Vercel Blob en `next/image`.
 - Corregido bug: client upload usaba `file.name` como pathname plano, impedía extraer el `uploadId` del draft. Solución: crear draft primero con pathname estructurado.
 - Corregido bug: `onUploadCompleted` no se ejecuta en local (webhook de Vercel no alcanza localhost). Solución: finalizar registro vía Server Action tras `upload()`.
+
+## 2026-06-16 :: 14:00 - Drag and drop en FileUploadField
+
+- Feature file-upload-2-spec: añadido soporte de arrastrar y soltar en `components/items/file-upload-field.tsx` para items de tipo `file` e `image`.
+- Reemplazado el input de archivo visible por un `<label>` estilizado como zona de drop, asociado a un `<input type="file" className="sr-only">`.
+- Implementados manejadores `onDragOver`, `onDragEnter`, `onDragLeave` y `onDrop` con estado `isDragging` y feedback visual.
+- Añadidos textos en español diferenciados para archivos e imágenes, y mensaje de estado activo "Suelta el archivo para cargarlo.".
+- Extraída función `handleSelectedFile(file)` para compartir la lógica de validación y subida entre click y drop.
+- Preservada la accesibilidad con `htmlFor`/`id`, `role="button"` en el label y `aria-live="polite"` para mensajes dinámicos.
+- Mantenida toda la lógica de subida existente (server/client upload, preview, cambiar/eliminar archivo).
+- Simplificado el mensaje de éxito a `Archivo subido correctamente.` sin distinguir estrategia de subida.
