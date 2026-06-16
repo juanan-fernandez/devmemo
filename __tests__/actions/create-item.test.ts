@@ -152,12 +152,15 @@ describe('createItem server action', () => {
 
 		expect(itemCreateMock).toHaveBeenCalledWith({
 			data: {
-				title: 'Mi snippet',
-				description: 'Descripción corta',
-				contentType: 'text',
-				content: 'const answer = 42',
-				language: 'TypeScript',
-				url: null,
+			title: 'Mi snippet',
+			description: 'Descripción corta',
+			contentType: 'text',
+			content: 'const answer = 42',
+			fileName: null,
+			fileSize: null,
+			fileUrl: null,
+			language: 'TypeScript',
+			url: null,
 				collectionId: null,
 				userId: 'user_123',
 				typeId: 'type_123'

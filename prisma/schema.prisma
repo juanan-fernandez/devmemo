@@ -19,6 +19,7 @@ model User {
   itemTypes   ItemType[]
   collections Collection[]
   tags        Tag[]
+  uploads     FileUpload[]
   accounts    Account[]
   sessions    Session[]
 
@@ -112,6 +113,7 @@ model Item {
   type         ItemType    @relation(fields: [typeId], references: [id])
   collectionId String?
   collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  fileUpload   FileUpload?
 
   tags ItemTag[]
 
@@ -123,6 +125,28 @@ model Item {
   @@index([collectionId])
   @@index([isFavorite])
   @@index([isPinned])
+}
+
+model FileUpload {
+  id           String   @id @default(cuid())
+  originalName String
+  pathname     String
+  blobUrl      String?  @unique
+  downloadUrl  String?
+  contentType  String
+  size         Int
+  kind         String
+  source       String
+  status       String   @default("pending")
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId       String?  @unique
+  item         Item?    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 model ItemType {

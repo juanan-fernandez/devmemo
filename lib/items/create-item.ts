@@ -9,10 +9,11 @@ import {
 } from '@/lib/items/editable-item'
 import type { SystemItemTypeKey } from '@/lib/item-types'
 
-const CREATE_ITEM_TYPE_VALUES = ['snippet', 'prompt', 'command', 'note', 'url'] as const satisfies readonly SystemItemTypeKey[]
+const CREATE_ITEM_TYPE_VALUES = ['snippet', 'prompt', 'command', 'note', 'file', 'image', 'url'] as const satisfies readonly SystemItemTypeKey[]
 
 const CONTENT_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['snippet', 'prompt', 'command', 'note'])
 const LANGUAGE_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['snippet', 'command'])
+const FILE_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['file', 'image'])
 const URL_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['url'])
 
 const optionalTextSchema = z
@@ -26,7 +27,12 @@ const optionalCollectionIdSchema = z
 		return normalizedValue === 'none' ? null : normalizedValue
 	})
 
-export type CreateItemField = EditableItemField | 'type' | 'collectionId'
+const optionalFileUploadIdSchema = z
+	.union([z.string(), z.null(), z.undefined()])
+	.optional()
+	.transform(value => normalizeOptionalText(value))
+
+export type CreateItemField = EditableItemField | 'type' | 'collectionId' | 'fileUploadId'
 
 export const createItemInputSchema = z
 	.object({
@@ -37,6 +43,7 @@ export const createItemInputSchema = z
 		description: optionalTextSchema,
 		content: optionalTextSchema,
 		language: optionalTextSchema,
+		fileUploadId: optionalFileUploadIdSchema,
 		url: optionalTextSchema,
 		collectionId: optionalCollectionIdSchema,
 		tags: z.array(z.string()).default([]).transform(values => normalizeTags(values))
@@ -113,6 +120,29 @@ export const createItemInputSchema = z
 			})
 		}
 	})
+	.superRefine((value, ctx) => {
+		const capabilities = getCreateItemCapabilities(value.type)
+
+		if (capabilities.canCreateFile) {
+			if (!value.fileUploadId) {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['fileUploadId'],
+					message: 'Debes subir un archivo antes de guardar.'
+				})
+			}
+
+			return
+		}
+
+		if (value.fileUploadId) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['fileUploadId'],
+				message: 'El archivo no aplica a este tipo de item.'
+			})
+		}
+	})
 
 export type CreateItemInput = z.infer<typeof createItemInputSchema>
 
@@ -125,6 +155,7 @@ export function parseCreateItemTagsInput(value: string) {
 export function getCreateItemCapabilities(typeKey: SystemItemTypeKey) {
 	return {
 		canCreateContent: CONTENT_CREATE_TYPE_KEYS.has(typeKey),
+		canCreateFile: FILE_CREATE_TYPE_KEYS.has(typeKey),
 		canCreateLanguage: LANGUAGE_CREATE_TYPE_KEYS.has(typeKey),
 		canCreateUrl: URL_CREATE_TYPE_KEYS.has(typeKey)
 	}
@@ -139,6 +170,7 @@ export function mapCreateItemSchemaErrors(error: z.ZodError<CreateItemInput>): P
 		description: fieldErrors.description?.[0],
 		content: fieldErrors.content?.[0],
 		language: fieldErrors.language?.[0],
+		fileUploadId: fieldErrors.fileUploadId?.[0],
 		url: fieldErrors.url?.[0],
 		collectionId: fieldErrors.collectionId?.[0],
 		tags: fieldErrors.tags?.[0]

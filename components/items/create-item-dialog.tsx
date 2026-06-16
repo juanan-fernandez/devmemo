@@ -15,6 +15,7 @@ import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { CanonicalSystemItemType } from '@/lib/item-types'
 import { CodeEditor } from '@/components/items/code-editor'
+import { FileUploadField, type UploadedFileValue } from '@/components/items/file-upload-field'
 import { MarkdownEditor } from '@/components/items/markdown-editor'
 import { Button } from '@/components/ui/button'
 import {
@@ -109,6 +110,7 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 	const [language, setLanguage] = useState('none')
 	const [url, setUrl] = useState('')
 	const [collectionId, setCollectionId] = useState('none')
+	const [uploadedFile, setUploadedFile] = useState<UploadedFileValue | null>(null)
 	const capabilities = useMemo(() => getCreateItemCapabilities(canonicalType.key), [canonicalType.key])
 	const usesCodeEditor = useMemo(() => supportsCodeEditor(canonicalType.key), [canonicalType.key])
 	const usesMarkdownEditor = canonicalType.key === 'prompt'
@@ -164,6 +166,7 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 			<input type='hidden' name='type' value={canonicalType.key} />
 			<input type='hidden' name='language' value={language === 'none' ? '' : language} />
 			<input type='hidden' name='collectionId' value={collectionId === 'none' ? '' : collectionId} />
+			<input type='hidden' name='fileUploadId' value={uploadedFile?.id ?? ''} />
 			{capabilities.canCreateContent && (usesCodeEditor || usesMarkdownEditor) ? (
 				<input type='hidden' name='content' value={content} />
 			) : null}
@@ -291,7 +294,18 @@ function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPen
 								</>
 							)}
 							{getFieldError('content') ? <p className='text-sm text-destructive'>{getFieldError('content')}</p> : null}
-						</section>
+					</section>
+				) : null}
+
+					{capabilities.canCreateFile ? (
+						<FileUploadField
+							disabled={isPending}
+							error={getFieldError('fileUploadId')}
+							label={canonicalType.key === 'image' ? 'Imagen' : 'Archivo'}
+							typeKey={canonicalType.key as 'file' | 'image'}
+							value={uploadedFile}
+							onChange={setUploadedFile}
+						/>
 					) : null}
 
 					{capabilities.canCreateLanguage && !usesCodeEditor ? (

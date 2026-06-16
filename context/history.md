@@ -231,3 +231,21 @@
 - Creado `components/items/markdown-editor.tsx` con renderizado mediante `react-markdown` + `remark-gfm`, botón de copiar y conmutador entre `Edición` y `Vista previa`.
 - Actualizados `components/items/item-detail-sheet.tsx` y `components/items/create-item-dialog.tsx` para usar el nuevo flujo Markdown manteniendo el campo existente `content` y sin tocar las Server Actions ni el esquema.
 - Corregido el envío del contenido al crear prompts también cuando el usuario guarda desde la pestaña `Vista previa`.
+
+## 2026-06-16 :: 14:20 - Subida de archivos con Vercel Blob
+
+- Feature file-upload-spec: añadida subida de archivos e imágenes usando Vercel Blob para items de tipo `file` e `image`.
+- Creado modelo Prisma `FileUpload` con migración, campos `blobUrl`, `pathname`, `contentType`, `size`, `kind`, `source`, `status` y relaciones con `User` e `Item`.
+- Implementada subida server-side por defecto y subida client-side para archivos >4.5 MB, con máximo 10 MB.
+- Creadas Server Actions `actions/storage/upload-file.ts` y `actions/storage/delete-file.ts` con autenticación, validación de tipo/tamaño, subida a Blob y persistencia en BD.
+- Creado route handler `app/api/storage/upload/route.ts` para el flujo de client upload con `handleUpload`, generación de tokens y callback `onUploadCompleted`.
+- Creado `actions/storage/create-upload-draft.ts` para pre-crear drafts con pathname estructurado antes de la subida client-side.
+- Creado `actions/storage/finalize-client-upload.ts` para finalizar el registro de subida client-side inmediatamente después de `upload()` (sin depender del webhook asíncrono de Vercel).
+- Añadido `lib/storage/file-validation.ts` con validación de tipos/tamaños, `shouldUseClientUpload()`, `buildUploadPathname()`, `getUploadIdFromPathname()`, `sanitizeUploadFilename()`.
+- Añadido `lib/storage/file-uploads.ts` con `uploadFileToBlob()`, `createUploadDraft()`, `finalizeUploadRecord()`, `finalizeClientUpload()`, `deleteUploadById()`, `deleteUploadForItem()`.
+- Creado `components/items/file-upload-field.tsx` con flujo en tres fases para client upload (draft → upload → finalize) y preview de imagen/archivo.
+- Actualizados `components/items/create-item-dialog.tsx` y `actions/items/create-item.ts` para integrar el campo `fileUploadId` en items de tipo archivo/imagen.
+- Actualizado `actions/items/delete-item.ts` para eliminar el blob asociado al borrar un item.
+- Configurado `next.config.ts` con `remotePatterns` para Vercel Blob en `next/image`.
+- Corregido bug: client upload usaba `file.name` como pathname plano, impedía extraer el `uploadId` del draft. Solución: crear draft primero con pathname estructurado.
+- Corregido bug: `onUploadCompleted` no se ejecuta en local (webhook de Vercel no alcanza localhost). Solución: finalizar registro vía Server Action tras `upload()`.

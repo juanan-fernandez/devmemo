@@ -38,6 +38,7 @@ export async function createItem(
 		description: formData.get('description'),
 		content: formData.get('content'),
 		language: formData.get('language'),
+		fileUploadId: formData.get('fileUploadId'),
 		url: formData.get('url'),
 		collectionId: formData.get('collectionId'),
 		tags: parseCreateItemTagsInput(String(formData.get('tags') ?? ''))
@@ -51,7 +52,7 @@ export async function createItem(
 		}
 	}
 
-	const { type, title, description, content, language, url, collectionId, tags } = parsedInput.data
+	const { type, title, description, content, language, fileUploadId, url, collectionId, tags } = parsedInput.data
 	const canonicalType = getCanonicalItemTypeByKey(type)
 
 	const capabilities = getCreateItemCapabilities(type)
@@ -101,14 +102,42 @@ export async function createItem(
 		}
 	}
 
+	const upload = capabilities.canCreateFile && fileUploadId
+		? await prisma.fileUpload.findFirst({
+				where: {
+					id: fileUploadId,
+					itemId: null,
+					status: 'uploaded',
+					userId: session.user.id
+				},
+				select: {
+					blobUrl: true,
+					id: true,
+					originalName: true,
+					size: true
+				}
+			})
+		: null
+
+	if (capabilities.canCreateFile && !upload) {
+		return {
+			error: 'Revisa los campos del formulario.',
+			fieldErrors: { fileUploadId: 'Debes subir un archivo válido antes de guardar.' },
+			successful: false
+		}
+	}
+
 	try {
 		await prisma.$transaction(async tx => {
 			const createdItem = await tx.item.create({
 				data: {
 					title,
 					description,
-					contentType: 'text',
+					contentType: capabilities.canCreateFile ? 'file' : 'text',
 					content: capabilities.canCreateContent ? content : null,
+					fileName: upload?.originalName ?? null,
+					fileSize: upload?.size ?? null,
+					fileUrl: upload?.blobUrl ?? null,
 					language: capabilities.canCreateLanguage ? language : null,
 					url: capabilities.canCreateUrl ? url : null,
 					collectionId,
@@ -119,6 +148,15 @@ export async function createItem(
 					id: true
 				}
 			})
+
+			if (upload) {
+				await tx.fileUpload.update({
+					where: { id: upload.id },
+					data: {
+						itemId: createdItem.id
+					}
+				})
+			}
 
 			if (tags.length === 0) {
 				return

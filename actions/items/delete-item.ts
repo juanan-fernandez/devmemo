@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { deleteUploadForItem } from '@/lib/storage/file-uploads'
 
 export type DeleteItemState = {
 	success?: string
@@ -39,6 +40,11 @@ export async function deleteItemAction(
 	if (item.userId !== session.user.id) {
 		return { error: 'No tienes permiso para eliminar este item.' }
 	}
+
+	await deleteUploadForItem({
+		itemId,
+		userId: session.user.id
+	})
 
 	await prisma.item.delete({
 		where: { id: itemId }

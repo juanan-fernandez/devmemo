@@ -53,6 +53,11 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Item = Prisma.ItemModel
 /**
+ * Model FileUpload
+ * 
+ */
+export type FileUpload = Prisma.FileUploadModel
+/**
  * Model ItemType
  * 
  */

@@ -75,15 +75,65 @@ describe('create item helpers', () => {
 		}
 	})
 
+	it('requires an uploaded file for file-backed items', () => {
+		const result = createItemInputSchema.safeParse({
+			type: 'file',
+			title: 'Guía de despliegue',
+			description: 'PDF de referencia',
+			content: null,
+			language: null,
+			fileUploadId: null,
+			url: null,
+			collectionId: null,
+			tags: []
+		})
+
+		expect(result.success).toBe(false)
+		if (!result.success) {
+			expect(result.error.flatten().fieldErrors.fileUploadId).toContain(
+				'Debes subir un archivo antes de guardar.'
+			)
+		}
+	})
+
+	it('accepts image items when a file upload id is present', () => {
+		const result = createItemInputSchema.parse({
+			type: 'image',
+			title: 'Mockup final',
+			description: 'Captura para revisar con el equipo',
+			content: null,
+			language: null,
+			fileUploadId: 'upload_123',
+			url: null,
+			collectionId: null,
+			tags: ['diseño', 'review']
+		})
+
+		expect(result).toMatchObject({
+			type: 'image',
+			fileUploadId: 'upload_123',
+			tags: ['diseño', 'review']
+		})
+	})
+
 	it('returns create capabilities by canonical item type key', () => {
 		expect(getCreateItemCapabilities('command')).toEqual({
 			canCreateContent: true,
+			canCreateFile: false,
 			canCreateLanguage: true,
+			canCreateUrl: false
+		})
+
+		expect(getCreateItemCapabilities('image')).toEqual({
+			canCreateContent: false,
+			canCreateFile: true,
+			canCreateLanguage: false,
 			canCreateUrl: false
 		})
 
 		expect(getCreateItemCapabilities('url')).toEqual({
 			canCreateContent: false,
+			canCreateFile: false,
 			canCreateLanguage: false,
 			canCreateUrl: true
 		})

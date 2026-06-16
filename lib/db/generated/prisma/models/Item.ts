@@ -315,6 +315,7 @@ export type ItemWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   type?: Prisma.XOR<Prisma.ItemTypeScalarRelationFilter, Prisma.ItemTypeWhereInput>
   collection?: Prisma.XOR<Prisma.CollectionNullableScalarRelationFilter, Prisma.CollectionWhereInput> | null
+  fileUpload?: Prisma.XOR<Prisma.FileUploadNullableScalarRelationFilter, Prisma.FileUploadWhereInput> | null
   tags?: Prisma.ItemTagListRelationFilter
 }
 
@@ -339,6 +340,7 @@ export type ItemOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   type?: Prisma.ItemTypeOrderByWithRelationInput
   collection?: Prisma.CollectionOrderByWithRelationInput
+  fileUpload?: Prisma.FileUploadOrderByWithRelationInput
   tags?: Prisma.ItemTagOrderByRelationAggregateInput
 }
 
@@ -366,6 +368,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   type?: Prisma.XOR<Prisma.ItemTypeScalarRelationFilter, Prisma.ItemTypeWhereInput>
   collection?: Prisma.XOR<Prisma.CollectionNullableScalarRelationFilter, Prisma.CollectionWhereInput> | null
+  fileUpload?: Prisma.XOR<Prisma.FileUploadNullableScalarRelationFilter, Prisma.FileUploadWhereInput> | null
   tags?: Prisma.ItemTagListRelationFilter
 }, "id">
 
@@ -435,6 +438,7 @@ export type ItemCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutItemsInput
   type: Prisma.ItemTypeCreateNestedOneWithoutItemsInput
   collection?: Prisma.CollectionCreateNestedOneWithoutItemsInput
+  fileUpload?: Prisma.FileUploadCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagCreateNestedManyWithoutItemInput
 }
 
@@ -456,6 +460,7 @@ export type ItemUncheckedCreateInput = {
   collectionId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  fileUpload?: Prisma.FileUploadUncheckedCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagUncheckedCreateNestedManyWithoutItemInput
 }
 
@@ -477,6 +482,7 @@ export type ItemUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   type?: Prisma.ItemTypeUpdateOneRequiredWithoutItemsNestedInput
   collection?: Prisma.CollectionUpdateOneWithoutItemsNestedInput
+  fileUpload?: Prisma.FileUploadUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUpdateManyWithoutItemNestedInput
 }
 
@@ -498,6 +504,7 @@ export type ItemUncheckedUpdateInput = {
   collectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileUpload?: Prisma.FileUploadUncheckedUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUncheckedUpdateManyWithoutItemNestedInput
 }
 
@@ -636,6 +643,11 @@ export type ItemSumOrderByAggregateInput = {
   fileSize?: Prisma.SortOrder
 }
 
+export type ItemNullableScalarRelationFilter = {
+  is?: Prisma.ItemWhereInput | null
+  isNot?: Prisma.ItemWhereInput | null
+}
+
 export type ItemScalarRelationFilter = {
   is?: Prisma.ItemWhereInput
   isNot?: Prisma.ItemWhereInput
@@ -685,6 +697,22 @@ export type ItemUncheckedUpdateManyWithoutUserNestedInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type ItemCreateNestedOneWithoutFileUploadInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutFileUploadInput, Prisma.ItemUncheckedCreateWithoutFileUploadInput>
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutFileUploadInput
+  connect?: Prisma.ItemWhereUniqueInput
+}
+
+export type ItemUpdateOneWithoutFileUploadNestedInput = {
+  create?: Prisma.XOR<Prisma.ItemCreateWithoutFileUploadInput, Prisma.ItemUncheckedCreateWithoutFileUploadInput>
+  connectOrCreate?: Prisma.ItemCreateOrConnectWithoutFileUploadInput
+  upsert?: Prisma.ItemUpsertWithoutFileUploadInput
+  disconnect?: Prisma.ItemWhereInput | boolean
+  delete?: Prisma.ItemWhereInput | boolean
+  connect?: Prisma.ItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ItemUpdateToOneWithWhereWithoutFileUploadInput, Prisma.ItemUpdateWithoutFileUploadInput>, Prisma.ItemUncheckedUpdateWithoutFileUploadInput>
 }
 
 export type ItemCreateNestedManyWithoutTypeInput = {
@@ -802,6 +830,7 @@ export type ItemCreateWithoutUserInput = {
   updatedAt?: Date | string
   type: Prisma.ItemTypeCreateNestedOneWithoutItemsInput
   collection?: Prisma.CollectionCreateNestedOneWithoutItemsInput
+  fileUpload?: Prisma.FileUploadCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagCreateNestedManyWithoutItemInput
 }
 
@@ -822,6 +851,7 @@ export type ItemUncheckedCreateWithoutUserInput = {
   collectionId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  fileUpload?: Prisma.FileUploadUncheckedCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagUncheckedCreateNestedManyWithoutItemInput
 }
 
@@ -874,6 +904,106 @@ export type ItemScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
 }
 
+export type ItemCreateWithoutFileUploadInput = {
+  id?: string
+  title: string
+  contentType: string
+  content?: string | null
+  fileUrl?: string | null
+  fileName?: string | null
+  fileSize?: number | null
+  url?: string | null
+  description?: string | null
+  isFavorite?: boolean
+  isPinned?: boolean
+  language?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutItemsInput
+  type: Prisma.ItemTypeCreateNestedOneWithoutItemsInput
+  collection?: Prisma.CollectionCreateNestedOneWithoutItemsInput
+  tags?: Prisma.ItemTagCreateNestedManyWithoutItemInput
+}
+
+export type ItemUncheckedCreateWithoutFileUploadInput = {
+  id?: string
+  title: string
+  contentType: string
+  content?: string | null
+  fileUrl?: string | null
+  fileName?: string | null
+  fileSize?: number | null
+  url?: string | null
+  description?: string | null
+  isFavorite?: boolean
+  isPinned?: boolean
+  language?: string | null
+  userId: string
+  typeId: string
+  collectionId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tags?: Prisma.ItemTagUncheckedCreateNestedManyWithoutItemInput
+}
+
+export type ItemCreateOrConnectWithoutFileUploadInput = {
+  where: Prisma.ItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.ItemCreateWithoutFileUploadInput, Prisma.ItemUncheckedCreateWithoutFileUploadInput>
+}
+
+export type ItemUpsertWithoutFileUploadInput = {
+  update: Prisma.XOR<Prisma.ItemUpdateWithoutFileUploadInput, Prisma.ItemUncheckedUpdateWithoutFileUploadInput>
+  create: Prisma.XOR<Prisma.ItemCreateWithoutFileUploadInput, Prisma.ItemUncheckedCreateWithoutFileUploadInput>
+  where?: Prisma.ItemWhereInput
+}
+
+export type ItemUpdateToOneWithWhereWithoutFileUploadInput = {
+  where?: Prisma.ItemWhereInput
+  data: Prisma.XOR<Prisma.ItemUpdateWithoutFileUploadInput, Prisma.ItemUncheckedUpdateWithoutFileUploadInput>
+}
+
+export type ItemUpdateWithoutFileUploadInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  contentType?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
+  type?: Prisma.ItemTypeUpdateOneRequiredWithoutItemsNestedInput
+  collection?: Prisma.CollectionUpdateOneWithoutItemsNestedInput
+  tags?: Prisma.ItemTagUpdateManyWithoutItemNestedInput
+}
+
+export type ItemUncheckedUpdateWithoutFileUploadInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  contentType?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  typeId?: Prisma.StringFieldUpdateOperationsInput | string
+  collectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tags?: Prisma.ItemTagUncheckedUpdateManyWithoutItemNestedInput
+}
+
 export type ItemCreateWithoutTypeInput = {
   id?: string
   title: string
@@ -891,6 +1021,7 @@ export type ItemCreateWithoutTypeInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutItemsInput
   collection?: Prisma.CollectionCreateNestedOneWithoutItemsInput
+  fileUpload?: Prisma.FileUploadCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagCreateNestedManyWithoutItemInput
 }
 
@@ -911,6 +1042,7 @@ export type ItemUncheckedCreateWithoutTypeInput = {
   collectionId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  fileUpload?: Prisma.FileUploadUncheckedCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagUncheckedCreateNestedManyWithoutItemInput
 }
 
@@ -957,6 +1089,7 @@ export type ItemCreateWithoutCollectionInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutItemsInput
   type: Prisma.ItemTypeCreateNestedOneWithoutItemsInput
+  fileUpload?: Prisma.FileUploadCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagCreateNestedManyWithoutItemInput
 }
 
@@ -977,6 +1110,7 @@ export type ItemUncheckedCreateWithoutCollectionInput = {
   typeId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  fileUpload?: Prisma.FileUploadUncheckedCreateNestedOneWithoutItemInput
   tags?: Prisma.ItemTagUncheckedCreateNestedManyWithoutItemInput
 }
 
@@ -1024,6 +1158,7 @@ export type ItemCreateWithoutTagsInput = {
   user: Prisma.UserCreateNestedOneWithoutItemsInput
   type: Prisma.ItemTypeCreateNestedOneWithoutItemsInput
   collection?: Prisma.CollectionCreateNestedOneWithoutItemsInput
+  fileUpload?: Prisma.FileUploadCreateNestedOneWithoutItemInput
 }
 
 export type ItemUncheckedCreateWithoutTagsInput = {
@@ -1044,6 +1179,7 @@ export type ItemUncheckedCreateWithoutTagsInput = {
   collectionId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  fileUpload?: Prisma.FileUploadUncheckedCreateNestedOneWithoutItemInput
 }
 
 export type ItemCreateOrConnectWithoutTagsInput = {
@@ -1080,6 +1216,7 @@ export type ItemUpdateWithoutTagsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   type?: Prisma.ItemTypeUpdateOneRequiredWithoutItemsNestedInput
   collection?: Prisma.CollectionUpdateOneWithoutItemsNestedInput
+  fileUpload?: Prisma.FileUploadUpdateOneWithoutItemNestedInput
 }
 
 export type ItemUncheckedUpdateWithoutTagsInput = {
@@ -1100,6 +1237,7 @@ export type ItemUncheckedUpdateWithoutTagsInput = {
   collectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileUpload?: Prisma.FileUploadUncheckedUpdateOneWithoutItemNestedInput
 }
 
 export type ItemCreateManyUserInput = {
@@ -1138,6 +1276,7 @@ export type ItemUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   type?: Prisma.ItemTypeUpdateOneRequiredWithoutItemsNestedInput
   collection?: Prisma.CollectionUpdateOneWithoutItemsNestedInput
+  fileUpload?: Prisma.FileUploadUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUpdateManyWithoutItemNestedInput
 }
 
@@ -1158,6 +1297,7 @@ export type ItemUncheckedUpdateWithoutUserInput = {
   collectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileUpload?: Prisma.FileUploadUncheckedUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUncheckedUpdateManyWithoutItemNestedInput
 }
 
@@ -1216,6 +1356,7 @@ export type ItemUpdateWithoutTypeInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   collection?: Prisma.CollectionUpdateOneWithoutItemsNestedInput
+  fileUpload?: Prisma.FileUploadUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUpdateManyWithoutItemNestedInput
 }
 
@@ -1236,6 +1377,7 @@ export type ItemUncheckedUpdateWithoutTypeInput = {
   collectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileUpload?: Prisma.FileUploadUncheckedUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUncheckedUpdateManyWithoutItemNestedInput
 }
 
@@ -1294,6 +1436,7 @@ export type ItemUpdateWithoutCollectionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutItemsNestedInput
   type?: Prisma.ItemTypeUpdateOneRequiredWithoutItemsNestedInput
+  fileUpload?: Prisma.FileUploadUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUpdateManyWithoutItemNestedInput
 }
 
@@ -1314,6 +1457,7 @@ export type ItemUncheckedUpdateWithoutCollectionInput = {
   typeId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileUpload?: Prisma.FileUploadUncheckedUpdateOneWithoutItemNestedInput
   tags?: Prisma.ItemTagUncheckedUpdateManyWithoutItemNestedInput
 }
 
@@ -1388,6 +1532,7 @@ export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   type?: boolean | Prisma.ItemTypeDefaultArgs<ExtArgs>
   collection?: boolean | Prisma.Item$collectionArgs<ExtArgs>
+  fileUpload?: boolean | Prisma.Item$fileUploadArgs<ExtArgs>
   tags?: boolean | Prisma.Item$tagsArgs<ExtArgs>
   _count?: boolean | Prisma.ItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["item"]>
@@ -1463,6 +1608,7 @@ export type ItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   type?: boolean | Prisma.ItemTypeDefaultArgs<ExtArgs>
   collection?: boolean | Prisma.Item$collectionArgs<ExtArgs>
+  fileUpload?: boolean | Prisma.Item$fileUploadArgs<ExtArgs>
   tags?: boolean | Prisma.Item$tagsArgs<ExtArgs>
   _count?: boolean | Prisma.ItemCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1483,6 +1629,7 @@ export type $ItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     user: Prisma.$UserPayload<ExtArgs>
     type: Prisma.$ItemTypePayload<ExtArgs>
     collection: Prisma.$CollectionPayload<ExtArgs> | null
+    fileUpload: Prisma.$FileUploadPayload<ExtArgs> | null
     tags: Prisma.$ItemTagPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1900,6 +2047,7 @@ export interface Prisma__ItemClient<T, Null = never, ExtArgs extends runtime.Typ
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   type<T extends Prisma.ItemTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ItemTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__ItemTypeClient<runtime.Types.Result.GetResult<Prisma.$ItemTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   collection<T extends Prisma.Item$collectionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$collectionArgs<ExtArgs>>): Prisma.Prisma__CollectionClient<runtime.Types.Result.GetResult<Prisma.$CollectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  fileUpload<T extends Prisma.Item$fileUploadArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$fileUploadArgs<ExtArgs>>): Prisma.Prisma__FileUploadClient<runtime.Types.Result.GetResult<Prisma.$FileUploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tags<T extends Prisma.Item$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Item$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ItemTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2364,6 +2512,25 @@ export type Item$collectionArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.CollectionInclude<ExtArgs> | null
   where?: Prisma.CollectionWhereInput
+}
+
+/**
+ * Item.fileUpload
+ */
+export type Item$fileUploadArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FileUpload
+   */
+  select?: Prisma.FileUploadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FileUpload
+   */
+  omit?: Prisma.FileUploadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileUploadInclude<ExtArgs> | null
+  where?: Prisma.FileUploadWhereInput
 }
 
 /**
