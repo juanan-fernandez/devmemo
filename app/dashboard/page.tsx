@@ -89,11 +89,37 @@ export default async function DashboardPage() {
 						VER TODAS
 					</Link>
 				</div>
-				<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-					{collections.map(collection => (
-						<LatestCollectionCard key={collection.id} collection={collection} />
-					))}
-				</div>
+				{collections.length > 0 ? (
+					<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+						{collections.map(collection => (
+							<LatestCollectionCard key={collection.id} collection={collection} />
+						))}
+					</div>
+				) : (
+					<div className='flex items-center justify-center rounded-xl border-2 border-dashed border-border py-16'>
+						<button
+							type='button'
+							className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
+						>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='16'
+								height='16'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								aria-hidden='true'
+							>
+								<path d='M5 12h14' />
+								<path d='M12 5v14' />
+							</svg>
+							Nueva Colección
+						</button>
+					</div>
+				)}
 			</section>
 
 			<PinnedSection items={itemsSection.items} title={itemsSection.title} />
