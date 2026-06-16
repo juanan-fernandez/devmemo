@@ -10,6 +10,7 @@ import { getDashboardSummary, getLatestCollections } from '@/lib/db/collections'
 import { getDashboardItemsSection } from '@/lib/db/items'
 
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { DashboardSummaryCard } from '@/components/dashboard/dashboard-summary-card'
 import { LatestCollectionCard } from '@/components/dashboard/latest-collection-card'
 import { PinnedSection } from '@/components/dashboard/pinned-section'
@@ -97,9 +98,9 @@ export default async function DashboardPage() {
 					</div>
 				) : (
 					<div className='flex items-center justify-center rounded-xl border-2 border-dashed border-border py-16'>
-						<button
+						<Button
 							type='button'
-							className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
+							className='gap-2'
 						>
 							<svg
 								xmlns='http://www.w3.org/2000/svg'
@@ -117,7 +118,7 @@ export default async function DashboardPage() {
 								<path d='M12 5v14' />
 							</svg>
 							Nueva Colección
-						</button>
+						</Button>
 					</div>
 				)}
 			</section>
