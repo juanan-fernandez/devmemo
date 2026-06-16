@@ -8,14 +8,11 @@ import { RESEND_VERIFICATION_MESSAGE } from '@/lib/auth/email-verification-messa
 import { buildAuthRateLimitMessage } from '@/lib/auth/rate-limit-messages'
 import { getIPFromHeaders } from '@/lib/get-ip'
 import { rateLimiters } from '@/lib/rate-limit'
+import { isValidEmail } from '@/lib/validation/email'
 
 type ResendVerificationState = {
 	message: string | null
 	error: string | null
-}
-
-function isValidEmail(email: string) {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 export async function resendVerificationAction(
@@ -43,7 +40,7 @@ export async function resendVerificationAction(
 
 	const email = formData.get('email')
 
-	if (typeof email !== 'string' || !isValidEmail(email.trim())) {
+	if (typeof email !== 'string' || !isValidEmail(email)) {
 		return {
 			message: null,
 			error: 'Escribe un correo electrónico válido para reenviar el enlace.'

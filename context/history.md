@@ -277,3 +277,11 @@
 - Eliminados estados vacíos o retornos `null` para visitantes sin sesión.
 - Añadido spec de referencia en `context/features/fix-protected-routes-redirect-spec.md`.
 - Lint, typecheck, build y tests pasan correctamente.
+
+## 2026-06-16 :: 18:37 - Validación de email compartida
+
+- Feature fix-extract-shared-email-validation: centralizada la validación y normalización de email en `lib/validation/email.ts`.
+- Extraída función `isValidEmail(email)` para sustituir la regex duplicada en `components/auth/register-form.tsx`, `actions/auth/request-password-reset.ts`, `actions/auth/resend-verification.ts` y `app/api/auth/register/route.ts`.
+- Extraída función `normalizeEmail(email)` (trim + lowercase) para centralizar la normalización.
+- Creado spec de referencia en `context/features/fix-extract-shared-email-validation.md`.
+- Lint, build y tests pasan correctamente.

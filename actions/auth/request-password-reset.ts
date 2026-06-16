@@ -5,14 +5,11 @@ import { getIPFromHeaders } from '@/lib/get-ip'
 import { requestPasswordReset } from '@/lib/auth/password-reset'
 import { FORGOT_PASSWORD_SUCCESS_MESSAGE } from '@/lib/auth/password-reset-messages'
 import { rateLimiters } from '@/lib/rate-limit'
+import { isValidEmail } from '@/lib/validation/email'
 
 type RequestPasswordResetState = {
 	message: string | null
 	error: string | null
-}
-
-function isValidEmail(email: string) {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 export async function requestPasswordResetAction(
@@ -32,7 +29,7 @@ export async function requestPasswordResetAction(
 
 		const email = formData.get('email')
 
-		if (typeof email !== 'string' || !isValidEmail(email.trim().toLowerCase())) {
+		if (typeof email !== 'string' || !isValidEmail(email)) {
 			return {
 				message: null,
 				error: 'Escribe un correo electrónico válido.'

@@ -12,6 +12,7 @@ import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-pol
 import { prisma } from '@/lib/db/prisma'
 import { getIPFromRequest } from '@/lib/get-ip'
 import { rateLimiters } from '@/lib/rate-limit'
+import { isValidEmail } from '@/lib/validation/email'
 
 type RegisterRequestBody = {
 	name?: unknown
@@ -22,10 +23,6 @@ type RegisterRequestBody = {
 
 function isNonEmptyString(value: unknown): value is string {
 	return typeof value === 'string' && value.trim().length > 0
-}
-
-function isValidEmail(email: string) {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 function isUniqueConstraintError(error: unknown) {
