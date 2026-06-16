@@ -1,39 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
 import { ItemActions } from '@/components/items/item-actions'
 import { ItemDetailSheet } from '@/components/items/item-detail-sheet'
+import { useItemRow } from '@/components/items/hooks/use-item-row'
 
 type ItemCardProps = {
 	item: DashboardItem
 }
 
 export function ItemCard({ item }: ItemCardProps) {
-	const router = useRouter()
-	const [isDeleted, setIsDeleted] = useState(false)
-	const [showMessage, setShowMessage] = useState(false)
-	const [sheetOpen, setSheetOpen] = useState(false)
-	const [sheetSession, setSheetSession] = useState(0)
-
-	function handleOpenSheet() {
-		setSheetSession(currentSession => currentSession + 1)
-		setSheetOpen(true)
-	}
-
-	function handleDelete() {
-		setSheetOpen(false)
-		setIsDeleted(true)
-		setShowMessage(true)
-
-		setTimeout(() => {
-			setShowMessage(false)
-			router.refresh()
-		}, 2000)
-	}
+	const { isDeleted, showMessage, sheetSession, sheetOpen, setSheetOpen, handleDelete, handleOpenSheet } =
+		useItemRow()
 
 	if (isDeleted) {
 		return showMessage ? (
