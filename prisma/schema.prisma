@@ -121,6 +121,9 @@ model Item {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([userId, createdAt])
+  @@index([userId, isPinned, createdAt])
+  @@index([userId, isFavorite])
   @@index([typeId])
   @@index([collectionId])
   @@index([isFavorite])
@@ -179,6 +182,7 @@ model Collection {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([userId, createdAt])
 }
 
 model Tag {
