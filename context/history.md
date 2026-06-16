@@ -285,3 +285,12 @@
 - Extraída función `normalizeEmail(email)` (trim + lowercase) para centralizar la normalización.
 - Creado spec de referencia en `context/features/fix-extract-shared-email-validation.md`.
 - Lint, build y tests pasan correctamente.
+
+## 2026-06-16 :: 18:55 - Reglas de item compartidas
+
+- Feature fix-extract-shared-item-rules: centralizadas las reglas de capacidades y normalización de items en `lib/items/shared.ts`.
+- Extraídas constantes `ITEM_TYPES_WITH_CONTENT`, `ITEM_TYPES_WITH_LANGUAGE`, `ITEM_TYPES_WITH_URL`, `ITEM_TYPES_WITH_FILE_UPLOAD` y `EDITABLE_ITEM_LANGUAGE_OPTIONS` a `shared.ts`.
+- Extraídos helpers `supportsContent`, `supportsLanguage`, `supportsUrl`, `supportsFileUpload`, `normalizeNullableText`, `normalizeTags` e `isAllowedItemLanguage` a `shared.ts`.
+- Refactorizados `lib/items/create-item.ts` y `lib/items/editable-item.ts` para importar desde el módulo compartido, eliminando la duplicación.
+- Creado spec de referencia en `context/features/fix-extract-shared-item-rules.md`.
+- Lint, build y tests pasan correctamente.
