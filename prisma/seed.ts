@@ -1,10 +1,7 @@
 import 'dotenv/config'
 import { hash } from 'bcryptjs'
 import { PrismaPg } from '@prisma/adapter-pg'
-import {
-	CANONICAL_SYSTEM_ITEM_TYPES,
-	getCanonicalItemTypeByMockId
-} from '../lib/item-types'
+import { CANONICAL_SYSTEM_ITEM_TYPES, getCanonicalItemTypeByMockId } from '../lib/item-types'
 import { mockCollections, mockItems, mockItemTags, mockTags } from '../lib/mockdata'
 import { PrismaClient } from '../lib/db/generated/prisma/client'
 
@@ -20,7 +17,7 @@ const prisma = new PrismaClient({ adapter })
 const DEMO_USER = {
 	email: 'demo@devmemo.com',
 	name: 'Demo User',
-	password: '12345678',
+	password: process.env.DEMO_USER_PASSWORD ?? 'demopassword',
 	image: 'https://gravatar.com/avatar/6e876962302db3a50286689eb0bef3c5?s=200&d=robohash&r=x'
 } as const
 
