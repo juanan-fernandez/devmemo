@@ -294,3 +294,10 @@
 - Refactorizados `lib/items/create-item.ts` y `lib/items/editable-item.ts` para importar desde el módulo compartido, eliminando la duplicación.
 - Creado spec de referencia en `context/features/fix-extract-shared-item-rules.md`.
 - Lint, build y tests pasan correctamente.
+
+## 2026-06-16 :: 19:00 - Hook useItemRow compartido
+
+- Feature refactor-item-row-sheet-delete: extraída la lógica duplicada de sheet/delete entre `ItemCard` y `PinnedItemRow` a un hook compartido `useItemRow()`.
+- Creado `components/items/hooks/use-item-row.ts` con estados de borrado, sheet session, open/close y manejadores.
+- Refactorizados `ItemCard` y `PinnedItemRow` para usar el hook, eliminando ~42 líneas de lógica de estado duplicada.
+- Sin cambios visuales ni de comportamiento; lint, build y tests pasan correctamente.

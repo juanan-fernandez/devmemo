@@ -1,37 +1,20 @@
-# refactor-item-row-sheet-delete
+# <source-filename-without-extension>
 
 # Current Feature
 
-<!-- Refactor Shared Item Row Sheet/Delete Logic -->
+<!-- Feature Name -->
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Fix duplicated orchestration logic between `ItemCard` and `PinnedItemRow`.
-- Create a shared `useItemRow()` hook to manage:
-  - `isDeleted`
-  - `showMessage`
-  - `sheetSession`
-  - `sheetOpen`
-  - `setSheetOpen`
-  - `handleDelete`
-  - `handleOpenSheet`
-- Update `components/items/item-card.tsx` to use the shared hook.
-- Update `components/dashboard/pinned-item-row.tsx` to use the shared hook.
-- Preserve existing behavior: Sheet open/close, delete with confirmation, delete messages, favorite/pinned actions.
+<!-- Goals & requirements derived from the spec file -->
 
 ## Notes
 
-- Affected files (per spec):
-  - `components/items/item-card.tsx:15-44`
-  - `components/dashboard/pinned-item-row.tsx:15-44`
-- Suggested hook location: `hooks/use-item-row.ts` or `components/items/hooks/use-item-row.ts`.
-- The hook is client-safe (uses React state).
-- No changes to visual design, database behavior, or the delete Server Action.
-- Acceptance criteria include lint, typecheck, and build passing.
+<!-- Any extra notes and other file references found in the spec -->
 
 ## History
 
