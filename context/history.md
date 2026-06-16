@@ -268,3 +268,12 @@
 - Corregida la descarga de imágenes: el atributo `download` no funciona con URLs cross-origin (Vercel Blob), por lo que se implementó un helper `downloadFile()` que fetchea el blob y dispara la descarga via object URL.
 - Añadida sección `Vista previa` con `next/image` a ancho completo, padding ligero y bordes redondeados para items de tipo `image`.
 - Preservadas las acciones existentes del Sheet y el modo edición.
+
+## 2026-06-16 :: 18:25 - Redirección en rutas protegidas
+
+- Feature fix-protected-routes-redirect-spec: corregida la redirección de rutas protegidas para usuarios no autenticados.
+- Añadida comprobación `if (!session?.user?.id) redirect('/login')` en `app/dashboard/layout.tsx`, `app/dashboard/page.tsx`, `app/items/[type]/page.tsx` y `app/profile/page.tsx`.
+- Actualizado `proxy.ts` con matcher `/dashboard/:path*`, `/items/:path*` y `/profile` como defensa adicional.
+- Eliminados estados vacíos o retornos `null` para visitantes sin sesión.
+- Añadido spec de referencia en `context/features/fix-protected-routes-redirect-spec.md`.
+- Lint, typecheck, build y tests pasan correctamente.

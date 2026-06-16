@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import {
 	Archive,
 	Heart,
@@ -15,7 +16,12 @@ import { PinnedSection } from '@/components/dashboard/pinned-section'
 
 export default async function DashboardPage() {
 	const session = await auth()
-	const userId = session?.user?.id
+
+	if (!session?.user?.id) {
+		redirect('/login')
+	}
+
+	const userId = session.user.id
 
 	const emptySummary = {
 		totalItems: 0,
