@@ -232,7 +232,7 @@
 - Actualizados `components/items/item-detail-sheet.tsx` y `components/items/create-item-dialog.tsx` para usar el nuevo flujo Markdown manteniendo el campo existente `content` y sin tocar las Server Actions ni el esquema.
 - Corregido el envío del contenido al crear prompts también cuando el usuario guarda desde la pestaña `Vista previa`.
 
-## 2026-06-16 :: 14:20 - Subida de archivos con Vercel Blob
+## 2026-06-16 :: 14:00 - Subida de archivos con Vercel Blob
 
 - Feature file-upload-spec: añadida subida de archivos e imágenes usando Vercel Blob para items de tipo `file` e `image`.
 - Creado modelo Prisma `FileUpload` con migración, campos `blobUrl`, `pathname`, `contentType`, `size`, `kind`, `source`, `status` y relaciones con `User` e `Item`.
@@ -250,7 +250,7 @@
 - Corregido bug: client upload usaba `file.name` como pathname plano, impedía extraer el `uploadId` del draft. Solución: crear draft primero con pathname estructurado.
 - Corregido bug: `onUploadCompleted` no se ejecuta en local (webhook de Vercel no alcanza localhost). Solución: finalizar registro vía Server Action tras `upload()`.
 
-## 2026-06-16 :: 14:00 - Drag and drop en FileUploadField
+## 2026-06-16 :: 14:05 - Drag and drop en FileUploadField
 
 - Feature file-upload-2-spec: añadido soporte de arrastrar y soltar en `components/items/file-upload-field.tsx` para items de tipo `file` e `image`.
 - Reemplazado el input de archivo visible por un `<label>` estilizado como zona de drop, asociado a un `<input type="file" className="sr-only">`.
