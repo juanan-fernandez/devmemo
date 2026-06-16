@@ -3,34 +3,33 @@ import { z } from 'zod'
 import {
 	EDITABLE_ITEM_LANGUAGE_OPTIONS,
 	isAllowedItemLanguage,
-	normalizeOptionalText,
+	normalizeNullableText,
 	normalizeTags,
-	type EditableItemField
-} from '@/lib/items/editable-item'
+	supportsContent,
+	supportsFileUpload,
+	supportsLanguage,
+	supportsUrl
+} from '@/lib/items/shared'
+import type { EditableItemField } from '@/lib/items/editable-item'
 import type { SystemItemTypeKey } from '@/lib/item-types'
 
 const CREATE_ITEM_TYPE_VALUES = ['snippet', 'prompt', 'command', 'note', 'file', 'image', 'url'] as const satisfies readonly SystemItemTypeKey[]
 
-const CONTENT_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['snippet', 'prompt', 'command', 'note'])
-const LANGUAGE_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['snippet', 'command'])
-const FILE_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['file', 'image'])
-const URL_CREATE_TYPE_KEYS = new Set<SystemItemTypeKey>(['url'])
-
 const optionalTextSchema = z
 	.union([z.string(), z.null(), z.undefined()])
-	.transform(value => normalizeOptionalText(value))
+	.transform(value => normalizeNullableText(value))
 
 const optionalCollectionIdSchema = z
 	.union([z.string(), z.null(), z.undefined()])
 	.transform(value => {
-		const normalizedValue = normalizeOptionalText(value)
+		const normalizedValue = normalizeNullableText(value)
 		return normalizedValue === 'none' ? null : normalizedValue
 	})
 
 const optionalFileUploadIdSchema = z
 	.union([z.string(), z.null(), z.undefined()])
 	.optional()
-	.transform(value => normalizeOptionalText(value))
+	.transform(value => normalizeNullableText(value))
 
 export type CreateItemField = EditableItemField | 'type' | 'collectionId' | 'fileUploadId'
 
@@ -49,9 +48,7 @@ export const createItemInputSchema = z
 		tags: z.array(z.string()).default([]).transform(values => normalizeTags(values))
 	})
 	.superRefine((value, ctx) => {
-		const capabilities = getCreateItemCapabilities(value.type)
-
-		if (capabilities.canCreateContent) {
+		if (supportsContent(value.type)) {
 			return
 		}
 
@@ -64,9 +61,7 @@ export const createItemInputSchema = z
 		}
 	})
 	.superRefine((value, ctx) => {
-		const capabilities = getCreateItemCapabilities(value.type)
-
-		if (capabilities.canCreateLanguage) {
+		if (supportsLanguage(value.type)) {
 			if (value.language && !isAllowedItemLanguage(value.language)) {
 				ctx.addIssue({
 					code: 'custom',
@@ -87,9 +82,7 @@ export const createItemInputSchema = z
 		}
 	})
 	.superRefine((value, ctx) => {
-		const capabilities = getCreateItemCapabilities(value.type)
-
-		if (capabilities.canCreateUrl) {
+		if (supportsUrl(value.type)) {
 			if (!value.url) {
 				ctx.addIssue({
 					code: 'custom',
@@ -121,9 +114,7 @@ export const createItemInputSchema = z
 		}
 	})
 	.superRefine((value, ctx) => {
-		const capabilities = getCreateItemCapabilities(value.type)
-
-		if (capabilities.canCreateFile) {
+		if (supportsFileUpload(value.type)) {
 			if (!value.fileUploadId) {
 				ctx.addIssue({
 					code: 'custom',
@@ -154,10 +145,10 @@ export function parseCreateItemTagsInput(value: string) {
 
 export function getCreateItemCapabilities(typeKey: SystemItemTypeKey) {
 	return {
-		canCreateContent: CONTENT_CREATE_TYPE_KEYS.has(typeKey),
-		canCreateFile: FILE_CREATE_TYPE_KEYS.has(typeKey),
-		canCreateLanguage: LANGUAGE_CREATE_TYPE_KEYS.has(typeKey),
-		canCreateUrl: URL_CREATE_TYPE_KEYS.has(typeKey)
+		canCreateContent: supportsContent(typeKey),
+		canCreateFile: supportsFileUpload(typeKey),
+		canCreateLanguage: supportsLanguage(typeKey),
+		canCreateUrl: supportsUrl(typeKey)
 	}
 }
 
