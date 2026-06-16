@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+
 import { auth } from '@/auth/auth'
 import { ProfileContent } from '@/components/profile/profile-content'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
@@ -8,11 +10,12 @@ import { getSidebarUser } from '@/lib/db/user'
 
 export default async function ProfilePage() {
 	const session = await auth()
-	const userId = session?.user?.id
 
-	if (!userId) {
-		return null
+	if (!session?.user?.id) {
+		redirect('/login')
 	}
+
+	const userId = session.user.id
 
 	const [sidebarItemTypes, sidebarCollections, sidebarUser, profile, stats] = await Promise.all([
 		getSidebarItemTypes(userId),

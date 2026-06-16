@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth/auth'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { getItemsByTypeName } from '@/lib/db/items'
@@ -22,11 +22,12 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 	}
 
 	const session = await auth()
-	const userId = session?.user?.id
 
-	if (!userId) {
-		return null
+	if (!session?.user?.id) {
+		redirect('/login')
 	}
+
+	const userId = session.user.id
 
 	const [sidebarItemTypes, sidebarCollections, sidebarUser, selectableCollections, { items, totalCount }] = await Promise.all([
 		getSidebarItemTypes(userId),

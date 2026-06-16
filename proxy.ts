@@ -6,12 +6,12 @@ import authConfig from '@/auth/auth.config'
 const { auth } = NextAuth(authConfig)
 
 export const proxy = auth(request => {
-	const isDashboardRoute =
-		request.nextUrl.pathname === '/dashboard' ||
-		request.nextUrl.pathname.startsWith('/dashboard/')
-	const isProfileRoute = request.nextUrl.pathname === '/profile'
+	const pathname = request.nextUrl.pathname
+	const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
+	const isProfileRoute = pathname === '/profile'
+	const isItemsRoute = pathname.startsWith('/items/')
 
-	if (!request.auth && (isDashboardRoute || isProfileRoute)) {
+	if (!request.auth && (isDashboardRoute || isProfileRoute || isItemsRoute)) {
 		const signInUrl = new URL('/login', request.nextUrl)
 
 		return NextResponse.redirect(signInUrl)
@@ -21,5 +21,5 @@ export const proxy = auth(request => {
 })
 
 export const config = {
-	matcher: ['/dashboard', '/dashboard/:path*', '/profile']
+	matcher: ['/dashboard', '/dashboard/:path*', '/profile', '/items/:path*']
 }
