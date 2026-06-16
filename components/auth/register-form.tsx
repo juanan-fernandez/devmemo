@@ -7,6 +7,7 @@ import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PASSWORD_ERROR_MESSAGE, isValidPassword } from '@/lib/auth/password-policy'
+import { isValidEmail } from '@/lib/validation/email'
 
 type FieldErrors = Partial<Record<'name' | 'email' | 'password' | 'passwordConfirm', string>>
 
@@ -37,7 +38,7 @@ function validateValues(values: RegisterFormValues) {
 
 	if (!values.email.trim()) {
 		errors.email = 'Escribe tu correo electrónico.'
-	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
+	} else if (!isValidEmail(values.email)) {
 		errors.email = 'Escribe un correo electrónico válido.'
 	}
 
