@@ -309,3 +309,14 @@
 - Creado `components/collections/create-collection-dialog.tsx` con campos `Nombre` y `Descripción`, botones `Guardar`/`Cancelar` con estado de carga y mensaje de éxito en español.
 - Actualizado `app/dashboard/page.tsx` para abrir el Dialog desde el botón "Nueva Colección" cuando no hay colecciones.
 - Lint, build y typecheck pasan correctamente.
+
+## 2026-06-17 :: 16:54 - Colección editable en Sheet
+
+- Feature add-collection-combobox-to-item-edit-spec: añadido selector de colección en el modo edición del Sheet de detalle de items.
+- Creada `actions/collections/get-collections-for-select.ts` para obtener las colecciones del usuario autenticado como opciones para el Select.
+- Añadido `getCollectionsForUserSelect()` en `lib/db/collections.ts` con formato `{ id, value, label }`.
+- Actualizado `lib/items/editable-item.ts` añadiendo `collectionId` al esquema Zod y al tipo `EditableItemField`.
+- Actualizado `actions/items/update-item.ts` con validación server-side de ownership de la colección.
+- Actualizado `components/items/item-detail-sheet.tsx` con Select de colección desplegable al editar, opción `Sin colección` y fetch bajo demanda de las colecciones al entrar en edición.
+- Creados tests en `__tests__/actions/update-item.test.ts` (9 tests) para validación de colección: ownership, null/empty normalization y errores Zod.
+- Lint, build y tests (67/67) pasan correctamente.

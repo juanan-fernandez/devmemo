@@ -11,7 +11,7 @@ import {
 } from '@/lib/items/shared'
 import type { SystemItemTypeKey } from '@/lib/item-types'
 
-export type EditableItemField = 'title' | 'description' | 'tags' | 'content' | 'language' | 'url'
+export type EditableItemField = 'title' | 'description' | 'tags' | 'content' | 'language' | 'url' | 'collectionId'
 
 export { EDITABLE_ITEM_LANGUAGE_OPTIONS, isAllowedItemLanguage }
 
@@ -26,7 +26,11 @@ export const updateItemInputSchema = z.object({
 	content: optionalTextSchema,
 	url: optionalTextSchema,
 	language: optionalTextSchema,
-	tags: z.array(z.string()).default([]).transform(values => normalizeTags(values))
+	tags: z.array(z.string()).default([]).transform(values => normalizeTags(values)),
+	collectionId: z
+		.union([z.string(), z.null(), z.undefined()])
+		.optional()
+		.transform(value => (value ? value : null))
 })
 
 export type UpdateItemInput = z.infer<typeof updateItemInputSchema>

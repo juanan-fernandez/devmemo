@@ -168,3 +168,23 @@ export async function getSelectableCollections(userId: string): Promise<Selectab
 		}
 	})
 }
+
+export type CollectionForSelect = {
+	id: string
+	value: string
+	label: string
+}
+
+export async function getCollectionsForUserSelect(userId: string): Promise<CollectionForSelect[]> {
+	const collections = await prisma.collection.findMany({
+		where: { userId },
+		orderBy: { name: 'asc' },
+		select: { id: true, name: true }
+	})
+
+	return collections.map(collection => ({
+		id: collection.id,
+		value: collection.id,
+		label: collection.name
+	}))
+}

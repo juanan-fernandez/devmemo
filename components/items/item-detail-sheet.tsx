@@ -5,6 +5,7 @@ import { CheckCircle2, Download, ExternalLink, FileText, LoaderCircle, PencilLin
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+import { getCollectionsForSelectAction } from '@/actions/collections/get-collections-for-select'
 import { updateItemAction } from '@/actions/items/update-item'
 import type { DashboardItem, ItemDetail } from '@/lib/db/items'
 import {
@@ -49,9 +50,16 @@ type ItemEditFormValues = {
 	content: string
 	language: string
 	url: string
+	collectionId: string
 }
 
-type ItemEditFieldErrors = Partial<Record<'title' | 'description' | 'tags' | 'content' | 'language' | 'url', string>>
+type ItemEditFieldErrors = Partial<Record<'title' | 'description' | 'tags' | 'content' | 'language' | 'url' | 'collectionId', string>>
+
+type CollectionOption = {
+	id: string
+	value: string
+	label: string
+}
 
 function formatDate(date: string | Date) {
 	return new Intl.DateTimeFormat('es-ES', {
@@ -96,7 +104,8 @@ function buildFormValues(source: DashboardItem | ItemDetail | null): ItemEditFor
 			tags: '',
 			content: '',
 			language: '',
-			url: ''
+			url: '',
+			collectionId: ''
 		}
 	}
 
@@ -106,7 +115,8 @@ function buildFormValues(source: DashboardItem | ItemDetail | null): ItemEditFor
 		tags: 'tags' in source ? source.tags.map(tag => tag.name).join(', ') : '',
 		content: 'content' in source ? source.content ?? '' : '',
 		language: source.language ?? '',
-		url: 'url' in source ? source.url ?? '' : ''
+		url: 'url' in source ? source.url ?? '' : '',
+		collectionId: 'collection' in source ? source.collection?.id ?? '' : ''
 	}
 }
 
@@ -117,6 +127,8 @@ function getCanonicalTypeKey(href: string) {
 	const slug = href.split('/').filter(Boolean).at(-1)
 	return slug ? getCanonicalItemTypeBySlug(slug)?.key ?? null : null
 }
+
+const emptyCollectionOption: CollectionOption = { id: '', value: 'none', label: 'Sin colección' }
 
 export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDetailSheetProps) {
 	const router = useRouter()
@@ -131,6 +143,7 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	const [fieldErrors, setFieldErrors] = useState<ItemEditFieldErrors>({})
 	const [formValues, setFormValues] = useState<ItemEditFormValues>(() => buildFormValues(item))
 	const [hasPendingListRefresh, setHasPendingListRefresh] = useState(false)
+	const [availableCollections, setAvailableCollections] = useState<CollectionOption[]>([])
 
 	function handleSheetOpenChange(nextOpen: boolean) {
 		if (nextOpen) {
@@ -233,12 +246,25 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 	const collectionName = detail?.collection?.name ?? 'Sin colección'
 	const tags = detail?.tags ?? []
 
+	const collectionValue = formValues.collectionId || 'none'
+
+	const availableCollectionOptions = useMemo(
+		() => [emptyCollectionOption, ...availableCollections],
+		[availableCollections]
+	)
+
 	function handleStartEditing() {
 		setSuccessMessage(null)
 		setSaveError(null)
 		setFieldErrors({})
 		setFormValues(buildFormValues(detail ?? item))
 		setIsEditing(true)
+
+		if (availableCollections.length === 0) {
+			getCollectionsForSelectAction().then(collections => {
+				setAvailableCollections(collections)
+			})
+		}
 	}
 
 	function handleCancelEditing() {
@@ -274,7 +300,8 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 				tags: parseTagsInput(formValues.tags),
 				content: capabilities.canEditContent ? formValues.content : null,
 				language: capabilities.canEditLanguage ? formValues.language : null,
-				url: capabilities.canEditUrl ? formValues.url : null
+				url: capabilities.canEditUrl ? formValues.url : null,
+				collectionId: formValues.collectionId || null
 			})
 
 			if (!result.successful) {
@@ -521,6 +548,29 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 										/>
 										{renderFieldError('tags')}
 									</div>
+									</section>
+
+									<section className='space-y-4 rounded-3xl border border-border bg-card/60 p-5'>
+										<label className='text-sm font-medium text-foreground' htmlFor='item-edit-collection'>
+											Colección
+										</label>
+										<Select
+											value={collectionValue}
+											onValueChange={value => handleFieldChange('collectionId', value === 'none' ? '' : value)}
+											disabled={isSaving}
+										>
+											<SelectTrigger id='item-edit-collection' aria-invalid={fieldErrors.collectionId ? true : undefined}>
+												<SelectValue placeholder='Sin colección' />
+											</SelectTrigger>
+											<SelectContent>
+												{availableCollectionOptions.map(col => (
+													<SelectItem key={col.id || 'none'} value={col.value}>
+														{col.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{renderFieldError('collectionId')}
 									</section>
 
 									{capabilities.canEditContent ? (
