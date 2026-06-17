@@ -1,16 +1,28 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LoaderCircle, Pencil, Star, Trash2 } from 'lucide-react'
+import { AlertTriangle, LoaderCircle, Pencil, Star, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { loadCollectionItemsAction } from '@/actions/collections/load-collection-items'
+import { toggleCollectionFavoriteAction } from '@/actions/collections/toggle-collection-favorite'
+import { deleteCollectionAction } from '@/actions/collections/delete-collection'
 import type { DashboardCollection } from '@/lib/db/collections'
 import type { DashboardItem } from '@/lib/db/items'
 import { useInfiniteScroll } from '@/lib/hooks/use-infinite-scroll'
 import { CANONICAL_SYSTEM_ITEM_TYPES } from '@/lib/item-types'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import { ItemCard } from '@/components/items/item-card'
+import { CollectionFormDialog } from '@/components/collections/create-collection-dialog'
 import { Button } from '@/components/ui/button'
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle
+} from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type CollectionDetailContentProps = {
@@ -38,9 +50,14 @@ export function CollectionDetailContent({
 	initialFilteredCount,
 	initialNextCursor
 }: CollectionDetailContentProps) {
+	const router = useRouter()
 	const [itemType, setItemType] = useState<string>(ALL_TYPES_VALUE)
 	const itemTypeRef = useRef(itemType)
 	const [filteredCount, setFilteredCount] = useState(initialFilteredCount)
+	const [isFavorite, setIsFavorite] = useState(collection.isFavorite)
+	const [editOpen, setEditOpen] = useState(false)
+	const [deleteOpen, setDeleteOpen] = useState(false)
+	const [isDeleting, setIsDeleting] = useState(false)
 
 	useEffect(() => {
 		itemTypeRef.current = itemType
@@ -65,34 +82,54 @@ export function CollectionDetailContent({
 	})
 
 	function handleTypeFilterChange(value: string) {
-		const newType = value
-		setItemType(newType)
-
-		const dbName =
-			newType === ALL_TYPES_VALUE ? null : (ITEM_TYPE_OPTIONS.find(o => o.value === newType)?.dbName ?? null)
-
+		setItemType(value)
+		const dbName = value === ALL_TYPES_VALUE ? null : (ITEM_TYPE_OPTIONS.find(o => o.value === value)?.dbName ?? null)
 		loadCollectionItemsAction(collection.id, dbName, null).then(result => {
 			reset(result.items, result.nextCursor)
 			setFilteredCount(result.filteredCount)
 		})
 	}
 
-	// When the server sends new initial data (e.g. after creating an item
-	// assigned to this collection), reset the local list so it refreshes.
+	// Detect server-side refresh (e.g. after creating an item in this collection)
 	const prevInitialIdsRef = useRef<string | null>(null)
 	useEffect(() => {
-		const currentIds = initialItems
-			.map(i => i.id)
-			.sort()
-			.join(',')
-		const prevIds = prevInitialIdsRef.current
-
-		if (prevIds !== null && currentIds !== prevIds) {
+		const currentIds = initialItems.map(i => i.id).sort().join(',')
+		if (prevInitialIdsRef.current !== null && currentIds !== prevInitialIdsRef.current) {
 			reset(initialItems, initialNextCursor)
 		}
-
 		prevInitialIdsRef.current = currentIds
 	}, [initialItems, initialNextCursor, reset])
+
+	// --- Favorite toggle ---
+	async function handleToggleFavorite() {
+		const previous = isFavorite
+		setIsFavorite(!previous)
+
+		const result = await toggleCollectionFavoriteAction(collection.id)
+
+		if (result.error) {
+			setIsFavorite(previous)
+		}
+	}
+
+	// --- Delete ---
+	async function handleDelete() {
+		setIsDeleting(true)
+		const result = await deleteCollectionAction(collection.id)
+		setIsDeleting(false)
+
+		if (result.error) {
+			return
+		}
+
+		setDeleteOpen(false)
+		router.refresh()
+		router.push('/collections')
+	}
+
+	async function handleEditSuccess() {
+		router.refresh()
+	}
 
 	const description = collection.description || 'Sin descripción'
 
@@ -109,7 +146,7 @@ export function CollectionDetailContent({
 						type='button'
 						variant='ghost'
 						size='icon'
-						disabled
+						onClick={() => setEditOpen(true)}
 						aria-label='Editar colección'
 						title='Editar colección'
 					>
@@ -119,21 +156,23 @@ export function CollectionDetailContent({
 						type='button'
 						variant='ghost'
 						size='icon'
-						disabled
-						aria-label='Marcar colección como favorita'
-						title='Marcar colección como favorita'
+						onClick={handleToggleFavorite}
+						aria-label={isFavorite ? 'Quitar colección de favoritas' : 'Marcar colección como favorita'}
+						title={isFavorite ? 'Quitar colección de favoritas' : 'Marcar colección como favorita'}
 					>
-						<Star className='size-4' />
+						<Star
+							className={`size-4 ${isFavorite ? 'fill-yellow-500 text-yellow-500' : ''}`}
+						/>
 					</Button>
 					<Button
 						type='button'
 						variant='ghost'
 						size='icon'
-						disabled
+						onClick={() => setDeleteOpen(true)}
 						aria-label='Eliminar colección'
 						title='Eliminar colección'
 					>
-						<Trash2 className='size-4' />
+						<Trash2 className='size-4 text-destructive' />
 					</Button>
 				</div>
 			</div>
@@ -191,7 +230,6 @@ export function CollectionDetailContent({
 						))}
 					</div>
 
-					{/* Sentinel for intersection observer */}
 					<div ref={sentinelRef} className='h-1' />
 
 					{isLoadingMore && (
@@ -206,6 +244,46 @@ export function CollectionDetailContent({
 					)}
 				</>
 			)}
+
+			{/* Edit dialog */}
+			<CollectionFormDialog
+				mode='edit'
+				collectionId={collection.id}
+				initialName={collection.name}
+				initialDescription={collection.description}
+				open={editOpen}
+				onOpenChange={setEditOpen}
+				onSuccess={handleEditSuccess}
+			/>
+
+			{/* Delete confirmation dialog */}
+			<Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<div className='flex items-center gap-3'>
+							<div className='flex size-11 shrink-0 items-center justify-center rounded-2xl border border-destructive/30 bg-destructive/10 text-destructive'>
+								<AlertTriangle className='size-5' />
+							</div>
+							<div className='min-w-0 space-y-1'>
+								<DialogTitle>Eliminar colección</DialogTitle>
+								<DialogDescription>
+									Esta acción es irreversible. La colección se eliminará permanentemente, pero los items que
+									contiene no se eliminarán y quedarán sin colección.
+								</DialogDescription>
+							</div>
+						</div>
+					</DialogHeader>
+					<DialogFooter>
+						<Button type='button' variant='outline' onClick={() => setDeleteOpen(false)} disabled={isDeleting}>
+							Cancelar
+						</Button>
+						<Button type='button' variant='destructive' onClick={handleDelete} disabled={isDeleting}>
+							{isDeleting ? <LoaderCircle className='mr-2 size-4 animate-spin' /> : null}
+							Eliminar
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	)
 }

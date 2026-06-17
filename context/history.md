@@ -347,3 +347,14 @@
 - Protección en `proxy.ts` para `/collections/:path*`.
 - Creados tests: `collection-by-id.test.ts` (4 tests), `collection-items-paginated.test.ts` (5 tests), `load-collection-items.test.ts` (4 tests).
 - Lint, build y tests (92/92) pasan correctamente.
+
+## 2026-06-17 :: 21:31 - Acciones del header de colección
+
+- Feature collection-header-actions: implementadas las acciones de editar, favorito y eliminar en el header del detalle de colección.
+- Creada `actions/collections/update-collection.ts` con validación Zod, ownership check y revalidación.
+- Creada `actions/collections/toggle-collection-favorite.ts` con toggle optimista de `isFavorite`.
+- Creada `actions/collections/delete-collection.ts` con transacción: desasignar items (`collectionId → null`) + eliminar colección, sin borrar items.
+- Refactorizado `CreateCollectionDialog` → `CollectionFormDialog` con soporte `mode="create" | "edit"`, valores iniciales y control externo (`open`/`onOpenChange`).
+- Actualizado `CollectionDetailContent` con botones funcionales: editar abre diálogo en modo edit, favorito con toggle optimista (amarillo/neutro + rollback), eliminar con diálogo de confirmación + redirect.
+- Creados tests: `update-collection.test.ts` (4 tests), `toggle-collection-favorite.test.ts` (4 tests), `delete-collection.test.ts` (3 tests).
+- Lint, build y tests (103/103) pasan correctamente.
