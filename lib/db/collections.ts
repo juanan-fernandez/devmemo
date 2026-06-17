@@ -213,12 +213,13 @@ export async function getCollectionsPaginated(
 	userId: string,
 	sort: CollectionSort,
 	cursor?: string | null,
-	limit: number = 9
+	limit: number = 9,
+	favoritesOnly: boolean = false
 ): Promise<PaginatedCollectionsResult> {
 	const orderBy = getPaginatedOrderBy(sort)
 
 	const collections = await prisma.collection.findMany({
-		where: { userId },
+		where: { userId, ...(favoritesOnly ? { isFavorite: true } : {}) },
 		orderBy,
 		take: limit + 1,
 		...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),

@@ -46,7 +46,7 @@ describe('loadMoreCollectionsAction', () => {
 
 		const result = await loadMoreCollectionsAction('name-asc', 'col_5')
 
-		expect(getCollectionsPaginatedMock).toHaveBeenCalledWith('user_123', 'name-asc', 'col_5')
+		expect(getCollectionsPaginatedMock).toHaveBeenCalledWith('user_123', 'name-asc', 'col_5', 9, undefined)
 		expect(result.collections).toHaveLength(1)
 		expect(result.nextCursor).toBe('col_1')
 	})
@@ -57,6 +57,6 @@ describe('loadMoreCollectionsAction', () => {
 
 		await loadMoreCollectionsAction('createdAt-desc')
 
-		expect(getCollectionsPaginatedMock).toHaveBeenCalledWith('user_123', 'createdAt-desc', undefined)
+		expect(getCollectionsPaginatedMock).toHaveBeenCalledWith('user_123', 'createdAt-desc', undefined, 9, undefined)
 	})
 })

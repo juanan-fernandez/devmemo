@@ -9,17 +9,12 @@ import { useInfiniteScroll } from '@/lib/hooks/use-infinite-scroll'
 import { CreateCollectionDialog } from '@/components/collections/create-collection-dialog'
 import { LatestCollectionCard } from '@/components/dashboard/latest-collection-card'
 import { Button } from '@/components/ui/button'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type CollectionListProps = {
 	initialCollections: DashboardCollection[]
 	initialNextCursor: string | null
+	favoritesOnly?: boolean
 }
 
 const SORT_OPTIONS: { value: CollectionSort; label: string }[] = [
@@ -29,17 +24,22 @@ const SORT_OPTIONS: { value: CollectionSort; label: string }[] = [
 	{ value: 'name-desc', label: 'Nombre Z-A' }
 ]
 
-export function CollectionList({ initialCollections, initialNextCursor }: CollectionListProps) {
+export function CollectionList({ initialCollections, initialNextCursor, favoritesOnly = false }: CollectionListProps) {
 	const [sort, setSort] = useState<CollectionSort>('createdAt-desc')
 	const sortRef = useRef(sort)
+	const favoritesOnlyRef = useRef(favoritesOnly)
 
 	useEffect(() => {
 		sortRef.current = sort
 	}, [sort])
 
+	useEffect(() => {
+		favoritesOnlyRef.current = favoritesOnly
+	}, [favoritesOnly])
+
 	const loadMore = useCallback(
 		async (cursor: string | null) => {
-			const result = await loadMoreCollectionsAction(sort, cursor)
+			const result = await loadMoreCollectionsAction(sort, cursor, favoritesOnlyRef.current)
 			return { items: result.collections, nextCursor: result.nextCursor }
 		},
 		[sort]
@@ -55,7 +55,10 @@ export function CollectionList({ initialCollections, initialNextCursor }: Collec
 	// creating a collection), reset the local list so the new collection appears.
 	const prevInitialIdsRef = useRef<string | null>(null)
 	useEffect(() => {
-		const currentIds = initialCollections.map(c => c.id).sort().join(',')
+		const currentIds = initialCollections
+			.map(c => c.id)
+			.sort()
+			.join(',')
 		const prevIds = prevInitialIdsRef.current
 
 		if (prevIds !== null && currentIds !== prevIds) {
@@ -69,21 +72,23 @@ export function CollectionList({ initialCollections, initialNextCursor }: Collec
 		const newSort = value as CollectionSort
 		setSort(newSort)
 
-		loadMoreCollectionsAction(newSort, null).then(result => {
+		loadMoreCollectionsAction(newSort, null, favoritesOnlyRef.current).then(result => {
 			reset(result.collections, result.nextCursor)
 		})
 	}
 
 	const handleCollectionCreated = useCallback(() => {
-		loadMoreCollectionsAction(sortRef.current, null).then(result => {
+		loadMoreCollectionsAction(sortRef.current, null, favoritesOnlyRef.current).then(result => {
 			reset(result.collections, result.nextCursor)
 		})
 	}, [reset])
 
+	const title = favoritesOnly ? 'Colecciones favoritas' : 'Colecciones'
+
 	return (
 		<div className='space-y-6'>
 			<div className='flex items-center justify-between'>
-				<h1 className='text-xl font-semibold text-foreground'>Colecciones</h1>
+				<h1 className='text-xl font-semibold text-foreground'>{title}</h1>
 				<div className='flex items-center gap-2'>
 					<label htmlFor='collection-sort' className='text-xs text-muted-foreground'>
 						Ordenar por
@@ -105,16 +110,27 @@ export function CollectionList({ initialCollections, initialNextCursor }: Collec
 
 			{items.length === 0 ? (
 				<div className='flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center'>
-					<p className='text-sm text-muted-foreground'>No tienes colecciones todavía.</p>
-					<p className='mt-1 mb-4 text-xs text-muted-foreground'>
-						Crea una nueva colección para organizar tus items.
-					</p>
-					<CreateCollectionDialog onSuccess={handleCollectionCreated}>
-						<Button type='button' className='gap-2'>
-							<FolderPlus className='size-4' />
-							Nueva Colección
-						</Button>
-					</CreateCollectionDialog>
+					{favoritesOnly ? (
+						<>
+							<p className='text-sm text-muted-foreground'>No tienes colecciones favoritas todavía.</p>
+							<p className='mt-1 text-xs text-muted-foreground'>
+								Marca una colección como favorita para verla aquí.
+							</p>
+						</>
+					) : (
+						<>
+							<p className='text-sm text-muted-foreground'>No tienes colecciones todavía.</p>
+							<p className='mt-1 mb-4 text-xs text-muted-foreground'>
+								Crea una nueva colección para organizar tus items.
+							</p>
+							<CreateCollectionDialog onSuccess={handleCollectionCreated}>
+								<Button type='button' className='gap-2'>
+									<FolderPlus className='size-4' />
+									Nueva Colección
+								</Button>
+							</CreateCollectionDialog>
+						</>
+					)}
 				</div>
 			) : (
 				<>
@@ -134,10 +150,8 @@ export function CollectionList({ initialCollections, initialNextCursor }: Collec
 						</div>
 					)}
 
-					{!hasMore && items.length > 0 && (
-						<p className='py-4 text-center text-xs text-muted-foreground'>
-							No hay más colecciones.
-						</p>
+					{!hasMore && items.length > 9 && (
+						<p className='py-4 text-center text-xs text-muted-foreground'>No hay más colecciones.</p>
 					)}
 				</>
 			)}

@@ -106,7 +106,7 @@ export function Sidebar({
 								<ul className='mt-1 space-y-0.5'>
 									<li>
 										<Link
-											href='/collections/favorites'
+											href='/collections?filter=favorites'
 											className='flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-sidebar-foreground/50 transition-colors hover:text-sidebar-foreground'
 										>
 											<Star className='size-4 shrink-0' />

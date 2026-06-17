@@ -9,7 +9,8 @@ import {
 
 export async function loadMoreCollectionsAction(
 	sort: CollectionSort,
-	cursor?: string | null
+	cursor?: string | null,
+	favoritesOnly?: boolean
 ): Promise<PaginatedCollectionsResult> {
 	const session = await auth()
 
@@ -17,5 +18,5 @@ export async function loadMoreCollectionsAction(
 		return { collections: [], nextCursor: null }
 	}
 
-	return getCollectionsPaginated(session.user.id, sort, cursor)
+	return getCollectionsPaginated(session.user.id, sort, cursor, 9, favoritesOnly)
 }

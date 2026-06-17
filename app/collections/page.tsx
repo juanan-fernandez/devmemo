@@ -8,7 +8,14 @@ import { getSidebarUser } from '@/lib/db/user'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
 import { CollectionList } from '@/components/collections/collection-list'
 
-export default async function CollectionsPage() {
+type CollectionsPageProps = {
+	searchParams: Promise<{ filter?: string }>
+}
+
+export default async function CollectionsPage({ searchParams }: CollectionsPageProps) {
+	const { filter } = await searchParams
+	const favoritesOnly = filter === 'favorites'
+
 	const session = await auth()
 
 	if (!session?.user?.id) {
@@ -21,7 +28,7 @@ export default async function CollectionsPage() {
 		getSidebarItemTypes(userId),
 		getSidebarCollections(userId),
 		getSidebarUser(userId),
-		getCollectionsPaginated(userId, 'createdAt-desc', null, 9)
+		getCollectionsPaginated(userId, 'createdAt-desc', null, 9, favoritesOnly)
 	])
 
 	return (
@@ -33,6 +40,7 @@ export default async function CollectionsPage() {
 			<CollectionList
 				initialCollections={initialData.collections}
 				initialNextCursor={initialData.nextCursor}
+				favoritesOnly={favoritesOnly}
 			/>
 		</DashboardLayoutShell>
 	)

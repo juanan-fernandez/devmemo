@@ -56,7 +56,8 @@ export default async function DashboardPage() {
 			label: 'Colecciones',
 			value: summary.totalCollections,
 			color: '#06B6D4',
-			icon: FolderHeart
+			icon: FolderHeart,
+			href: '/collections'
 		},
 		{
 			label: 'Elementos favoritos',
@@ -68,7 +69,8 @@ export default async function DashboardPage() {
 			label: 'Colecciones favoritas',
 			value: summary.favoriteCollections,
 			color: '#F59E0B',
-			icon: Star
+			icon: Star,
+			href: '/collections?filter=favorites'
 		}
 	]
 
