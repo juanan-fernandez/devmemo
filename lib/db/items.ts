@@ -236,3 +236,53 @@ export async function getDashboardItemsSection(userId: string): Promise<Dashboar
 		items: recentItems.map(mapDashboardItem)
 	}
 }
+
+export type PaginatedCollectionItemsResult = {
+	items: DashboardItem[]
+	nextCursor: string | null
+	totalCount: number
+	filteredCount: number
+}
+
+export async function getCollectionItemsPaginated(
+	userId: string,
+	collectionId: string,
+	itemType?: string | null,
+	cursor?: string | null,
+	limit: number = 12
+): Promise<PaginatedCollectionItemsResult> {
+	const whereClause = {
+		userId,
+		collectionId,
+		...(itemType ? { type: { name: itemType } } : {})
+	}
+
+	const [items, totalCount, filteredCount] = await Promise.all([
+		prisma.item.findMany({
+			where: whereClause,
+			orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+			take: limit + 1,
+			...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+			include: { type: true }
+		}),
+		prisma.item.count({
+			where: { userId, collectionId }
+		}),
+		prisma.item.count({
+			where: whereClause
+		})
+	])
+
+	const hasMore = items.length > limit
+
+	if (hasMore) {
+		items.pop()
+	}
+
+	return {
+		items: items.map(mapDashboardItem),
+		nextCursor: hasMore ? items[items.length - 1].id : null,
+		totalCount,
+		filteredCount
+	}
+}

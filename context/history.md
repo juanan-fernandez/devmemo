@@ -334,3 +334,16 @@
 - Limpiados imports sin usar en `app/items/[type]/page.tsx`.
 - Creados tests: `collections-paginated.test.ts` (8 tests) y `load-more-collections.test.ts` (4 tests).
 - Lint, build y tests (79/79) pasan correctamente.
+
+## 2026-06-17 :: 20:39 - Detalle de colección
+
+- Feature collection-detail-page: creada la página protegida `/collections/[id]` con filtro de items por tipo e infinite scroll.
+- Añadido `getCollectionById()` en `lib/db/collections.ts` para obtener una colección con verificación de ownership.
+- Añadido `getCollectionItemsPaginated()` en `lib/db/items.ts` con cursor pagination (lotes de 12) y filtro opcional por tipo de item.
+- Creada Server Action `actions/collections/load-collection-items.ts` como wrapper autenticado.
+- Creado `components/collections/collection-detail-content.tsx` con header (nombre + contador), iconos placeholder (editar/favorito/eliminar), descripción con fallback "Sin descripción", filtro por tipo con icono+color, lista `ItemCard` + infinite scroll, y estados de carga/fin/empty.
+- Creado `app/collections/[id]/page.tsx` dentro del dashboard layout con validación de ownership (si no → notFound).
+- Envuelta `LatestCollectionCard` en `<Link href={/collections/${id}}>` para navegar al detalle desde cualquier lista.
+- Protección en `proxy.ts` para `/collections/:path*`.
+- Creados tests: `collection-by-id.test.ts` (4 tests), `collection-items-paginated.test.ts` (5 tests), `load-collection-items.test.ts` (4 tests).
+- Lint, build y tests (92/92) pasan correctamente.
