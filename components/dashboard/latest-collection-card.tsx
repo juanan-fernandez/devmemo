@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react'
+import Link from 'next/link'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardCollection } from '@/lib/db/collections'
 
@@ -10,7 +11,10 @@ export function LatestCollectionCard({ collection }: LatestCollectionCardProps) 
 	const typeColor = collection.predominantType?.color ?? '#666'
 
 	return (
-		<div className='overflow-hidden rounded-xl border border-border bg-card'>
+		<Link
+			href={`/collections/${collection.id}`}
+			className='overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-accent/30'
+		>
 			<div className='h-1.5 w-full' style={{ backgroundColor: typeColor }} />
 			<div className='space-y-2 p-4'>
 				<div className='flex items-center gap-2'>
@@ -42,6 +46,6 @@ export function LatestCollectionCard({ collection }: LatestCollectionCardProps) 
 					) : null}
 				</div>
 			</div>
-		</div>
+		</Link>
 	)
 }

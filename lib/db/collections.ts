@@ -267,3 +267,44 @@ export async function getCollectionsPaginated(
 		nextCursor: hasMore ? mappedCollections[mappedCollections.length - 1].id : null
 	}
 }
+
+export async function getCollectionById(
+	userId: string,
+	collectionId: string
+): Promise<DashboardCollection | null> {
+	const collection = await prisma.collection.findFirst({
+		where: { id: collectionId, userId },
+		include: {
+			items: {
+				include: { type: true }
+			}
+		}
+	})
+
+	if (!collection) {
+		return null
+	}
+
+	const itemCount = collection.items.length
+	const predominantType = getPredominantType(collection.items)
+	const typeIcons: AppItemType[] = []
+	const seenIds = new Set<string>()
+
+	for (const item of collection.items) {
+		if (!seenIds.has(item.type.id)) {
+			seenIds.add(item.type.id)
+			typeIcons.push(toCollectionAppItemType(item.type))
+		}
+	}
+
+	return {
+		id: collection.id,
+		name: collection.name,
+		description: collection.description,
+		isFavorite: collection.isFavorite,
+		createdAt: collection.createdAt,
+		itemCount,
+		predominantType,
+		typeIcons
+	}
+}
