@@ -1,20 +1,35 @@
-# 
+# collections-page-infinite-scroll
 
 # Current Feature
 
-<!-- Feature Name -->
+<!-- Collections Page with Infinite Scroll -->
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Goals & requirements derived from the spec file -->
+- Crear la página protegida `/collections` dentro del dashboard layout existente.
+- Cargar las primeras 9 colecciones del usuario autenticado (orden: `createdAt desc`).
+- Implementar infinite scroll: cargar lotes de 9 al acercarse al final de la lista.
+- Mostrar estado de carga `Cargando más colecciones...` y estado final `No hay más colecciones.`.
+- Select de ordenación con opciones: `Más recientes primero`, `Más antiguas primero`, `Nombre A-Z`, `Nombre Z-A`.
+- Cambiar el orden reinicia la lista y vuelve a cargar la primera página.
+- Componente de infinite scroll aislado para reutilización en otras listas.
+- Usar cursor-based pagination si ya existe en el proyecto; offset si no.
+- Empty state: `No tienes colecciones todavía.` con botón de crear colección.
+- Seguridad: siempre usar el userId de la sesión, nunca del cliente.
+- Pasar lint, typecheck y build.
 
 ## Notes
 
-<!-- Any extra notes and other file references found in the spec -->
+- Fetch function shape: `{ limit: 9, cursor?: string | null, sort: "createdAt-desc" | "createdAt-asc" | "name-asc" | "name-desc" }`.
+- Response shape: `{ collections: Collection[], nextCursor: string | null }`.
+- Usar `LatestCollectionCard` existente si es reutilizable como card de colección.
+- Reutilizar `CreateCollectionDialog` para el empty state.
+- Labels en español: `Colecciones`, `Ordenar por`, `Sin descripción`, `Cargando más colecciones...`, `No hay más colecciones.`.
+- El spec pide aislar el infinite scroll en un componente reutilizable.
 
 ## History
 

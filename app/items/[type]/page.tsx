@@ -1,15 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
-import { Plus } from 'lucide-react'
 import { auth } from '@/auth/auth'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { getItemsByTypeName } from '@/lib/db/items'
 import { getSidebarItemTypes } from '@/lib/db/items'
-import { getSelectableCollections, getSidebarCollections } from '@/lib/db/collections'
+import { getSidebarCollections } from '@/lib/db/collections'
 import { getSidebarUser } from '@/lib/db/user'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
-import { Button } from '@/components/ui/button'
-import { CreateItemDialog } from '@/components/items/create-item-dialog'
-import { getCreateLabel } from '@/lib/items/create-item'
 import { ItemCard } from '@/components/items/item-card'
 
 type ItemListPageProps = {
@@ -32,14 +28,12 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, selectableCollections, { items, totalCount }] =
-		await Promise.all([
-			getSidebarItemTypes(userId),
-			getSidebarCollections(userId),
-			getSidebarUser(userId),
-			getSelectableCollections(userId),
-			getItemsByTypeName(userId, canonicalType.dbName)
-		])
+	const [sidebarItemTypes, sidebarCollections, sidebarUser, { items, totalCount }] = await Promise.all([
+		getSidebarItemTypes(userId),
+		getSidebarCollections(userId),
+		getSidebarUser(userId),
+		getItemsByTypeName(userId, canonicalType.dbName)
+	])
 
 	return (
 		<DashboardLayoutShell
