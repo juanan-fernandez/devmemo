@@ -32,6 +32,7 @@ const textareaClassName =
 
 type CreateCollectionDialogProps = {
 	children: React.ReactNode
+	onSuccess?: () => void
 }
 
 type CreateCollectionFormProps = {
@@ -40,7 +41,7 @@ type CreateCollectionFormProps = {
 	onPendingChange: (isPending: boolean) => void
 }
 
-export function CreateCollectionDialog({ children }: CreateCollectionDialogProps) {
+export function CreateCollectionDialog({ children, onSuccess }: CreateCollectionDialogProps) {
 	const [open, setOpen] = useState(false)
 	const [isPending, setIsPending] = useState(false)
 	const [formKey, setFormKey] = useState(0)
@@ -57,6 +58,11 @@ export function CreateCollectionDialog({ children }: CreateCollectionDialogProps
 		}
 	}
 
+	function handleFormSuccess() {
+		handleOpenChange(false)
+		onSuccess?.()
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
@@ -64,7 +70,7 @@ export function CreateCollectionDialog({ children }: CreateCollectionDialogProps
 				<CreateCollectionForm
 					key={formKey}
 					onCancel={() => handleOpenChange(false)}
-					onSuccess={() => handleOpenChange(false)}
+					onSuccess={handleFormSuccess}
 					onPendingChange={setIsPending}
 				/>
 			</DialogContent>

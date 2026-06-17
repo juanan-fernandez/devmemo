@@ -188,3 +188,82 @@ export async function getCollectionsForUserSelect(userId: string): Promise<Colle
 		label: collection.name
 	}))
 }
+
+export type CollectionSort = 'createdAt-desc' | 'createdAt-asc' | 'name-asc' | 'name-desc'
+
+export type PaginatedCollectionsResult = {
+	collections: DashboardCollection[]
+	nextCursor: string | null
+}
+
+function getPaginatedOrderBy(sort: CollectionSort) {
+	switch (sort) {
+		case 'createdAt-desc':
+			return [{ createdAt: 'desc' as const }, { id: 'desc' as const }]
+		case 'createdAt-asc':
+			return [{ createdAt: 'asc' as const }, { id: 'asc' as const }]
+		case 'name-asc':
+			return [{ name: 'asc' as const }, { id: 'asc' as const }]
+		case 'name-desc':
+			return [{ name: 'desc' as const }, { id: 'desc' as const }]
+	}
+}
+
+export async function getCollectionsPaginated(
+	userId: string,
+	sort: CollectionSort,
+	cursor?: string | null,
+	limit: number = 9
+): Promise<PaginatedCollectionsResult> {
+	const orderBy = getPaginatedOrderBy(sort)
+
+	const collections = await prisma.collection.findMany({
+		where: { userId },
+		orderBy,
+		take: limit + 1,
+		...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+		include: {
+			items: {
+				include: {
+					type: true
+				}
+			}
+		}
+	})
+
+	const hasMore = collections.length > limit
+
+	if (hasMore) {
+		collections.pop()
+	}
+
+	const mappedCollections = collections.map(collection => {
+		const itemCount = collection.items.length
+		const predominantType = getPredominantType(collection.items)
+		const typeIcons: AppItemType[] = []
+		const seenIds = new Set<string>()
+
+		for (const item of collection.items) {
+			if (!seenIds.has(item.type.id)) {
+				seenIds.add(item.type.id)
+				typeIcons.push(toCollectionAppItemType(item.type))
+			}
+		}
+
+		return {
+			id: collection.id,
+			name: collection.name,
+			description: collection.description,
+			isFavorite: collection.isFavorite,
+			createdAt: collection.createdAt,
+			itemCount,
+			predominantType,
+			typeIcons
+		}
+	})
+
+	return {
+		collections: mappedCollections,
+		nextCursor: hasMore ? mappedCollections[mappedCollections.length - 1].id : null
+	}
+}

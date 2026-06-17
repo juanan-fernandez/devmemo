@@ -320,3 +320,17 @@
 - Actualizado `components/items/item-detail-sheet.tsx` con Select de colección desplegable al editar, opción `Sin colección` y fetch bajo demanda de las colecciones al entrar en edición.
 - Creados tests en `__tests__/actions/update-item.test.ts` (9 tests) para validación de colección: ownership, null/empty normalization y errores Zod.
 - Lint, build y tests (67/67) pasan correctamente.
+
+## 2026-06-17 :: 19:50 - Página /collections con infinite scroll
+
+- Feature collections-page-infinite-scroll: creada la página protegida `/collections` con listado paginado e infinite scroll.
+- Añadido `getCollectionsPaginated()` en `lib/db/collections.ts` con cursor-based pagination (cursor sobre `id`), 4 órdenes de sort (`createdAt` asc/desc, `name` asc/desc) y lotes de 9.
+- Creada Server Action `actions/collections/load-more-collections.ts` como wrapper autenticado para cargar más páginas desde el cliente.
+- Creado hook reutilizable `lib/hooks/use-infinite-scroll.ts` con Intersection Observer para detectar el final de la lista.
+- Creado `components/collections/collection-list.tsx` con grid de `LatestCollectionCard`, Select de ordenación, estados de carga/fin y empty state con `CreateCollectionDialog`.
+- Creado `app/collections/page.tsx` dentro del dashboard layout existente con protección de autenticación.
+- Añadida protección en `proxy.ts` para `/collections`.
+- Añadido `onSuccess` opcional a `CreateCollectionDialog` para refrescar la lista tras crear una colección.
+- Limpiados imports sin usar en `app/items/[type]/page.tsx`.
+- Creados tests: `collections-paginated.test.ts` (8 tests) y `load-more-collections.test.ts` (4 tests).
+- Lint, build y tests (79/79) pasan correctamente.
