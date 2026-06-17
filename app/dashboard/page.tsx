@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { DashboardSummaryCard } from '@/components/dashboard/dashboard-summary-card'
 import { LatestCollectionCard } from '@/components/dashboard/latest-collection-card'
 import { PinnedSection } from '@/components/dashboard/pinned-section'
+import { CreateCollectionDialog } from '@/components/collections/create-collection-dialog'
 
 export default async function DashboardPage() {
 	const session = await auth()
@@ -98,27 +99,29 @@ export default async function DashboardPage() {
 					</div>
 				) : (
 					<div className='flex items-center justify-center rounded-xl border-2 border-dashed border-border py-16'>
-						<Button
-							type='button'
-							className='gap-2'
-						>
-							<svg
-								xmlns='http://www.w3.org/2000/svg'
-								width='16'
-								height='16'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='2'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-								aria-hidden='true'
+						<CreateCollectionDialog>
+							<Button
+								type='button'
+								className='gap-2'
 							>
-								<path d='M5 12h14' />
-								<path d='M12 5v14' />
-							</svg>
-							Nueva Colección
-						</Button>
+								<svg
+									xmlns='http://www.w3.org/2000/svg'
+									width='16'
+									height='16'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									aria-hidden='true'
+								>
+									<path d='M5 12h14' />
+									<path d='M12 5v14' />
+								</svg>
+								Nueva Colección
+							</Button>
+						</CreateCollectionDialog>
 					</div>
 				)}
 			</section>

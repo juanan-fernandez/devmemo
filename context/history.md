@@ -301,3 +301,11 @@
 - Creado `components/items/hooks/use-item-row.ts` con estados de borrado, sheet session, open/close y manejadores.
 - Refactorizados `ItemCard` y `PinnedItemRow` para usar el hook, eliminando ~42 líneas de lógica de estado duplicada.
 - Sin cambios visuales ni de comportamiento; lint, build y tests pasan correctamente.
+
+## 2026-06-17 :: 13:40 - Creación de colecciones
+
+- Feature create-collection-spec: implementado formulario de creación de colecciones dentro de un shadcn Dialog.
+- Creada `actions/collections/create-collection.ts` con validación Zod, auth check y revalidación de `/dashboard` y `/collections`.
+- Creado `components/collections/create-collection-dialog.tsx` con campos `Nombre` y `Descripción`, botones `Guardar`/`Cancelar` con estado de carga y mensaje de éxito en español.
+- Actualizado `app/dashboard/page.tsx` para abrir el Dialog desde el botón "Nueva Colección" cuando no hay colecciones.
+- Lint, build y typecheck pasan correctamente.
