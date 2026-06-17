@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { CreateCollectionDialog } from '@/components/collections/create-collection-dialog'
+import { NewItemMenu } from '@/components/dashboard/new-item-menu'
 import { Sidebar } from '@/components/dashboard/sidebar'
 import type { SidebarItemType } from '@/lib/db/items'
 import type { SidebarCollectionsData } from '@/lib/db/collections'
@@ -48,6 +49,7 @@ export function DashboardLayoutShell({
 							<Input type='search' placeholder='Buscar snippets, comandos, notas...' className='pl-9' />
 						</div>
 					</div>
+					<NewItemMenu />
 					<CreateCollectionDialog>
 						<Button className='gap-2 shrink-0'>
 							<FolderPlus className='size-4' />

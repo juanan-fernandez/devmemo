@@ -11,7 +11,7 @@ import {
 	supportsUrl
 } from '@/lib/items/shared'
 import type { EditableItemField } from '@/lib/items/editable-item'
-import type { SystemItemTypeKey } from '@/lib/item-types'
+import type { CanonicalSystemItemType, SystemItemTypeKey } from '@/lib/item-types'
 
 const CREATE_ITEM_TYPE_VALUES = ['snippet', 'prompt', 'command', 'note', 'file', 'image', 'url'] as const satisfies readonly SystemItemTypeKey[]
 
@@ -166,4 +166,8 @@ export function mapCreateItemSchemaErrors(error: z.ZodError<CreateItemInput>): P
 		collectionId: fieldErrors.collectionId?.[0],
 		tags: fieldErrors.tags?.[0]
 	}
+}
+
+export function getCreateLabel(canonicalType: CanonicalSystemItemType) {
+	return `Nuev${canonicalType.gender === 'feminine' ? 'a' : 'o'} ${canonicalType.singularLabel}`
 }

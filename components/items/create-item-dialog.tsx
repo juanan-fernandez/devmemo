@@ -1,7 +1,7 @@
 'use client'
 
-import { CheckCircle2, LoaderCircle, Plus, Save, X } from 'lucide-react'
-import { useActionState, useEffect, useId, useMemo, useState } from 'react'
+import { CheckCircle2, LoaderCircle, Save, X } from 'lucide-react'
+import { Children, cloneElement, useActionState, useEffect, useId, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { createItem, type CreateItemState } from '@/actions/items/create-item'
@@ -9,6 +9,7 @@ import type { SelectableCollection } from '@/lib/db/collections'
 import {
 	CREATE_ITEM_LANGUAGE_OPTIONS,
 	getCreateItemCapabilities,
+	getCreateLabel,
 	type CreateItemField
 } from '@/lib/items/create-item'
 import { supportsCodeEditor } from '@/lib/items/code-editor'
@@ -47,6 +48,7 @@ const textareaClassName =
 type CreateItemDialogProps = {
 	canonicalType: CanonicalSystemItemType
 	collections: SelectableCollection[]
+	children?: React.ReactNode
 }
 
 type CreateItemFormProps = CreateItemDialogProps & {
@@ -55,11 +57,7 @@ type CreateItemFormProps = CreateItemDialogProps & {
 	onPendingChange: (isPending: boolean) => void
 }
 
-function getCreateLabel(canonicalType: CanonicalSystemItemType) {
-	return `Nue${canonicalType.gender === 'feminine' ? 'va' : 'vo'} ${canonicalType.singularLabel}`
-}
-
-export function CreateItemDialog({ canonicalType, collections }: CreateItemDialogProps) {
+export function CreateItemDialog({ canonicalType, collections, children }: CreateItemDialogProps) {
 	const [open, setOpen] = useState(false)
 	const [isPending, setIsPending] = useState(false)
 	const [formKey, setFormKey] = useState(0)
@@ -76,12 +74,13 @@ export function CreateItemDialog({ canonicalType, collections }: CreateItemDialo
 		}
 	}
 
+	const trigger = children ? (
+		cloneElement(Children.only(children) as React.ReactElement<{ onClick: () => void }>, { onClick: () => setOpen(true) })
+	) : null
+
 	return (
 		<>
-			<Button type='button' className='h-10 rounded-xl px-4' onClick={() => setOpen(true)}>
-				<Plus data-icon='inline-start' />
-				{getCreateLabel(canonicalType)}
-			</Button>
+			{trigger}
 
 			<Dialog open={open} onOpenChange={handleOpenChange}>
 				<DialogContent className='max-h-[90vh] p-0'>
@@ -99,7 +98,7 @@ export function CreateItemDialog({ canonicalType, collections }: CreateItemDialo
 	)
 }
 
-function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPendingChange }: CreateItemFormProps) {
+export function CreateItemForm({ canonicalType, collections, onCancel, onSuccess, onPendingChange }: CreateItemFormProps) {
 	const router = useRouter()
 	const formId = useId()
 	const [state, action, isPending] = useActionState(createItem, INITIAL_CREATE_ITEM_STATE)
