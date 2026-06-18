@@ -7,6 +7,7 @@ import { getSidebarCollections } from '@/lib/db/collections'
 import { getSidebarItemTypes } from '@/lib/db/items'
 import { getUserProfile, getUserUsageStats } from '@/lib/db/profile'
 import { getSidebarUser } from '@/lib/db/user'
+import { getSearchIndex } from '@/lib/db/search'
 
 export default async function ProfilePage() {
 	const session = await auth()
@@ -17,12 +18,13 @@ export default async function ProfilePage() {
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, profile, stats] = await Promise.all([
+	const [sidebarItemTypes, sidebarCollections, sidebarUser, profile, stats, searchIndex] = await Promise.all([
 		getSidebarItemTypes(userId),
 		getSidebarCollections(userId),
 		getSidebarUser(userId),
 		getUserProfile(userId),
-		getUserUsageStats(userId)
+		getUserUsageStats(userId),
+		getSearchIndex(userId)
 	])
 
 	if (!profile) {
@@ -34,6 +36,7 @@ export default async function ProfilePage() {
 			sidebarItemTypes={sidebarItemTypes}
 			sidebarCollections={sidebarCollections}
 			sidebarUser={sidebarUser}
+			searchIndex={searchIndex}
 		>
 			<ProfileContent profile={profile} stats={stats} />
 		</DashboardLayoutShell>

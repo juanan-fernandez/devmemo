@@ -358,3 +358,13 @@
 - Actualizado `CollectionDetailContent` con botones funcionales: editar abre diálogo en modo edit, favorito con toggle optimista (amarillo/neutro + rollback), eliminar con diálogo de confirmación + redirect.
 - Creados tests: `update-collection.test.ts` (4 tests), `toggle-collection-favorite.test.ts` (4 tests), `delete-collection.test.ts` (3 tests).
 - Lint, build y tests (103/103) pasan correctamente.
+
+## 2026-06-17 :: 20:53 - Búsqueda global con Command
+
+- Feature global-search-spec: implementada búsqueda global de items y colecciones desde la barra del dashboard.
+- Instalado `cmdk` v1 y creado `components/ui/command.tsx` con Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem y CommandSeparator.
+- Creado `lib/db/search.ts` con `getSearchIndex(userId)` para precargar índice compacto de items (título, descripción, tipo, tags) y colecciones (nombre, contador), ordenados por `createdAt` desc.
+- Creado `components/search/global-search.tsx` con shadcn CommandDialog, grupos Items/Colecciones, filtro case-insensitive por substrings, atajo `Cmd+B`/`Ctrl+B`, selección de item → Sheet, selección de colección → navegación.
+- Actualizado `DashboardLayoutShell` con input readOnly clickeable, placeholder con atajo, y GlobalSearch condicional.
+- Añadido `searchIndex` a todas las páginas protegidas (dashboard, collections, items/[type], profile) para búsqueda global consistente.
+- Creados 7 tests en `search-index.test.ts`. Lint, build y tests (110/110) pasan correctamente.

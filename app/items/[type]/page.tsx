@@ -5,6 +5,7 @@ import { getItemsByTypeName } from '@/lib/db/items'
 import { getSidebarItemTypes } from '@/lib/db/items'
 import { getSidebarCollections } from '@/lib/db/collections'
 import { getSidebarUser } from '@/lib/db/user'
+import { getSearchIndex } from '@/lib/db/search'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
 import { ItemCard } from '@/components/items/item-card'
 
@@ -28,11 +29,12 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, { items, totalCount }] = await Promise.all([
+	const [sidebarItemTypes, sidebarCollections, sidebarUser, { items, totalCount }, searchIndex] = await Promise.all([
 		getSidebarItemTypes(userId),
 		getSidebarCollections(userId),
 		getSidebarUser(userId),
-		getItemsByTypeName(userId, canonicalType.dbName)
+		getItemsByTypeName(userId, canonicalType.dbName),
+		getSearchIndex(userId)
 	])
 
 	return (
@@ -40,6 +42,7 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 			sidebarItemTypes={sidebarItemTypes}
 			sidebarCollections={sidebarCollections}
 			sidebarUser={sidebarUser}
+			searchIndex={searchIndex}
 		>
 			<div className='space-y-6'>
 				<div className='flex items-center justify-between'>

@@ -6,6 +6,7 @@ import { getCollectionItemsPaginated } from '@/lib/db/items'
 import { getSidebarCollections } from '@/lib/db/collections'
 import { getSidebarItemTypes } from '@/lib/db/items'
 import { getSidebarUser } from '@/lib/db/user'
+import { getSearchIndex } from '@/lib/db/search'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
 import { CollectionDetailContent } from '@/components/collections/collection-detail-content'
 
@@ -24,13 +25,14 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, collection, itemsResult] =
+	const [sidebarItemTypes, sidebarCollections, sidebarUser, collection, itemsResult, searchIndex] =
 		await Promise.all([
 			getSidebarItemTypes(userId),
 			getSidebarCollections(userId),
 			getSidebarUser(userId),
 			getCollectionById(userId, collectionId),
-			getCollectionItemsPaginated(userId, collectionId, null, null, 12)
+			getCollectionItemsPaginated(userId, collectionId, null, null, 12),
+			getSearchIndex(userId)
 		])
 
 	if (!collection) {
@@ -42,6 +44,7 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
 			sidebarItemTypes={sidebarItemTypes}
 			sidebarCollections={sidebarCollections}
 			sidebarUser={sidebarUser}
+			searchIndex={searchIndex}
 		>
 			<CollectionDetailContent
 				collection={collection}
