@@ -19,7 +19,24 @@ export function AuthLayoutShell({
 		<main className='relative min-h-dvh overflow-hidden bg-background text-foreground'>
 			<div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(227,226,231,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(145,144,149,0.12),transparent_28%)]' />
 			<div className='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:42px_42px] opacity-25' />
-			<div className='relative mx-auto flex min-h-dvh max-w-7xl flex-col px-6 py-8 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:py-10'>
+
+			{/* Top bar with DevMemo logo */}
+			<div className='relative z-10 flex h-14 items-center justify-center border-b border-border/30 bg-background/60 backdrop-blur px-6'>
+				<Link
+					href='/'
+					className='inline-flex items-center gap-2 font-heading text-base font-bold tracking-tight text-foreground transition hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+				>
+					<svg className='size-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+						<path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20' />
+						<path d='M8 7h6' />
+						<path d='M8 11h8' />
+						<path d='M8 15h5' />
+					</svg>
+					DevMemo
+				</Link>
+			</div>
+
+			<div className='relative mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-7xl flex-col px-6 py-8 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:py-10'>
 				<section className='hidden min-h-[36rem] flex-col justify-between rounded-[2rem] border border-border/70 bg-card/60 p-10 shadow-[0_32px_120px_rgba(0,0,0,0.28)] backdrop-blur lg:flex'>
 					<div className='space-y-6'>
 						<div className='inline-flex w-fit items-center gap-2 rounded-full border border-border/80 bg-background/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground'>
