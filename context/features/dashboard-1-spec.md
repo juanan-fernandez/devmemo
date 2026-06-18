@@ -16,7 +16,7 @@ Esta es la fase 1/3 de la implementación de la página principal de la app.
 
 ## References
 
-- @context/stich/design-home.md
+- @context/stich/design-main.md
 - @context/stich/screens/mainScreen.png
 - @context/project-overview.md
 - @lib/mockdata.ts
