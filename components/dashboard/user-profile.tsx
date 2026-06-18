@@ -25,7 +25,7 @@ export function UserProfile({ user, collapsed }: UserProfileProps) {
 	}
 
 	return (
-		<div className={cn('space-y-3', collapsed && 'w-full')}>
+		<div className={cn('w-full min-w-0 space-y-3', collapsed && 'w-full')}>
 			<Link
 				href='/profile'
 				className={cn(
