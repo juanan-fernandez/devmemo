@@ -201,3 +201,36 @@
 [data-slot='sheet-content'][data-state='closed'] {
   animation: sheet-content-out 320ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
+
+/* Home page card animations */
+@keyframes card-float {
+  0%, 100% { transform: translateY(10px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes card-glow-lime {
+  0%, 100% { box-shadow: 0 8px 30px rgba(132,204,22,0.08); }
+  50% { box-shadow: 0 12px 36px rgba(132,204,22,0.18); }
+}
+
+@keyframes card-glow-blue {
+  0%, 100% { box-shadow: 0 8px 30px rgba(59,130,246,0.08); }
+  50% { box-shadow: 0 12px 36px rgba(59,130,246,0.18); }
+}
+
+@keyframes card-glow-purple {
+  0%, 100% { box-shadow: 0 8px 30px rgba(139,92,246,0.08); }
+  50% { box-shadow: 0 12px 36px rgba(139,92,246,0.18); }
+}
+
+.card-float-1 { animation: card-float 2.5s ease-in-out infinite; }
+.card-float-2 { animation: card-float 2.5s ease-in-out 0.5s infinite; }
+.card-float-3 { animation: card-float 2.5s ease-in-out 1s infinite; }
+.card-glow-1 { animation: card-glow-lime 2.5s ease-in-out infinite; }
+.card-glow-2 { animation: card-glow-blue 2.5s ease-in-out 0.4s infinite; }
+.card-glow-3 { animation: card-glow-purple 2.5s ease-in-out 0.8s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-float-1, .card-float-2, .card-float-3,
+  .card-glow-1, .card-glow-2, .card-glow-3 { animation: none; }
+}

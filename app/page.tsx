@@ -67,30 +67,13 @@ export default async function Home({ searchParams }: HomePageProps) {
 			</section>
 
 			{/* 3. Item Preview Cards */}
-			<style>{`
-				@keyframes float {
-					0%, 100% { transform: translateY(0px); }
-					50% { transform: translateY(-6px); }
-				}
-				@keyframes accentGlow {
-					0%, 100% { box-shadow: 0 8px 30px var(--glow-color, transparent); }
-					50% { box-shadow: 0 12px 40px var(--glow-color, transparent); }
-				}
-				.card-float-1 { animation: float 3s ease-in-out infinite; }
-				.card-float-2 { animation: float 3s ease-in-out 0.6s infinite; }
-				.card-float-3 { animation: float 3s ease-in-out 1.2s infinite; }
-				.card-glow-1 { --glow-color: rgba(132,204,22,0.12); animation: accentGlow 3s ease-in-out infinite; }
-				.card-glow-2 { --glow-color: rgba(59,130,246,0.12); animation: accentGlow 3s ease-in-out 0.5s infinite; }
-				.card-glow-3 { --glow-color: rgba(139,92,246,0.12); animation: accentGlow 3s ease-in-out 1s infinite; }
-				@media (prefers-reduced-motion: reduce) {
-					.card-float-1, .card-float-2, .card-float-3,
-					.card-glow-1, .card-glow-2, .card-glow-3 { animation: none; }
-				}
-			`}</style>
 			<section className='mx-auto mt-10 max-w-[860px] px-6 md:mt-12'>
 				<div className='flex flex-col justify-center gap-8 md:flex-row'>
 					{/* Snippet Card */}
-					<div className='card-float-1 card-glow-1 relative flex-1 rounded-xl border border-lime-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(132,204,22,0.08)] transition-transform hover:scale-[1.02]'>
+					<div
+						style={{ animation: 'card-float 2.5s ease-in-out infinite, card-glow-lime 2.5s ease-in-out infinite' }}
+						className='relative flex-1 rounded-xl border border-lime-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(132,204,22,0.08)] transition-transform hover:scale-[1.02]'
+					>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-lime-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-lime-400'>
@@ -104,7 +87,10 @@ export default async function Home({ searchParams }: HomePageProps) {
 					</div>
 
 					{/* Link Card */}
-					<div className='card-float-2 card-glow-2 relative flex-1 rounded-xl border border-blue-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(59,130,246,0.08)] transition-transform hover:scale-[1.02]'>
+					<div
+						style={{ animation: 'card-float 2.5s ease-in-out 0.5s infinite, card-glow-blue 2.5s ease-in-out 0.4s infinite' }}
+						className='relative flex-1 rounded-xl border border-blue-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(59,130,246,0.08)] transition-transform hover:scale-[1.02]'
+					>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-blue-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-blue-400'>
@@ -118,7 +104,10 @@ export default async function Home({ searchParams }: HomePageProps) {
 					</div>
 
 					{/* Prompt Card */}
-					<div className='card-float-3 card-glow-3 relative flex-1 rounded-xl border border-purple-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(139,92,246,0.08)] transition-transform hover:scale-[1.02]'>
+					<div
+						style={{ animation: 'card-float 2.5s ease-in-out 1s infinite, card-glow-purple 2.5s ease-in-out 0.8s infinite' }}
+						className='relative flex-1 rounded-xl border border-purple-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(139,92,246,0.08)] transition-transform hover:scale-[1.02]'
+					>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-purple-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-purple-400'>
