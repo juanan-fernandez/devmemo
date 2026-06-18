@@ -368,3 +368,16 @@
 - Actualizado `DashboardLayoutShell` con input readOnly clickeable, placeholder con atajo, y GlobalSearch condicional.
 - Añadido `searchIndex` a todas las páginas protegidas (dashboard, collections, items/[type], profile) para búsqueda global consistente.
 - Creados 7 tests en `search-index.test.ts`. Lint, build y tests (110/110) pasan correctamente.
+
+## 2026-06-17 :: 21:46 - Rediseño root home page
+
+- Feature root-home-page-spec: rediseñada la página raíz `/` con diseño editorial oscuro siguiendo el spec visual `home-page-visual-spec.md`.
+- Implementado navbar sticky con logo DevMemo, LOGIN y EMPEZAR GRATIS.
+- Hero section con headline Syne 76px "Tu segundo cerebro. Todo en un lugar." y subtítulo editorial.
+- 3 preview cards con acentos de color (Snippet verde, Link azul, Prompt púrpura) mostrando contenido demo.
+- CTA "Empezar gratis" centrado con glow shadow, link a `/register`.
+- Row de 6 pills con colores funcionales: SNIPPETS, LINKS, PROMPTS, DOCS, COMMANDS, ASSETS.
+- Auth card visual con tabs Iniciar sesión/Crear cuenta y preview de formulario, linka a `/login`.
+- Footer con DevMemo, tagline en inglés, PRIVACIDAD y copyright.
+- Usuario autenticado hace auto-redirect a `/dashboard`. Mensaje `accountDeleted` preservado.
+- Sin nuevas dependencias ni cambios en auth/BD. Lint, build y tests (110/110) pasan.

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stash | Tu Segundo Cerebro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#121317",
+                    "snippet": "#84CC16",
+                    "surface-container-highest": "#343539",
+                    "on-primary": "#313032",
+                    "surface-container-lowest": "#0d0e12",
+                    "outline": "#919095",
+                    "primary": "#c8c6c8",
+                    "surface-variant": "#343539",
+                    "tertiary": "#c8c5cb",
+                    "primary-fixed": "#e5e1e4",
+                    "tertiary-fixed": "#e4e1e7",
+                    "secondary-container": "#454747",
+                    "on-tertiary-container": "#7b7a7f",
+                    "surface-tint": "#c8c6c8",
+                    "on-secondary": "#2f3131",
+                    "on-secondary-fixed-variant": "#454747",
+                    "surface-container": "#1e1f23",
+                    "on-surface-variant": "#c8c5ca",
+                    "on-tertiary": "#303034",
+                    "error-container": "#93000a",
+                    "inverse-on-surface": "#2f3034",
+                    "prompt": "#8B5CF6",
+                    "secondary": "#c6c6c7",
+                    "on-error": "#690005",
+                    "tertiary-container": "#0d0d11",
+                    "surface": "#121317",
+                    "secondary-fixed": "#e2e2e2",
+                    "on-tertiary-fixed-variant": "#47464b",
+                    "command": "#F97316",
+                    "primary-container": "#0d0d0f",
+                    "on-primary-fixed": "#1b1b1d",
+                    "outline-variant": "#47464a",
+                    "on-primary-container": "#7c7a7d",
+                    "on-secondary-container": "#b4b5b5",
+                    "link": "#3B82F6",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-high": "#292a2e",
+                    "primary-fixed-dim": "#c8c6c8",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "inverse-primary": "#5f5e60",
+                    "note": "#06B6D4",
+                    "inverse-surface": "#e3e2e7",
+                    "tertiary-fixed-dim": "#c8c5cb",
+                    "document": "#F59E0B",
+                    "surface-container-low": "#1a1b1f",
+                    "on-tertiary-fixed": "#1b1b1f",
+                    "on-surface": "#e3e2e7",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "border-subtle": "#262626",
+                    "image": "#EC4899",
+                    "on-background": "#e3e2e7",
+                    "on-primary-fixed-variant": "#474649",
+                    "error": "#ffb4ab",
+                    "background": "#121317",
+                    "surface-bright": "#38393d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sidebar-collapsed": "72px",
+                    "section-gap": "64px",
+                    "stack-lg": "32px",
+                    "sidebar-width": "240px",
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "container-max-width": "1280px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-md": ["Syne"],
+                    "headline-lg": ["Syne"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Syne"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "label-mono": ["JetBrains Mono"],
+                    "display-xl": ["Syne"],
+                    "label-caps": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "label-mono": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0d0d0f;
+            color: #e3e2e7;
+            overflow-x: hidden;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .neon-glow-snippet:hover { box-shadow: 0 0 20px rgba(132, 204, 22, 0.3); }
+        .neon-glow-link:hover { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .neon-glow-prompt:hover { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+        
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+        }
+        .floating-card-delayed {
+            animation: float-delayed 8s ease-in-out infinite;
+        }
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(-10px) rotate(-1deg); }
+            50% { transform: translateY(10px) rotate(0deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- Top Navigation -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface-dim/80 backdrop-blur-md border-b border-border-subtle">
+<div class="max-w-container-max-width mx-auto px-gutter h-16 flex justify-between items-center">
+<div class="flex items-center gap-stack-md w-1/3">
+<span class="text-headline-md font-headline-md font-black text-on-surface tracking-tight">DevMemo</span>
+</div>
+<!-- Minimalist approach: could center the logo here if preferred, but usually keeping it left-aligned is standard while centering content below -->
+<div class="flex items-center justify-end gap-stack-md w-1/3">
+<a class="text-label-mono font-label-mono text-on-surface-variant hover:text-primary transition-colors" href="#login">LOGIN</a>
+<button class="bg-on-surface text-surface px-4 py-2 font-bold text-label-mono rounded-lg hover:bg-primary transition-transform active:scale-95">EMPEZAR GRATIS</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section Centered -->
+<section class="relative min-h-screen flex flex-col items-center justify-center pb-16 px-gutter overflow-hidden pt-16">
+<!-- Floating Visual Grid - Distributed Symmetrically -->
+<!-- Center Content -->
+<div class="relative z-20 text-center max-w-4xl mx-auto">
+<h1 class="font-bold text-5xl md:text-7xl mb-stack-md tracking-tight font-headline-md">
+                Tu segundo cerebro.<br/>
+<span class="text-on-surface-variant">Todo en un lugar.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-2xl mx-auto">
+                Guarda links, código, comandos, prompts, imágenes y documentos en una bóveda digital diseñada para la velocidad y la precisión editorial.
+            </p><div class="flex flex-col md:flex-row items-center justify-center gap-stack-lg mb-stack-lg">
+<!-- Snippet Card -->
+<div class="w-64 p-stack-md bg-surface-container border border-border-subtle border-l-4 border-snippet rounded-lg floating-card neon-glow-snippet pointer-events-auto z-10">
+<div class="flex justify-between items-start mb-stack-sm">
+<span class="text-snippet font-label-mono text-label-mono">SNIPPET</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">code</span>
+</div>
+<h3 class="font-bold text-body-md mb-2">Tailwind Config</h3>
+<div class="bg-surface-dim p-2 rounded font-label-mono text-[10px] text-on-surface-variant overflow-hidden">
+<code class="block">module.exports = {</code>
+<code class="block ml-2">theme: { ... },</code>
+<code class="block ml-2">plugins: [],</code>
+<code class="block">}</code>
+</div>
+</div>
+<!-- Link Card -->
+<div class="w-72 p-stack-md bg-surface-container border border-border-subtle border-l-4 border-link rounded-lg floating-card-delayed neon-glow-link pointer-events-auto z-10">
+<div class="flex justify-between items-start mb-stack-sm">
+<span class="text-link font-label-mono text-label-mono">LINK</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">link</span>
+</div>
+<h3 class="font-bold text-body-md mb-2">Aesthetic UI References</h3>
+<p class="text-body-sm text-on-surface-variant">Curated list of premium design patterns for modern SaaS apps...</p>
+</div>
+<!-- Prompt Card -->
+<div class="w-64 p-stack-md bg-surface-container border border-border-subtle border-l-4 border-prompt rounded-lg floating-card neon-glow-prompt pointer-events-auto z-10">
+<div class="flex justify-between items-start mb-stack-sm">
+<span class="text-prompt font-label-mono text-label-mono">PROMPT</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">bolt</span>
+</div>
+<h3 class="font-bold text-body-md mb-2">Midjourney Editorial</h3>
+<p class="text-body-sm text-on-surface-variant italic">"/imagine prompt: minimalist obsidian texture..."</p>
+</div>
+</div>
+<div class="flex justify-center gap-stack-md">
+<button class="bg-on-surface text-surface px-10 py-5 font-bold text-body-md rounded-lg hover:scale-[1.02] transition-transform active:scale-[0.98] shadow-2xl">
+                    Empezar gratis
+                </button>
+</div>
+</div>
+<!-- Subtle Background Texture -->
+</section>
+<!-- Feature Chips Centered Row -->
+<section class="max-w-container-max-width mx-auto px-gutter py-8 overflow-x-auto">
+<div class="flex justify-center gap-stack-md whitespace-nowrap">
+<span class="px-4 py-1.5 bg-snippet/10 border border-snippet/50 text-snippet font-label-mono text-label-mono rounded-full">SNIPPETS</span>
+<span class="px-4 py-1.5 bg-link/10 border border-link/50 text-link font-label-mono text-label-mono rounded-full">LINKS</span>
+<span class="px-4 py-1.5 bg-prompt/10 border border-prompt/50 text-prompt font-label-mono text-label-mono rounded-full">PROMPTS</span>
+<span class="px-4 py-1.5 bg-document/10 border border-document/50 text-document font-label-mono text-label-mono rounded-full">DOCS</span>
+<span class="px-4 py-1.5 bg-command/10 border border-command/50 text-command font-label-mono text-label-mono rounded-full">COMMANDS</span>
+<span class="px-4 py-1.5 bg-image/10 border border-image/50 text-image font-label-mono text-label-mono rounded-full">ASSETS</span>
+</div>
+</section>
+<!-- Sleek Centered Auth Container following Hero -->
+<section class="max-w-container-max-width mx-auto px-gutter py-section-gap flex justify-center" id="login">
+<div class="w-full max-w-lg bg-surface-container-low border border-border-subtle rounded-xl p-8 relative overflow-hidden shadow-2xl">
+<!-- Background Accent Glow -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 blur-3xl rounded-full"></div>
+<div class="relative z-10">
+<div class="flex gap-stack-lg border-b border-border-subtle mb-8 justify-center">
+<button class="pb-4 font-headline-md text-headline-md border-b-2 border-primary text-on-surface" id="tab-login" onclick="switchAuthTab('login')">Iniciar sesión</button>
+<button class="pb-4 font-headline-md text-headline-md border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors" id="tab-signup" onclick="switchAuthTab('signup')">Crear cuenta</button>
+</div>
+<form class="space-y-stack-md" onsubmit="return false;">
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">EMAIL</label>
+<input class="w-full bg-surface-dim border border-border-subtle rounded-lg px-4 py-3 focus:border-primary focus:ring-0 transition-colors text-on-surface" placeholder="dev@stash.io" type="email"/>
+</div>
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">CONTRASEÑA</label>
+<input class="w-full bg-surface-dim border border-border-subtle rounded-lg px-4 py-3 focus:border-primary focus:ring-0 transition-colors text-on-surface" placeholder="••••••••" type="password"/>
+</div>
+<button class="w-full bg-on-surface text-surface py-4 font-bold text-body-md rounded-lg mt-4 hover:scale-[1.01] transition-transform">
+                        Acceder al Hub
+                    </button>
+<div class="flex items-center gap-4 py-4">
+<div class="flex-1 h-px bg-border-subtle"></div>
+<span class="font-label-mono text-label-mono text-on-surface-variant">O CONTINUA CON</span>
+<div class="flex-1 h-px bg-border-subtle"></div>
+</div>
+<button class="w-full flex items-center justify-center gap-stack-md bg-surface-container-high border border-border-subtle py-3 rounded-lg hover:bg-surface-bright transition-colors">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+<span class="font-bold text-body-sm">GitHub Account</span>
+</button>
+</form>
+</div>
+</div>
+</section>
+</main>
+<footer class="py-stack-lg border-t border-border-subtle mt-section-gap">
+<div class="max-w-container-max-width mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="flex flex-col items-center md:items-start">
+<span class="text-headline-md font-headline-md font-black text-on-surface mb-1">DevMemo</span>
+<p class="text-body-sm text-on-surface-variant">The Editorial Hub for Developers &amp; Thinkers.</p>
+</div>
+<div class="flex gap-stack-lg">
+<a class="text-label-mono font-label-mono text-on-surface-variant hover:text-primary transition-colors" href="#">PRIVACIDAD</a>
+</div>
+<p class="text-label-mono font-label-mono text-on-surface-variant">© 2024 DEVMEMO CORE</p>
+</div>
+</footer>
+<script>
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tab-login');
+            const signupBtn = document.getElementById('tab-signup');
+            
+            if (tab === 'login') {
+                loginBtn.classList.add('border-primary', 'text-on-surface');
+                loginBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+                signupBtn.classList.remove('border-primary', 'text-on-surface');
+                signupBtn.classList.add('border-transparent', 'text-on-surface-variant');
+            } else {
+                signupBtn.classList.add('border-primary', 'text-on-surface');
+                signupBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+                loginBtn.classList.remove('border-primary', 'text-on-surface');
+                loginBtn.classList.add('border-transparent', 'text-on-surface-variant');
+            }
+        }
+
+        // Mouse tracking parallax for floating cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.floating-card, .floating-card-delayed');
+            const mouseX = e.clientX / window.innerWidth - 0.5;
+            const mouseY = e.clientY / window.innerHeight - 0.5;
+
+            cards.forEach((card, index) => {
+                const depth = (index + 1) * 30;
+                const moveX = mouseX * depth;
+                const moveY = mouseY * depth;
+                // Preserve existing animation but add offset
+                card.style.translate = `${moveX}px ${moveY}px`;
+            });
+        });
+    </script>
+</body></html>
