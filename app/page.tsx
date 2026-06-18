@@ -28,10 +28,7 @@ export default async function Home({ searchParams }: HomePageProps) {
 					DevMemo
 				</Link>
 				<div className='flex items-center gap-4'>
-					<Link
-						href='/login'
-						className='text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200'
-					>
+					<Link href='/login' className='text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200'>
 						LOGIN
 					</Link>
 					<Link
@@ -58,22 +55,42 @@ export default async function Home({ searchParams }: HomePageProps) {
 
 			{/* 2. Hero Section */}
 			<section className='mx-auto mt-28 max-w-[900px] px-6 text-center md:mt-36'>
-				<h1 className='font-heading text-5xl font-extrabold leading-[0.95] tracking-[-0.04em] text-[#f4f4f5] sm:text-6xl md:text-[76px]'>
+				<h1 className='font-heading text-5xl font-extrabold leading-[0.95] tracking-[-0.04em] text-[#f4f4f5] sm:text-6xl md:text-[70px]'>
 					Tu segundo cerebro.
 					<br />
 					Todo en un lugar.
 				</h1>
 				<p className='mx-auto mt-6 max-w-[720px] text-base leading-relaxed text-zinc-400 md:text-lg'>
-					Guarda links, código, comandos, prompts, imágenes y documentos en una bóveda digital diseñada
-					para la velocidad y la precisión editorial.
+					Guarda links, código, comandos, prompts, imágenes y documentos en una bóveda digital diseñada para la
+					velocidad y la precisión editorial.
 				</p>
 			</section>
 
 			{/* 3. Item Preview Cards */}
+			<style>{`
+				@keyframes float {
+					0%, 100% { transform: translateY(0px); }
+					50% { transform: translateY(-6px); }
+				}
+				@keyframes accentGlow {
+					0%, 100% { box-shadow: 0 8px 30px var(--glow-color, transparent); }
+					50% { box-shadow: 0 12px 40px var(--glow-color, transparent); }
+				}
+				.card-float-1 { animation: float 3s ease-in-out infinite; }
+				.card-float-2 { animation: float 3s ease-in-out 0.6s infinite; }
+				.card-float-3 { animation: float 3s ease-in-out 1.2s infinite; }
+				.card-glow-1 { --glow-color: rgba(132,204,22,0.12); animation: accentGlow 3s ease-in-out infinite; }
+				.card-glow-2 { --glow-color: rgba(59,130,246,0.12); animation: accentGlow 3s ease-in-out 0.5s infinite; }
+				.card-glow-3 { --glow-color: rgba(139,92,246,0.12); animation: accentGlow 3s ease-in-out 1s infinite; }
+				@media (prefers-reduced-motion: reduce) {
+					.card-float-1, .card-float-2, .card-float-3,
+					.card-glow-1, .card-glow-2, .card-glow-3 { animation: none; }
+				}
+			`}</style>
 			<section className='mx-auto mt-10 max-w-[860px] px-6 md:mt-12'>
 				<div className='flex flex-col justify-center gap-8 md:flex-row'>
 					{/* Snippet Card */}
-					<div className='relative flex-1 rounded-xl border border-lime-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(132,204,22,0.08)]'>
+					<div className='card-float-1 card-glow-1 relative flex-1 rounded-xl border border-lime-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(132,204,22,0.08)] transition-transform hover:scale-[1.02]'>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-lime-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-lime-400'>
@@ -87,32 +104,28 @@ export default async function Home({ searchParams }: HomePageProps) {
 					</div>
 
 					{/* Link Card */}
-					<div className='relative flex-1 rounded-xl border border-blue-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(59,130,246,0.08)]'>
+					<div className='card-float-2 card-glow-2 relative flex-1 rounded-xl border border-blue-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(59,130,246,0.08)] transition-transform hover:scale-[1.02]'>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-blue-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-blue-400'>
 								LINK
 							</span>
 						</div>
-						<h3 className='mt-3 font-heading text-lg font-semibold text-[#f4f4f5]'>
-							Aesthetic UI References
-						</h3>
+						<h3 className='mt-3 font-heading text-lg font-semibold text-[#f4f4f5]'>Aesthetic UI References</h3>
 						<p className='mt-2 text-sm leading-relaxed text-zinc-500'>
 							Curated list of premium design patterns for modern SaaS apps...
 						</p>
 					</div>
 
 					{/* Prompt Card */}
-					<div className='relative flex-1 rounded-xl border border-purple-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(139,92,246,0.08)]'>
+					<div className='card-float-3 card-glow-3 relative flex-1 rounded-xl border border-purple-500/40 bg-[#151518] p-5 shadow-[0_8px_30px_rgba(139,92,246,0.08)] transition-transform hover:scale-[1.02]'>
 						<div className='absolute left-0 top-0 h-full w-1 rounded-l-xl bg-purple-500' />
 						<div className='flex items-start justify-between'>
 							<span className='font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-purple-400'>
 								PROMPT
 							</span>
 						</div>
-						<h3 className='mt-3 font-heading text-lg font-semibold text-[#f4f4f5]'>
-							Midjourney Editorial
-						</h3>
+						<h3 className='mt-3 font-heading text-lg font-semibold text-[#f4f4f5]'>Midjourney Editorial</h3>
 						<p className='mt-2 font-mono text-sm leading-relaxed text-zinc-400'>
 							/imagine prompt: minimalist obsidian texture...
 						</p>
