@@ -1,6 +1,11 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+	experimental: {
+		serverActions: {
+			bodySizeLimit: '5mb' // ajusta al tamaño máximo que necesites
+		}
+	},
 	allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev', '127.0.0.1', 'localhost'],
 	reactCompiler: true,
 	images: {
