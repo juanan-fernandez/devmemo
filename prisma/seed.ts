@@ -17,7 +17,7 @@ const prisma = new PrismaClient({ adapter })
 const DEMO_USER = {
 	email: 'demo@devmemo.com',
 	name: 'Demo User',
-	password: process.env.DEMO_USER_PASSWORD ?? 'demopassword',
+	password: process.env.DEMO_USER_PASSWORD ?? 'demo-password',
 	image: 'https://gravatar.com/avatar/6e876962302db3a50286689eb0bef3c5?s=200&d=robohash&r=x'
 } as const
 
