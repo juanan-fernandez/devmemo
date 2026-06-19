@@ -2,6 +2,8 @@
 
 Tu centro de conocimiento para desarrolladores. Guarda, organiza y recupera snippets, prompts, notas, comandos, archivos, imágenes y enlaces desde un único lugar.
 
+La apliación está desplegada en vercel con una URL temporal:https://devmemo-blond.vercel.app/
+
 ---
 
 ## Resumen
