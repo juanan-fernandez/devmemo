@@ -9,7 +9,7 @@
 
 ## 🎯 Objetivo general
 
-Diseña una aplicación web llamada **Stash** que permite a los usuarios guardar y organizar distintos tipos de ítems de conocimiento personal (links, snippets de código, comandos, imágenes, documentos, prompts, notas, etc.) de forma similar a Notion. Cada tipo de ítem tiene un color identificador único. Los usuarios pueden agrupar ítems en colecciones.
+Diseña una aplicación web llamada **DevMemo** que permite a los usuarios guardar y organizar distintos tipos de ítems de conocimiento personal (links, snippets de código, comandos, imágenes, documentos, prompts, notas, etc.) de forma similar a Notion. Cada tipo de ítem tiene un color identificador único. Los usuarios pueden agrupar ítems en colecciones.
 
 ---
 
@@ -41,7 +41,6 @@ Diseña una aplicación web llamada **Stash** que permite a los usuarios guardar
 - **Headline:** Algo como *"Tu segundo cerebro. Todo en un lugar."*
 - **Subheadline:** Breve descripción: *"Guarda links, código, comandos, prompts, imágenes y documentos. Organízalos en colecciones. Encuéntralo todo al instante."*
 - CTA primario: botón **"Empezar gratis"**
-- CTA secundario: enlace **"Ver demo"**
 - Visual decorativo: grid de cards flotantes con distintos tipos de ítem, cada una con su color asociado, con efecto de profundidad o parallax sutil.
 
 ### Sección Login / Registro (debajo del hero o en modal al pulsar CTA)

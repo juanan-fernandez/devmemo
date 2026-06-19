@@ -381,3 +381,9 @@
 - Footer con DevMemo, tagline en inglés, PRIVACIDAD y copyright.
 - Usuario autenticado hace auto-redirect a `/dashboard`. Mensaje `accountDeleted` preservado.
 - Sin nuevas dependencias ni cambios en auth/BD. Lint, build y tests (110/110) pasan.
+
+## 2026-06-17 :: 22:15 - README del proyecto
+
+- Feature readme-generation-spec: creado `README.md` raíz en español documentando el proyecto.
+- Incluye resumen, funcionalidades implementadas (MVP), 7 tipos de item con colores/campos, stack tecnológico, setup paso a paso, 12 variables de entorno, base de datos y seed, autenticación completa, búsqueda global, subida de archivos, scripts reales y roadmap (✅ implementado / 🔜 próximo / 🔮 futuro).
+- Basado en `history.md` (implementación real) y `project-overview.md` (visión de producto). Sin features inventadas.
