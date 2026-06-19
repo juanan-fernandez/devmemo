@@ -8,32 +8,16 @@ import { useRouter } from 'next/navigation'
 import { getCollectionsForSelectAction } from '@/actions/collections/get-collections-for-select'
 import { updateItemAction } from '@/actions/items/update-item'
 import type { DashboardItem, ItemDetail } from '@/lib/db/items'
-import {
-	getEditableItemCapabilities,
-	parseTagsInput,
-	EDITABLE_ITEM_LANGUAGE_OPTIONS
-} from '@/lib/items/editable-item'
+import { getEditableItemCapabilities, parseTagsInput, EDITABLE_ITEM_LANGUAGE_OPTIONS } from '@/lib/items/editable-item'
 import { supportsCodeEditor } from '@/lib/items/code-editor'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import { CodeEditor } from '@/components/items/code-editor'
 import { MarkdownEditor } from '@/components/items/markdown-editor'
 import { Button } from '@/components/ui/button'
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ItemActions } from '@/components/items/item-actions'
 
 type ItemDetailSheetProps = {
@@ -53,7 +37,9 @@ type ItemEditFormValues = {
 	collectionId: string
 }
 
-type ItemEditFieldErrors = Partial<Record<'title' | 'description' | 'tags' | 'content' | 'language' | 'url' | 'collectionId', string>>
+type ItemEditFieldErrors = Partial<
+	Record<'title' | 'description' | 'tags' | 'content' | 'language' | 'url' | 'collectionId', string>
+>
 
 type CollectionOption = {
 	id: string
@@ -91,7 +77,7 @@ async function downloadFile(url: string, fileName: string) {
 		document.body.removeChild(link)
 		URL.revokeObjectURL(blobUrl)
 	} catch (error) {
-		console.error('Download failed:', error)
+		//console.error('Download failed:', error)
 		window.open(url, '_blank', 'noopener,noreferrer')
 	}
 }
@@ -113,10 +99,10 @@ function buildFormValues(source: DashboardItem | ItemDetail | null): ItemEditFor
 		title: source.title,
 		description: source.description ?? '',
 		tags: 'tags' in source ? source.tags.map(tag => tag.name).join(', ') : '',
-		content: 'content' in source ? source.content ?? '' : '',
+		content: 'content' in source ? (source.content ?? '') : '',
 		language: source.language ?? '',
-		url: 'url' in source ? source.url ?? '' : '',
-		collectionId: 'collection' in source ? source.collection?.id ?? '' : ''
+		url: 'url' in source ? (source.url ?? '') : '',
+		collectionId: 'collection' in source ? (source.collection?.id ?? '') : ''
 	}
 }
 
@@ -125,7 +111,7 @@ const textareaClassName =
 
 function getCanonicalTypeKey(href: string) {
 	const slug = href.split('/').filter(Boolean).at(-1)
-	return slug ? getCanonicalItemTypeBySlug(slug)?.key ?? null : null
+	return slug ? (getCanonicalItemTypeBySlug(slug)?.key ?? null) : null
 }
 
 const emptyCollectionOption: CollectionOption = { id: '', value: 'none', label: 'Sin colección' }
@@ -386,7 +372,9 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 							<ItemTypeIcon iconName={activeItem.type.icon} className='size-5' color={activeItem.type.color} />
 						</div>
 						<div className='min-w-0 space-y-1'>
-							<SheetTitle className='truncate text-xl'>{isEditing ? 'Editar item' : activeItem.title}</SheetTitle>
+							<SheetTitle className='truncate text-xl'>
+								{isEditing ? 'Editar item' : activeItem.title}
+							</SheetTitle>
 							<SheetDescription className='flex items-center gap-2 text-xs uppercase tracking-wider'>
 								<span>Tipo</span>
 								<span>·</span>
@@ -425,20 +413,20 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 								>
 									<PencilLine className='size-4' />
 								</Button>
-							{detail?.fileUrl && (activeItemTypeKey === 'file' || activeItemTypeKey === 'image') ? (
-								<Button
-									type='button'
-									variant='outline'
-									size='sm'
-									onClick={() => {
-										if (!detail.fileUrl) return
-										downloadFile(detail.fileUrl, detail.fileName ?? activeItem.title)
-									}}
-								>
-									<Download className='size-4' />
-									{activeItemTypeKey === 'image' ? 'Descargar imagen' : 'Descargar archivo'}
-								</Button>
-							) : null}
+								{detail?.fileUrl && (activeItemTypeKey === 'file' || activeItemTypeKey === 'image') ? (
+									<Button
+										type='button'
+										variant='outline'
+										size='sm'
+										onClick={() => {
+											if (!detail.fileUrl) return
+											downloadFile(detail.fileUrl, detail.fileName ?? activeItem.title)
+										}}
+									>
+										<Download className='size-4' />
+										{activeItemTypeKey === 'image' ? 'Descargar imagen' : 'Descargar archivo'}
+									</Button>
+								) : null}
 								<ItemActions
 									itemId={activeItem.id}
 									itemTitle={activeItem.title}
@@ -518,36 +506,36 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 											{renderFieldError('title')}
 										</div>
 
-									<div className='space-y-2'>
-										<label className='text-sm font-medium text-foreground' htmlFor='item-edit-description'>
-											Descripción
-										</label>
-										<textarea
-											id='item-edit-description'
-											value={formValues.description}
-											onChange={event => handleFieldChange('description', event.target.value)}
-											className='w-full rounded-xl border border-input bg-background/60 px-4 py-2 text-sm leading-5 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 resize-none'
-											rows={2}
-											placeholder='Añade una descripción breve'
-											aria-invalid={fieldErrors.description ? true : undefined}
-										/>
-										{renderFieldError('description')}
-									</div>
+										<div className='space-y-2'>
+											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-description'>
+												Descripción
+											</label>
+											<textarea
+												id='item-edit-description'
+												value={formValues.description}
+												onChange={event => handleFieldChange('description', event.target.value)}
+												className='w-full rounded-xl border border-input bg-background/60 px-4 py-2 text-sm leading-5 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 resize-none'
+												rows={2}
+												placeholder='Añade una descripción breve'
+												aria-invalid={fieldErrors.description ? true : undefined}
+											/>
+											{renderFieldError('description')}
+										</div>
 
-									<div className='space-y-2'>
-										<label className='text-sm font-medium text-foreground' htmlFor='item-edit-tags'>
-											Etiquetas
-										</label>
-										<Input
-											id='item-edit-tags'
-											value={formValues.tags}
-											onChange={event => handleFieldChange('tags', event.target.value)}
-											className='h-11 rounded-xl bg-background/60 px-4'
-											placeholder='react, nextjs, prisma (debes separar las etiquetas con comas)'
-											aria-invalid={fieldErrors.tags ? true : undefined}
-										/>
-										{renderFieldError('tags')}
-									</div>
+										<div className='space-y-2'>
+											<label className='text-sm font-medium text-foreground' htmlFor='item-edit-tags'>
+												Etiquetas
+											</label>
+											<Input
+												id='item-edit-tags'
+												value={formValues.tags}
+												onChange={event => handleFieldChange('tags', event.target.value)}
+												className='h-11 rounded-xl bg-background/60 px-4'
+												placeholder='react, nextjs, prisma (debes separar las etiquetas con comas)'
+												aria-invalid={fieldErrors.tags ? true : undefined}
+											/>
+											{renderFieldError('tags')}
+										</div>
 									</section>
 
 									<section className='space-y-4 rounded-3xl border border-border bg-card/60 p-5'>
@@ -556,10 +544,15 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 										</label>
 										<Select
 											value={collectionValue}
-											onValueChange={value => handleFieldChange('collectionId', value === 'none' ? '' : value)}
+											onValueChange={value =>
+												handleFieldChange('collectionId', value === 'none' ? '' : value)
+											}
 											disabled={isSaving}
 										>
-											<SelectTrigger id='item-edit-collection' aria-invalid={fieldErrors.collectionId ? true : undefined}>
+											<SelectTrigger
+												id='item-edit-collection'
+												aria-invalid={fieldErrors.collectionId ? true : undefined}
+											>
 												<SelectValue placeholder='Sin colección' />
 											</SelectTrigger>
 											<SelectContent>
@@ -597,7 +590,10 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 												/>
 											) : (
 												<>
-													<label className='text-sm font-medium text-foreground' htmlFor='item-edit-content'>
+													<label
+														className='text-sm font-medium text-foreground'
+														htmlFor='item-edit-content'
+													>
 														Contenido
 													</label>
 													<textarea
@@ -622,7 +618,9 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 											</label>
 											<Select
 												value={formValues.language || 'none'}
-												onValueChange={value => handleFieldChange('language', value === 'none' ? '' : value)}
+												onValueChange={value =>
+													handleFieldChange('language', value === 'none' ? '' : value)
+												}
 												aria-invalid={fieldErrors.language ? true : undefined}
 											>
 												<SelectTrigger id='item-edit-language'>
@@ -694,7 +692,9 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 										<>
 											<h3 className='text-sm font-semibold text-foreground'>Contenido</h3>
 											<div className='overflow-x-auto rounded-2xl border border-border bg-background p-4'>
-												<pre className='whitespace-pre-wrap break-words text-sm leading-6 text-foreground'>{detail.content}</pre>
+												<pre className='whitespace-pre-wrap break-words text-sm leading-6 text-foreground'>
+													{detail.content}
+												</pre>
 											</div>
 										</>
 									)}
@@ -744,9 +744,21 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 										<div className='flex items-start gap-3'>
 											<FileText className='mt-0.5 size-4 text-muted-foreground' />
 											<div className='space-y-1 text-sm text-muted-foreground'>
-												{detail.fileName ? <p><span className='font-medium text-foreground'>Nombre:</span> {detail.fileName}</p> : null}
-												{fileSize ? <p><span className='font-medium text-foreground'>Tamaño:</span> {fileSize}</p> : null}
-												{detail.fileUrl ? <p className='break-all'><span className='font-medium text-foreground'>URL:</span> {detail.fileUrl}</p> : null}
+												{detail.fileName ? (
+													<p>
+														<span className='font-medium text-foreground'>Nombre:</span> {detail.fileName}
+													</p>
+												) : null}
+												{fileSize ? (
+													<p>
+														<span className='font-medium text-foreground'>Tamaño:</span> {fileSize}
+													</p>
+												) : null}
+												{detail.fileUrl ? (
+													<p className='break-all'>
+														<span className='font-medium text-foreground'>URL:</span> {detail.fileUrl}
+													</p>
+												) : null}
 											</div>
 										</div>
 									</div>
@@ -777,7 +789,10 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 										{tags.length > 0 ? (
 											<div className='mt-2 flex flex-wrap gap-2'>
 												{tags.map(tag => (
-													<span key={tag.id} className='rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground'>
+													<span
+														key={tag.id}
+														className='rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground'
+													>
 														{tag.name}
 													</span>
 												))}
