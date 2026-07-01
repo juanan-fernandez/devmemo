@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateCollectionPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
@@ -36,8 +36,7 @@ export async function deleteCollectionAction(collectionId: string) {
 		return { error: 'No se ha podido eliminar la colección.' }
 	}
 
-	revalidatePath('/dashboard')
-	revalidatePath('/collections')
+	revalidateCollectionPaths()
 
 	return { success: true }
 }

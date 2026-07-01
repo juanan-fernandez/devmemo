@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateItemPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
@@ -49,9 +49,7 @@ export async function toggleFavoriteAction(
 		data: { isFavorite: newState }
 	})
 
-	revalidatePath('/dashboard')
-	revalidatePath('/profile')
-	revalidatePath('/items', 'layout')
+	revalidateItemPaths()
 
 	return {
 		success: newState ? 'Añadido a favoritos.' : 'Quitado de favoritos.',

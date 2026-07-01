@@ -1,10 +1,11 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateItemPaths } from '@/lib/revalidation'
 import { z } from 'zod'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { relinkTagsToItem } from '@/lib/db/tags'
 import {
 	getEditableItemCapabilities,
 	isAllowedItemLanguage,
@@ -123,39 +124,7 @@ export async function updateItemAction(input: UpdateItemInput): Promise<UpdateIt
 				}
 			})
 
-			await tx.itemTag.deleteMany({
-				where: { itemId }
-			})
-
-			if (tags.length === 0) {
-				return
-			}
-
-			const persistedTags = await Promise.all(
-				tags.map(tagName =>
-					tx.tag.upsert({
-						where: {
-							name_userId: {
-								name: tagName,
-								userId: session.user.id
-							}
-						},
-						update: {},
-						create: {
-							name: tagName,
-							userId: session.user.id
-						},
-						select: {
-							id: true
-						}
-					})
-				)
-			)
-
-			await tx.itemTag.createMany({
-				data: persistedTags.map(tag => ({ itemId, tagId: tag.id })),
-				skipDuplicates: true
-			})
+			await relinkTagsToItem(tx, tags, itemId, session.user.id)
 		})
 	} catch {
 		return {
@@ -164,9 +133,7 @@ export async function updateItemAction(input: UpdateItemInput): Promise<UpdateIt
 		}
 	}
 
-	revalidatePath('/dashboard')
-	revalidatePath('/profile')
-	revalidatePath('/items', 'layout')
+	revalidateItemPaths()
 
 	return {
 		success: 'Cambios guardados correctamente.',

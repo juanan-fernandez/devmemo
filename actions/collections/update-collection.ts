@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateCollectionPaths } from '@/lib/revalidation'
 import { z } from 'zod'
 
 import { auth } from '@/auth/auth'
@@ -85,8 +85,7 @@ export async function updateCollection(
 		}
 	}
 
-	revalidatePath('/dashboard')
-	revalidatePath('/collections')
+	revalidateCollectionPaths()
 
 	return {
 		success: 'Colección actualizada correctamente.',

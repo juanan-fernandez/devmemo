@@ -8,7 +8,9 @@ import {
 } from '@/lib/auth/email-verification-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
 import { prisma } from '@/lib/db/prisma'
+import { normalizeEmail } from '@/lib/validation/email'
 import { sendMail } from '@/lib/mail/resend'
+export { normalizeEmail }
 
 const VERIFICATION_TOKEN_TTL_HOURS = 24
 
@@ -20,10 +22,6 @@ function getAppUrl() {
 	}
 
 	return appUrl ?? 'http://localhost:3000'
-}
-
-export function normalizeEmail(email: string) {
-	return email.trim().toLowerCase()
 }
 
 export function hashEmailVerificationToken(token: string) {

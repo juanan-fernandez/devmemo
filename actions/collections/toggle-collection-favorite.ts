@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateCollectionPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
@@ -30,8 +30,7 @@ export async function toggleCollectionFavoriteAction(collectionId: string) {
 		return { error: 'No se ha podido actualizar la colección.' }
 	}
 
-	revalidatePath('/dashboard')
-	revalidatePath('/collections')
+	revalidateCollectionPaths()
 
 	return { isFavorite: !collection.isFavorite }
 }

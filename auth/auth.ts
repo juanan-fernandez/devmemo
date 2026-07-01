@@ -19,10 +19,7 @@ import { prisma } from '@/lib/db/prisma'
 import { getIPFromHeaders } from '@/lib/get-ip'
 import { rateLimiters } from '@/lib/rate-limit'
 
-function normalizeEmail(email: string) {
-	return email.trim().toLowerCase()
-}
-
+import { normalizeEmail } from '@/lib/validation/email'
 class EmailNotVerifiedError extends CredentialsSignin {
 	code = 'email_not_verified'
 

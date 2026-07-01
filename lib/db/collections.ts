@@ -50,6 +50,38 @@ function toCollectionAppItemType(type: CollectionItemType) {
 	})
 }
 
+function toDashboardCollection(collection: {
+	id: string
+	name: string
+	description: string | null
+	isFavorite: boolean
+	createdAt: Date
+	items: Array<{ type: CollectionItemType }>
+}): DashboardCollection {
+	const itemCount = collection.items.length
+	const predominantType = getPredominantType(collection.items)
+	const typeIcons: AppItemType[] = []
+	const seenIds = new Set<string>()
+
+	for (const item of collection.items) {
+		if (!seenIds.has(item.type.id)) {
+			seenIds.add(item.type.id)
+			typeIcons.push(toCollectionAppItemType(item.type))
+		}
+	}
+
+	return {
+		id: collection.id,
+		name: collection.name,
+		description: collection.description,
+		isFavorite: collection.isFavorite,
+		createdAt: collection.createdAt,
+		itemCount,
+		predominantType,
+		typeIcons
+	}
+}
+
 function getPredominantType(items: { type: CollectionItemType }[]) {
 	const typeCounts = new Map<
 		string,
@@ -130,32 +162,7 @@ export async function getLatestCollections(userId: string): Promise<DashboardCol
 		}
 	})
 
-	return collections.map(collection => {
-		const itemCount = collection.items.length
-
-		const predominantType = getPredominantType(collection.items)
-
-		const typeIcons: AppItemType[] = []
-		const seenIds = new Set<string>()
-
-		for (const item of collection.items) {
-			if (!seenIds.has(item.type.id)) {
-				seenIds.add(item.type.id)
-				typeIcons.push(toCollectionAppItemType(item.type))
-			}
-		}
-
-		return {
-			id: collection.id,
-			name: collection.name,
-			description: collection.description,
-			isFavorite: collection.isFavorite,
-			createdAt: collection.createdAt,
-			itemCount,
-			predominantType,
-			typeIcons
-		}
-	})
+	return collections.map(toDashboardCollection)
 }
 
 export async function getSelectableCollections(userId: string): Promise<SelectableCollection[]> {
@@ -238,30 +245,7 @@ export async function getCollectionsPaginated(
 		collections.pop()
 	}
 
-	const mappedCollections = collections.map(collection => {
-		const itemCount = collection.items.length
-		const predominantType = getPredominantType(collection.items)
-		const typeIcons: AppItemType[] = []
-		const seenIds = new Set<string>()
-
-		for (const item of collection.items) {
-			if (!seenIds.has(item.type.id)) {
-				seenIds.add(item.type.id)
-				typeIcons.push(toCollectionAppItemType(item.type))
-			}
-		}
-
-		return {
-			id: collection.id,
-			name: collection.name,
-			description: collection.description,
-			isFavorite: collection.isFavorite,
-			createdAt: collection.createdAt,
-			itemCount,
-			predominantType,
-			typeIcons
-		}
-	})
+	const mappedCollections = collections.map(toDashboardCollection)
 
 	return {
 		collections: mappedCollections,
@@ -286,26 +270,5 @@ export async function getCollectionById(
 		return null
 	}
 
-	const itemCount = collection.items.length
-	const predominantType = getPredominantType(collection.items)
-	const typeIcons: AppItemType[] = []
-	const seenIds = new Set<string>()
-
-	for (const item of collection.items) {
-		if (!seenIds.has(item.type.id)) {
-			seenIds.add(item.type.id)
-			typeIcons.push(toCollectionAppItemType(item.type))
-		}
-	}
-
-	return {
-		id: collection.id,
-		name: collection.name,
-		description: collection.description,
-		isFavorite: collection.isFavorite,
-		createdAt: collection.createdAt,
-		itemCount,
-		predominantType,
-		typeIcons
-	}
+	return toDashboardCollection(collection)
 }

@@ -1,9 +1,10 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateItemPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { linkTagsToItem } from '@/lib/db/tags'
 import {
 	createItemInputSchema,
 	getCreateItemCapabilities,
@@ -158,35 +159,7 @@ export async function createItem(
 				})
 			}
 
-			if (tags.length === 0) {
-				return
-			}
-
-			const persistedTags = await Promise.all(
-				tags.map(tagName =>
-					tx.tag.upsert({
-						where: {
-							name_userId: {
-								name: tagName,
-								userId: session.user.id
-							}
-						},
-						update: {},
-						create: {
-							name: tagName,
-							userId: session.user.id
-						},
-						select: {
-							id: true
-						}
-					})
-				)
-			)
-
-			await tx.itemTag.createMany({
-				data: persistedTags.map(tag => ({ itemId: createdItem.id, tagId: tag.id })),
-				skipDuplicates: true
-			})
+			await linkTagsToItem(tx, tags, createdItem.id, session.user.id)
 		})
 	} catch {
 		return {
@@ -195,10 +168,7 @@ export async function createItem(
 		}
 	}
 
-	revalidatePath('/dashboard')
-	revalidatePath('/profile')
-	revalidatePath('/items', 'layout')
-	revalidatePath(canonicalType.href)
+	revalidateItemPaths(canonicalType.href)
 
 	return {
 		success: 'Item creado correctamente.',
