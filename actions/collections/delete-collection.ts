@@ -4,6 +4,7 @@ import { revalidateCollectionPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { logServerError } from '@/lib/logger'
 
 export async function deleteCollectionAction(collectionId: string) {
 	const session = await auth()
@@ -32,7 +33,8 @@ export async function deleteCollectionAction(collectionId: string) {
 				where: { id: collectionId }
 			})
 		})
-	} catch {
+	} catch (error) {
+		logServerError('deleteCollection', error)
 		return { error: 'No se ha podido eliminar la colección.' }
 	}
 

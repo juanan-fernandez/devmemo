@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { logServerError } from '@/lib/logger'
 
 const updateCollectionSchema = z.object({
 	collectionId: z.string().trim().min(1),
@@ -78,7 +79,8 @@ export async function updateCollection(
 			where: { id: collectionId },
 			data: { name, description }
 		})
-	} catch {
+	} catch (error) {
+		logServerError('updateCollection', error)
 		return {
 			error: 'No se ha podido actualizar la colección.',
 			successful: false

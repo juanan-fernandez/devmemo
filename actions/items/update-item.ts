@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
 import { relinkTagsToItem } from '@/lib/db/tags'
+import { logServerError } from '@/lib/logger'
 import {
 	getEditableItemCapabilities,
 	isAllowedItemLanguage,
@@ -125,7 +126,8 @@ export async function updateItemAction(input: UpdateItemInput): Promise<UpdateIt
 
 			await relinkTagsToItem(tx, tags, itemId, session.user.id)
 		})
-	} catch {
+	} catch (error) {
+		logServerError('updateItem', error)
 		return {
 			error: 'No se han podido guardar los cambios.',
 			successful: false

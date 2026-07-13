@@ -3,6 +3,7 @@
 import { auth } from '@/auth/auth'
 import { createUploadDraft } from '@/lib/storage/file-uploads'
 import { isUploadItemTypeKey, type UploadItemTypeKey } from '@/lib/storage/file-validation'
+import { logServerError } from '@/lib/logger'
 
 export type CreateUploadDraftState = {
 	successful: boolean
@@ -50,9 +51,10 @@ export async function createUploadDraftAction(
 			pathname: draft.pathname
 		}
 	} catch (error) {
+		logServerError('createUploadDraft', error)
 		return {
 			successful: false,
-			error: error instanceof Error ? error.message : 'No se ha podido preparar la subida del archivo.'
+			error: 'No se ha podido preparar la subida del archivo.'
 		}
 	}
 }

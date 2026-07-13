@@ -4,6 +4,7 @@ import type { PutBlobResult } from '@vercel/blob'
 
 import { auth } from '@/auth/auth'
 import { finalizeUploadRecord } from '@/lib/storage/file-uploads'
+import { logServerError } from '@/lib/logger'
 
 export type FinalizeClientUploadState = {
 	successful: boolean
@@ -49,9 +50,10 @@ export async function finalizeClientUploadAction(params: {
 
 		return { successful: true, error: null }
 	} catch (error) {
+		logServerError('finalizeClientUpload', error)
 		return {
 			successful: false,
-			error: error instanceof Error ? error.message : 'No se ha podido finalizar la subida del archivo.'
+			error: 'No se ha podido finalizar la subida del archivo.'
 		}
 	}
 }

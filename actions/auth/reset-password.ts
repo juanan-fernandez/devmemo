@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { PASSWORD_ERROR_MESSAGE, PASSWORD_MISMATCH_MESSAGE, validatePassword } from '@/lib/auth/password-policy'
 import { resetPassword } from '@/lib/auth/password-reset'
 import { PASSWORD_RESET_INVALID_TOKEN_MESSAGE } from '@/lib/auth/password-reset-messages'
+import { logServerError } from '@/lib/logger'
 
 type ResetPasswordState = {
 	error: string | null
@@ -46,7 +47,8 @@ export async function resetPasswordAction(
 		if (!result.success) {
 			return { error: result.message }
 		}
-	} catch {
+	} catch (error) {
+		logServerError('resetPassword', error)
 		return { error: 'No pudimos actualizar tu contraseña. Inténtalo de nuevo en unos minutos.' }
 	}
 

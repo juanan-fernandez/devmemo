@@ -6,6 +6,7 @@ import { requestPasswordReset } from '@/lib/auth/password-reset'
 import { FORGOT_PASSWORD_SUCCESS_MESSAGE } from '@/lib/auth/password-reset-messages'
 import { rateLimiters } from '@/lib/rate-limit'
 import { isValidEmail } from '@/lib/validation/email'
+import { logServerError } from '@/lib/logger'
 
 type RequestPasswordResetState = {
 	message: string | null
@@ -42,7 +43,8 @@ export async function requestPasswordResetAction(
 			message: FORGOT_PASSWORD_SUCCESS_MESSAGE,
 			error: null
 		}
-	} catch {
+	} catch (error) {
+		logServerError('requestPasswordReset', error)
 		return {
 			message: null,
 			error: 'No pudimos procesar tu solicitud ahora mismo. Inténtalo de nuevo en unos minutos.'

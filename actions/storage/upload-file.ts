@@ -7,6 +7,7 @@ import {
 	shouldUseClientUpload,
 	type UploadItemTypeKey
 } from '@/lib/storage/file-validation'
+import { logServerError } from '@/lib/logger'
 
 export type UploadFileState = {
 	successful: boolean
@@ -79,9 +80,10 @@ export async function uploadFileAction(formData: FormData): Promise<UploadFileSt
 			}
 		}
 	} catch (error) {
+		logServerError('uploadFile', error)
 		return {
 			successful: false,
-			error: error instanceof Error ? error.message : 'No se ha podido subir el archivo.',
+			error: 'No se ha podido subir el archivo.',
 			strategy: 'server'
 		}
 	}

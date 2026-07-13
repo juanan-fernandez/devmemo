@@ -4,6 +4,7 @@ import { revalidateCollectionPaths } from '@/lib/revalidation'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { logServerError } from '@/lib/logger'
 
 export async function toggleCollectionFavoriteAction(collectionId: string) {
 	const session = await auth()
@@ -26,7 +27,8 @@ export async function toggleCollectionFavoriteAction(collectionId: string) {
 			where: { id: collectionId },
 			data: { isFavorite: !collection.isFavorite }
 		})
-	} catch {
+	} catch (error) {
+		logServerError('toggleCollectionFavorite', error)
 		return { error: 'No se ha podido actualizar la colección.' }
 	}
 

@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
+import { logServerError } from '@/lib/logger'
 
 const createCollectionSchema = z.object({
 	name: z.string().trim().min(1, 'El nombre de la colección es obligatorio.'),
@@ -70,7 +71,8 @@ export async function createCollection(
 				userId: session.user.id
 			}
 		})
-	} catch {
+	} catch (error) {
+		logServerError('createCollection', error)
 		return {
 			error: 'No se ha podido crear la colección.',
 			successful: false

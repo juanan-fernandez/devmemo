@@ -5,6 +5,7 @@ import { revalidateItemPaths } from '@/lib/revalidation'
 import { auth } from '@/auth/auth'
 import { prisma } from '@/lib/db/prisma'
 import { linkTagsToItem } from '@/lib/db/tags'
+import { logServerError } from '@/lib/logger'
 import {
 	createItemInputSchema,
 	getCreateItemCapabilities,
@@ -161,7 +162,8 @@ export async function createItem(
 
 			await linkTagsToItem(tx, tags, createdItem.id, session.user.id)
 		})
-	} catch {
+	} catch (error) {
+		logServerError('createItem', error)
 		return {
 			error: 'No se ha podido crear el item.',
 			successful: false

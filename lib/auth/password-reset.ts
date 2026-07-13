@@ -10,6 +10,7 @@ import {
 	PASSWORD_RESET_INVALID_TOKEN_MESSAGE
 } from '@/lib/auth/password-reset-messages'
 import { prisma } from '@/lib/db/prisma'
+import { logServerError } from '@/lib/logger'
 import { sendMail } from '@/lib/mail/resend'
 
 const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000
@@ -138,7 +139,8 @@ export async function resetPassword(rawToken: string, password: string) {
 				where: { email: normalizedEmail }
 			})
 		])
-	} catch {
+	} catch (error) {
+		logServerError('passwordReset:resetPassword', error)
 		await prisma.passwordResetToken.deleteMany({
 			where: { email: normalizedEmail }
 		})

@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth/auth'
 import { deleteUploadById } from '@/lib/storage/file-uploads'
+import { logServerError } from '@/lib/logger'
 
 export type DeleteFileState = {
 	successful: boolean
@@ -38,9 +39,10 @@ export async function deleteFileAction(uploadId: string): Promise<DeleteFileStat
 			success: 'Archivo eliminado correctamente.'
 		}
 	} catch (error) {
+		logServerError('deleteFile', error)
 		return {
 			successful: false,
-			error: error instanceof Error ? error.message : 'No se ha podido eliminar el archivo.'
+			error: 'No se ha podido eliminar el archivo.'
 		}
 	}
 }
