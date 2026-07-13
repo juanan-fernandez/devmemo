@@ -14,6 +14,7 @@ import {
 	updateItemInputSchema
 } from '@/lib/items/editable-item'
 import { getCanonicalItemType } from '@/lib/item-types'
+import { mapZodFieldErrors } from '@/lib/validation/zod-errors'
 
 type UpdateItemState = {
 	success?: string
@@ -23,17 +24,15 @@ type UpdateItemState = {
 }
 
 function mapSchemaErrors(error: z.ZodError<UpdateItemInput>): Partial<Record<EditableItemField, string>> {
-	const fieldErrors = error.flatten().fieldErrors
-
-	return {
-		title: fieldErrors.title?.[0],
-		description: fieldErrors.description?.[0],
-		content: fieldErrors.content?.[0],
-		url: fieldErrors.url?.[0],
-		language: fieldErrors.language?.[0],
-		tags: fieldErrors.tags?.[0],
-		collectionId: fieldErrors.collectionId?.[0]
-	}
+	return mapZodFieldErrors(error, [
+		'title',
+		'description',
+		'content',
+		'url',
+		'language',
+		'tags',
+		'collectionId'
+	] as const)
 }
 
 export async function updateItemAction(input: UpdateItemInput): Promise<UpdateItemState> {

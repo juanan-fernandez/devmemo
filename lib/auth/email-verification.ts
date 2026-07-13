@@ -7,6 +7,7 @@ import {
 	VERIFICATION_SUCCESS_MESSAGE
 } from '@/lib/auth/email-verification-messages'
 import { isEmailVerificationEnabled } from '@/lib/auth/email-verification-config'
+import { getAppUrl } from '@/lib/auth/app-url'
 import { prisma } from '@/lib/db/prisma'
 import { normalizeEmail } from '@/lib/validation/email'
 import { sendMail } from '@/lib/mail/resend'
@@ -14,22 +15,12 @@ export { normalizeEmail }
 
 const VERIFICATION_TOKEN_TTL_HOURS = 24
 
-function getAppUrl() {
-	const appUrl = process.env.APP_URL?.trim()
-
-	if (!appUrl && process.env.NODE_ENV !== 'test') {
-		throw new Error('APP_URL is required to build email verification links')
-	}
-
-	return appUrl ?? 'http://localhost:3000'
-}
-
 export function hashEmailVerificationToken(token: string) {
 	return createHash('sha256').update(token).digest('hex')
 }
 
 function buildVerificationUrl(token: string) {
-	const url = new URL('/verify-email', getAppUrl())
+	const url = new URL('/verify-email', getAppUrl('APP_URL is required to build email verification links'))
 	url.searchParams.set('token', token)
 	return url.toString()
 }

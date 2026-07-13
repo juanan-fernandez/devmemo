@@ -12,6 +12,7 @@ import {
 } from '@/lib/items/shared'
 import type { EditableItemField } from '@/lib/items/editable-item'
 import type { CanonicalSystemItemType, SystemItemTypeKey } from '@/lib/item-types'
+import { mapZodFieldErrors } from '@/lib/validation/zod-errors'
 
 const CREATE_ITEM_TYPE_VALUES = ['snippet', 'prompt', 'command', 'note', 'file', 'image', 'url'] as const satisfies readonly SystemItemTypeKey[]
 
@@ -153,19 +154,17 @@ export function getCreateItemCapabilities(typeKey: SystemItemTypeKey) {
 }
 
 export function mapCreateItemSchemaErrors(error: z.ZodError<CreateItemInput>): Partial<Record<CreateItemField, string>> {
-	const fieldErrors = error.flatten().fieldErrors
-
-	return {
-		type: fieldErrors.type?.[0],
-		title: fieldErrors.title?.[0],
-		description: fieldErrors.description?.[0],
-		content: fieldErrors.content?.[0],
-		language: fieldErrors.language?.[0],
-		fileUploadId: fieldErrors.fileUploadId?.[0],
-		url: fieldErrors.url?.[0],
-		collectionId: fieldErrors.collectionId?.[0],
-		tags: fieldErrors.tags?.[0]
-	}
+	return mapZodFieldErrors(error, [
+		'type',
+		'title',
+		'description',
+		'content',
+		'language',
+		'fileUploadId',
+		'url',
+		'collectionId',
+		'tags'
+	] as const)
 }
 
 export function getCreateLabel(canonicalType: CanonicalSystemItemType) {

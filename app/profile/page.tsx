@@ -3,11 +3,8 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth/auth'
 import { ProfileContent } from '@/components/profile/profile-content'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
-import { getSidebarCollections } from '@/lib/db/collections'
-import { getSidebarItemTypes } from '@/lib/db/items'
+import { getSidebarBootstrap } from '@/lib/sidebar-bootstrap'
 import { getUserProfile, getUserUsageStats } from '@/lib/db/profile'
-import { getSidebarUser } from '@/lib/db/user'
-import { getSearchIndex } from '@/lib/db/search'
 
 export default async function ProfilePage() {
 	const session = await auth()
@@ -18,13 +15,10 @@ export default async function ProfilePage() {
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, profile, stats, searchIndex] = await Promise.all([
-		getSidebarItemTypes(userId),
-		getSidebarCollections(userId),
-		getSidebarUser(userId),
+	const [sidebarBootstrap, profile, stats] = await Promise.all([
+		getSidebarBootstrap(userId),
 		getUserProfile(userId),
-		getUserUsageStats(userId),
-		getSearchIndex(userId)
+		getUserUsageStats(userId)
 	])
 
 	if (!profile) {
@@ -33,10 +27,10 @@ export default async function ProfilePage() {
 
 	return (
 		<DashboardLayoutShell
-			sidebarItemTypes={sidebarItemTypes}
-			sidebarCollections={sidebarCollections}
-			sidebarUser={sidebarUser}
-			searchIndex={searchIndex}
+			sidebarItemTypes={sidebarBootstrap.sidebarItemTypes}
+			sidebarCollections={sidebarBootstrap.sidebarCollections}
+			sidebarUser={sidebarBootstrap.sidebarUser}
+			searchIndex={sidebarBootstrap.searchIndex}
 		>
 			<ProfileContent profile={profile} stats={stats} />
 		</DashboardLayoutShell>

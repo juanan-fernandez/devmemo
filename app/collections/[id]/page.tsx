@@ -3,10 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth/auth'
 import { getCollectionById } from '@/lib/db/collections'
 import { getCollectionItemsPaginated } from '@/lib/db/items'
-import { getSidebarCollections } from '@/lib/db/collections'
-import { getSidebarItemTypes } from '@/lib/db/items'
-import { getSidebarUser } from '@/lib/db/user'
-import { getSearchIndex } from '@/lib/db/search'
+import { getSidebarBootstrap } from '@/lib/sidebar-bootstrap'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
 import { CollectionDetailContent } from '@/components/collections/collection-detail-content'
 
@@ -25,15 +22,11 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, collection, itemsResult, searchIndex] =
-		await Promise.all([
-			getSidebarItemTypes(userId),
-			getSidebarCollections(userId),
-			getSidebarUser(userId),
-			getCollectionById(userId, collectionId),
-			getCollectionItemsPaginated(userId, collectionId, null, null, 12),
-			getSearchIndex(userId)
-		])
+	const [sidebarBootstrap, collection, itemsResult] = await Promise.all([
+		getSidebarBootstrap(userId),
+		getCollectionById(userId, collectionId),
+		getCollectionItemsPaginated(userId, collectionId, null, null, 12)
+	])
 
 	if (!collection) {
 		notFound()
@@ -41,10 +34,10 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
 
 	return (
 		<DashboardLayoutShell
-			sidebarItemTypes={sidebarItemTypes}
-			sidebarCollections={sidebarCollections}
-			sidebarUser={sidebarUser}
-			searchIndex={searchIndex}
+			sidebarItemTypes={sidebarBootstrap.sidebarItemTypes}
+			sidebarCollections={sidebarBootstrap.sidebarCollections}
+			sidebarUser={sidebarBootstrap.sidebarUser}
+			searchIndex={sidebarBootstrap.searchIndex}
 		>
 			<CollectionDetailContent
 				collection={collection}

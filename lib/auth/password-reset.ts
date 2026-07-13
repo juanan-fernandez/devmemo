@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 
 import { hash } from 'bcryptjs'
 
+import { getAppUrl } from '@/lib/auth/app-url'
 import { normalizeEmail } from '@/lib/auth/email-verification'
 import {
 	FORGOT_PASSWORD_SUCCESS_MESSAGE,
@@ -13,22 +14,12 @@ import { sendMail } from '@/lib/mail/resend'
 
 const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1000
 
-function getAppUrl() {
-	const appUrl = process.env.APP_URL?.trim()
-
-	if (!appUrl && process.env.NODE_ENV !== 'test') {
-		throw new Error('APP_URL is required to build password reset links')
-	}
-
-	return appUrl ?? 'http://localhost:3000'
-}
-
 export function hashPasswordResetToken(token: string) {
 	return createHash('sha256').update(token).digest('hex')
 }
 
 function buildPasswordResetUrl(token: string) {
-	const url = new URL('/reset-password', getAppUrl())
+	const url = new URL('/reset-password', getAppUrl('APP_URL is required to build password reset links'))
 	url.searchParams.set('token', token)
 	return url.toString()
 }

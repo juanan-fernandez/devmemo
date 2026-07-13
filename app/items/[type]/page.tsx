@@ -2,10 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth/auth'
 import { getCanonicalItemTypeBySlug } from '@/lib/item-types'
 import { getItemsByTypeName } from '@/lib/db/items'
-import { getSidebarItemTypes } from '@/lib/db/items'
-import { getSidebarCollections } from '@/lib/db/collections'
-import { getSidebarUser } from '@/lib/db/user'
-import { getSearchIndex } from '@/lib/db/search'
+import { getSidebarBootstrap } from '@/lib/sidebar-bootstrap'
 import { DashboardLayoutShell } from '@/components/dashboard/dashboard-layout-shell'
 import { ItemCard } from '@/components/items/item-card'
 
@@ -29,20 +26,17 @@ export default async function ItemListPage({ params }: ItemListPageProps) {
 
 	const userId = session.user.id
 
-	const [sidebarItemTypes, sidebarCollections, sidebarUser, { items, totalCount }, searchIndex] = await Promise.all([
-		getSidebarItemTypes(userId),
-		getSidebarCollections(userId),
-		getSidebarUser(userId),
-		getItemsByTypeName(userId, canonicalType.dbName),
-		getSearchIndex(userId)
+	const [sidebarBootstrap, { items, totalCount }] = await Promise.all([
+		getSidebarBootstrap(userId),
+		getItemsByTypeName(userId, canonicalType.dbName)
 	])
 
 	return (
 		<DashboardLayoutShell
-			sidebarItemTypes={sidebarItemTypes}
-			sidebarCollections={sidebarCollections}
-			sidebarUser={sidebarUser}
-			searchIndex={searchIndex}
+			sidebarItemTypes={sidebarBootstrap.sidebarItemTypes}
+			sidebarCollections={sidebarBootstrap.sidebarCollections}
+			sidebarUser={sidebarBootstrap.sidebarUser}
+			searchIndex={sidebarBootstrap.searchIndex}
 		>
 			<div className='space-y-6'>
 				<div className='flex items-center justify-between'>
