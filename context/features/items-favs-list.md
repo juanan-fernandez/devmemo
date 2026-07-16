@@ -63,7 +63,7 @@ Más recientes primero
 When the user changes the sort option:
 
 - Reset the list.
-- Load the first 9 collections again using the selected order.
+- Load the first 9 items again using the selected order.
 - Continue lazy loading with the new sorting mode.
 
 ### Loading & end states
