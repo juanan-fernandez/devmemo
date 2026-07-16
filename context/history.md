@@ -387,3 +387,13 @@
 - Feature readme-generation-spec: creado `README.md` raíz en español documentando el proyecto.
 - Incluye resumen, funcionalidades implementadas (MVP), 7 tipos de item con colores/campos, stack tecnológico, setup paso a paso, 12 variables de entorno, base de datos y seed, autenticación completa, búsqueda global, subida de archivos, scripts reales y roadmap (✅ implementado / 🔜 próximo / 🔮 futuro).
 - Basado en `history.md` (implementación real) y `project-overview.md` (visión de producto). Sin features inventadas.
+
+## 2026-07-16 :: 13:45 - Página /items con scroll
+
+- Feature items-page: creada la nueva ruta protegida `/items` dentro del shell del dashboard.
+- La card de “Total de elementos” del dashboard ahora navega a `/items`.
+- Añadido `getItemsPaginated()` en `lib/db/items.ts` con paginación por cursor en lotes de 9 y ordenación por `createdAt` y `title`.
+- Creada la Server Action `actions/items/load-more-items.ts` para cargar más items autenticados.
+- Creado `components/items/item-list.tsx` con Select de ordenación, infinite scroll reutilizando `useInfiniteScroll`, loading state, end state y empty state.
+- Ajustado `ItemCard` para reflejar visualmente cambios optimistas de favorito y fijado en la página `/items`.
+- Añadidos tests para `getItemsPaginated()` y `loadMoreItemsAction()`.

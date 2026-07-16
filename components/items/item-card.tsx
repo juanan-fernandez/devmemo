@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { ItemTypeIcon } from '@/lib/item-type-icons'
 import type { DashboardItem } from '@/lib/db/items'
 import { ItemActions } from '@/components/items/item-actions'
@@ -13,6 +15,7 @@ type ItemCardProps = {
 export function ItemCard({ item }: ItemCardProps) {
 	const { isDeleted, showMessage, sheetSession, sheetOpen, setSheetOpen, handleDelete, handleOpenSheet } =
 		useItemRow()
+	const [itemStatus, setItemStatus] = useState({ isFavorite: item.isFavorite, isPinned: item.isPinned })
 
 	if (isDeleted) {
 		return showMessage ? (
@@ -44,9 +47,12 @@ export function ItemCard({ item }: ItemCardProps) {
 					<ItemActions
 						itemId={item.id}
 						itemTitle={item.title}
-						isFavorite={item.isFavorite}
-						isPinned={item.isPinned}
+						isFavorite={itemStatus.isFavorite}
+						isPinned={itemStatus.isPinned}
 						onDelete={handleDelete}
+						onStatusChange={nextState => {
+							setItemStatus(current => ({ ...current, ...nextState }))
+						}}
 					/>
 				</div>
 				<div className='px-5 pb-4 pt-1'>
@@ -67,8 +73,8 @@ export function ItemCard({ item }: ItemCardProps) {
 			</div>
 
 			<ItemDetailSheet
-				key={`${item.id}-${sheetSession}`}
-				item={item}
+				key={`${item.id}-${item.isFavorite}-${item.isPinned}-${item.title}-${item.description ?? ''}-${item.language ?? ''}-${sheetSession}`}
+				item={{ ...item, ...itemStatus }}
 				open={sheetOpen}
 				onOpenChange={setSheetOpen}
 				onDelete={handleDelete}

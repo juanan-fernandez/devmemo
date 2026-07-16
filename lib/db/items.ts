@@ -237,6 +237,54 @@ export async function getDashboardItemsSection(userId: string): Promise<Dashboar
 	}
 }
 
+export type ItemSort = 'createdAt-desc' | 'createdAt-asc' | 'title-asc' | 'title-desc'
+
+export type PaginatedItemsResult = {
+	items: DashboardItem[]
+	nextCursor: string | null
+}
+
+function getItemsPaginatedOrderBy(sort: ItemSort) {
+	switch (sort) {
+		case 'createdAt-desc':
+			return [{ createdAt: 'desc' as const }, { id: 'desc' as const }]
+		case 'createdAt-asc':
+			return [{ createdAt: 'asc' as const }, { id: 'asc' as const }]
+		case 'title-asc':
+			return [{ title: 'asc' as const }, { id: 'asc' as const }]
+		case 'title-desc':
+			return [{ title: 'desc' as const }, { id: 'desc' as const }]
+	}
+}
+
+export async function getItemsPaginated(
+	userId: string,
+	sort: ItemSort,
+	cursor?: string | null,
+	limit: number = 9
+): Promise<PaginatedItemsResult> {
+	const orderBy = getItemsPaginatedOrderBy(sort)
+
+	const items = await prisma.item.findMany({
+		where: { userId },
+		orderBy,
+		take: limit + 1,
+		...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+		include: { type: true }
+	})
+
+	const hasMore = items.length > limit
+
+	if (hasMore) {
+		items.pop()
+	}
+
+	return {
+		items: items.map(mapDashboardItem),
+		nextCursor: hasMore ? items[items.length - 1].id : null
+	}
+}
+
 export type PaginatedCollectionItemsResult = {
 	items: DashboardItem[]
 	nextCursor: string | null

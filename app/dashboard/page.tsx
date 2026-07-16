@@ -50,7 +50,8 @@ export default async function DashboardPage() {
 			label: 'Total de elementos',
 			value: summary.totalItems,
 			color: '#84CC16',
-			icon: Archive
+			icon: Archive,
+			href: '/items'
 		},
 		{
 			label: 'Colecciones',
