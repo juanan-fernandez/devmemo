@@ -25,6 +25,7 @@ type ItemDetailSheetProps = {
 	open: boolean
 	onOpenChange: (open: boolean) => void
 	onDelete?: () => void
+	onStatusChange?: (nextState: { isFavorite?: boolean; isPinned?: boolean }) => void
 }
 
 type ItemEditFormValues = {
@@ -116,7 +117,7 @@ function getCanonicalTypeKey(href: string) {
 
 const emptyCollectionOption: CollectionOption = { id: '', value: 'none', label: 'Sin colección' }
 
-export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDetailSheetProps) {
+export function ItemDetailSheet({ item, open, onOpenChange, onDelete, onStatusChange }: ItemDetailSheetProps) {
 	const router = useRouter()
 	const closeRefreshTimeoutRef = useRef<number | null>(null)
 	const [detail, setDetail] = useState<ItemDetail | null>(null)
@@ -346,6 +347,7 @@ export function ItemDetailSheet({ item, open, onOpenChange, onDelete }: ItemDeta
 
 	function handleSheetActionStatusChange(nextState: { isFavorite?: boolean; isPinned?: boolean }) {
 		setHasPendingListRefresh(true)
+		onStatusChange?.(nextState)
 
 		setDetail(currentDetail => {
 			if (!currentDetail) {

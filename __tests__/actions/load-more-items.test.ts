@@ -66,9 +66,18 @@ describe('loadMoreItemsAction', () => {
 
 		const result = await loadMoreItemsAction('title-asc', 'item_5')
 
-		expect(getItemsPaginatedMock).toHaveBeenCalledWith('user_123', 'title-asc', 'item_5')
+		expect(getItemsPaginatedMock).toHaveBeenCalledWith('user_123', 'title-asc', 'item_5', 9, undefined)
 		expect(result.items).toHaveLength(1)
 		expect(result.nextCursor).toBe('item_1')
+	})
+
+	it('passes favoritesOnly to the paginated query when requested', async () => {
+		authMock.mockResolvedValue({ user: { id: 'user_123' } })
+		getItemsPaginatedMock.mockResolvedValue({ items: [], nextCursor: null })
+
+		await loadMoreItemsAction('createdAt-desc', 'item_5', true)
+
+		expect(getItemsPaginatedMock).toHaveBeenCalledWith('user_123', 'createdAt-desc', 'item_5', 9, true)
 	})
 
 	it('passes null cursor by default', async () => {
@@ -77,6 +86,6 @@ describe('loadMoreItemsAction', () => {
 
 		await loadMoreItemsAction('createdAt-desc')
 
-		expect(getItemsPaginatedMock).toHaveBeenCalledWith('user_123', 'createdAt-desc', undefined)
+		expect(getItemsPaginatedMock).toHaveBeenCalledWith('user_123', 'createdAt-desc', undefined, 9, undefined)
 	})
 })

@@ -64,7 +64,8 @@ export default async function DashboardPage() {
 			label: 'Elementos favoritos',
 			value: summary.favoriteItems,
 			color: '#EC4899',
-			icon: Heart
+			icon: Heart,
+			href: '/items/favorites'
 		},
 		{
 			label: 'Colecciones favoritas',

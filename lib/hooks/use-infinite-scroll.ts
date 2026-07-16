@@ -20,6 +20,8 @@ type InfiniteScrollState<T> = {
 	sentinelRef: React.RefObject<HTMLDivElement | null>
 	/** Call to reset the list with new initial data (e.g. when sort changes) */
 	reset: (initialItems: T[], nextCursor: string | null) => void
+	/** Update the current list optimistically without resetting pagination */
+	setItems: React.Dispatch<React.SetStateAction<T[]>>
 }
 
 export function useInfiniteScroll<T>({
@@ -82,5 +84,12 @@ export function useInfiniteScroll<T>({
 		[]
 	)
 
-	return { items, isLoadingMore, hasMore, sentinelRef: sentinelRef as React.RefObject<HTMLDivElement | null>, reset }
+	return {
+		items,
+		isLoadingMore,
+		hasMore,
+		sentinelRef: sentinelRef as React.RefObject<HTMLDivElement | null>,
+		reset,
+		setItems
+	}
 }

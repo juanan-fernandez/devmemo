@@ -6,7 +6,7 @@
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
@@ -23,6 +23,7 @@ Not Started
 - Mostrar loading indicator al cargar más resultados.
 - Mostrar fin de lista cuando no haya más items favoritos.
 - Si no hay favoritos, mostrar exactamente: "No tienes items favoritos todavía.".
+- Los botones para agregar un favorito (star) o para agregar al tablero (pin) deben funcionar como en `/items`
 
 ## Notes
 
@@ -30,10 +31,10 @@ Not Started
 - Reutilizar los componentes/patrones de `/items` siempre que sea razonable; si hace falta, extraer lógica compartida en vez de duplicar markup.
 - Batch size fijo: 9 items por carga inicial y por cada carga adicional.
 - Mapeo de sort:
-  - Más recientes primero → `createdAt desc`
-  - Más antiguos primero → `createdAt asc`
-  - Nombre A-Z → `title asc`
-  - Nombre Z-A → `title desc`
+   - Más recientes primero → `createdAt desc`
+   - Más antiguos primero → `createdAt asc`
+   - Nombre A-Z → `title asc`
+   - Nombre Z-A → `title desc`
 - La spec menciona "collections" al describir el reset del sort, pero se refiere a items; aplicar la misma lógica que en `/items`.
 - Constraint clave: nunca mostrar items de otros usuarios ni items no favoritos.
 

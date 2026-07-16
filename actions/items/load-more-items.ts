@@ -5,7 +5,8 @@ import { getItemsPaginated, type ItemSort, type PaginatedItemsResult } from '@/l
 
 export async function loadMoreItemsAction(
 	sort: ItemSort,
-	cursor?: string | null
+	cursor?: string | null,
+	favoritesOnly?: boolean
 ): Promise<PaginatedItemsResult> {
 	const session = await auth()
 
@@ -13,5 +14,5 @@ export async function loadMoreItemsAction(
 		return { items: [], nextCursor: null }
 	}
 
-	return getItemsPaginated(session.user.id, sort, cursor)
+	return getItemsPaginated(session.user.id, sort, cursor, 9, favoritesOnly)
 }

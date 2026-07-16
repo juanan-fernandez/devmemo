@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type ItemListProps = {
 	initialItems: DashboardItem[]
 	initialNextCursor: string | null
+	favoritesOnly?: boolean
 }
 
 const SORT_OPTIONS: { value: ItemSort; label: string }[] = [
@@ -21,23 +22,28 @@ const SORT_OPTIONS: { value: ItemSort; label: string }[] = [
 	{ value: 'title-desc', label: 'Nombre Z-A' }
 ]
 
-export function ItemList({ initialItems, initialNextCursor }: ItemListProps) {
+export function ItemList({ initialItems, initialNextCursor, favoritesOnly = false }: ItemListProps) {
 	const [sort, setSort] = useState<ItemSort>('createdAt-desc')
 	const sortRef = useRef(sort)
+	const favoritesOnlyRef = useRef(favoritesOnly)
 
 	useEffect(() => {
 		sortRef.current = sort
 	}, [sort])
 
+	useEffect(() => {
+		favoritesOnlyRef.current = favoritesOnly
+	}, [favoritesOnly])
+
 	const loadMore = useCallback(
 		async (cursor: string | null) => {
-			const result = await loadMoreItemsAction(sortRef.current, cursor)
+			const result = await loadMoreItemsAction(sortRef.current, cursor, favoritesOnlyRef.current)
 			return { items: result.items, nextCursor: result.nextCursor }
 		},
 		[]
 	)
 
-	const { items, isLoadingMore, hasMore, sentinelRef, reset } = useInfiniteScroll({
+	const { items, isLoadingMore, hasMore, sentinelRef, reset, setItems } = useInfiniteScroll({
 		initialItems,
 		initialNextCursor,
 		loadMore
@@ -62,15 +68,31 @@ export function ItemList({ initialItems, initialNextCursor }: ItemListProps) {
 		const newSort = value as ItemSort
 		setSort(newSort)
 
-		loadMoreItemsAction(newSort, null).then(result => {
+		loadMoreItemsAction(newSort, null, favoritesOnlyRef.current).then(result => {
 			reset(result.items, result.nextCursor)
 		})
 	}
 
+	const title = favoritesOnly ? 'Items favoritos' : 'Items'
+	const endMessage = favoritesOnly ? 'No hay más items favoritos' : 'No hay más items.'
+
+	const handleItemStatusChange = useCallback(
+		(itemId: string, nextState: { isFavorite?: boolean; isPinned?: boolean }) => {
+			setItems(currentItems => {
+				if (favoritesOnlyRef.current && nextState.isFavorite === false) {
+					return currentItems.filter(item => item.id !== itemId)
+				}
+
+				return currentItems.map(item => (item.id === itemId ? { ...item, ...nextState } : item))
+			})
+		},
+		[setItems]
+	)
+
 	return (
 		<div className='space-y-6'>
 			<div className='flex items-center justify-between'>
-				<h1 className='text-xl font-semibold text-foreground'>Items</h1>
+				<h1 className='text-xl font-semibold text-foreground'>{title}</h1>
 				<div className='flex items-center gap-2'>
 					<label htmlFor='item-sort' className='text-xs text-muted-foreground'>
 						Ordenar por
@@ -92,13 +114,19 @@ export function ItemList({ initialItems, initialNextCursor }: ItemListProps) {
 
 			{items.length === 0 ? (
 				<div className='flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center'>
-					<p className='text-sm text-muted-foreground'>No tienes items todavía.</p>
+					<p className='text-sm text-muted-foreground'>
+						{favoritesOnly ? 'No tienes items favoritos todavía.' : 'No tienes items todavía.'}
+					</p>
 				</div>
 			) : (
 				<>
 					<div className='grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3'>
 						{items.map(item => (
-							<ItemCard key={item.id} item={item} />
+							<ItemCard
+								key={item.id}
+								item={item}
+								onStatusChange={nextState => handleItemStatusChange(item.id, nextState)}
+							/>
 						))}
 					</div>
 
@@ -111,8 +139,8 @@ export function ItemList({ initialItems, initialNextCursor }: ItemListProps) {
 						</div>
 					)}
 
-					{!hasMore && items.length > 9 && (
-						<p className='py-4 text-center text-xs text-muted-foreground'>No hay más items.</p>
+					{!hasMore && items.length > 0 && (
+						<p className='py-4 text-center text-xs text-muted-foreground'>{endMessage}</p>
 					)}
 				</>
 			)}

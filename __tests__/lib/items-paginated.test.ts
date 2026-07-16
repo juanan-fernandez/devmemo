@@ -149,6 +149,19 @@ describe('getItemsPaginated', () => {
 		expect(findManyMock).toHaveBeenCalledWith(expect.objectContaining({ take: 6 }))
 	})
 
+	it('enforces favorite-only filter when requested', async () => {
+		findManyMock.mockResolvedValue(makeItemRows(2))
+
+		await getItemsPaginated('user_1', 'createdAt-desc', null, 9, true)
+
+		expect(findManyMock).toHaveBeenCalledWith({
+			where: { userId: 'user_1', isFavorite: true },
+			orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+			take: 10,
+			include: { type: true }
+		})
+	})
+
 	it('maps items to DashboardItem shape', async () => {
 		const rows = makeItemRows(1)
 		findManyMock.mockResolvedValue(rows)

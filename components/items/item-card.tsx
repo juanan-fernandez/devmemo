@@ -10,12 +10,18 @@ import { useItemRow } from '@/components/items/hooks/use-item-row'
 
 type ItemCardProps = {
 	item: DashboardItem
+	onStatusChange?: (nextState: { isFavorite?: boolean; isPinned?: boolean }) => void
 }
 
-export function ItemCard({ item }: ItemCardProps) {
+export function ItemCard({ item, onStatusChange }: ItemCardProps) {
 	const { isDeleted, showMessage, sheetSession, sheetOpen, setSheetOpen, handleDelete, handleOpenSheet } =
 		useItemRow()
 	const [itemStatus, setItemStatus] = useState({ isFavorite: item.isFavorite, isPinned: item.isPinned })
+
+	function handleStatusChange(nextState: { isFavorite?: boolean; isPinned?: boolean }) {
+		setItemStatus(current => ({ ...current, ...nextState }))
+		onStatusChange?.(nextState)
+	}
 
 	if (isDeleted) {
 		return showMessage ? (
@@ -50,9 +56,7 @@ export function ItemCard({ item }: ItemCardProps) {
 						isFavorite={itemStatus.isFavorite}
 						isPinned={itemStatus.isPinned}
 						onDelete={handleDelete}
-						onStatusChange={nextState => {
-							setItemStatus(current => ({ ...current, ...nextState }))
-						}}
+						onStatusChange={handleStatusChange}
 					/>
 				</div>
 				<div className='px-5 pb-4 pt-1'>
@@ -78,6 +82,7 @@ export function ItemCard({ item }: ItemCardProps) {
 				open={sheetOpen}
 				onOpenChange={setSheetOpen}
 				onDelete={handleDelete}
+				onStatusChange={handleStatusChange}
 			/>
 		</>
 	)

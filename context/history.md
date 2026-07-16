@@ -397,3 +397,13 @@
 - Creado `components/items/item-list.tsx` con Select de ordenación, infinite scroll reutilizando `useInfiniteScroll`, loading state, end state y empty state.
 - Ajustado `ItemCard` para reflejar visualmente cambios optimistas de favorito y fijado en la página `/items`.
 - Añadidos tests para `getItemsPaginated()` y `loadMoreItemsAction()`.
+
+## 2026-07-16 :: 14:20 - Página favoritos de items
+
+- Feature items-favs-list: creada la ruta protegida `/items/favorites` reutilizando la misma base compartida que `/items`.
+- La card de “Elementos favoritos” del dashboard ahora navega a `/items/favorites`.
+- Se extrajo `components/items/items-page-content.tsx` para compartir la carga inicial entre `/items` y `/items/favorites`.
+- `getItemsPaginated()` y `loadMoreItemsAction()` aceptan ahora el filtro `favoritesOnly` para devolver solo items favoritos del usuario autenticado.
+- `ItemList` reutiliza el mismo listado para ambos casos y ajusta título, empty state y end state en modo favoritos.
+- Al quitar favorito desde `/items/favorites`, el item desaparece inmediatamente de la lista con actualización optimista.
+- Se actualizaron tests de paginación y server action para cubrir el filtro `favoritesOnly`.
