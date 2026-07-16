@@ -32,7 +32,7 @@ Implement a full listing page reachable from the "Total items" dashboard card, c
 
 ### Sorting
 
-At the top of the collection list, show a Select dropdown with sorting options.
+At the top of the items list, show a Select dropdown with sorting options.
 
 Use the project's existing Select component. If the project uses shadcn UI, use the shadcn Select component.
 
@@ -40,7 +40,7 @@ Sorting options:
 
 ```text
 Más recientes primero
-Más antiguas primero
+Más antiguos primero
 Nombre A-Z
 Nombre Z-A
 ```
@@ -48,7 +48,7 @@ Nombre Z-A
 Mapping:
 
 - `Más recientes primero` -> `createdAt desc`
-- `Más antiguas primero` -> `createdAt asc`
+- `Más antiguos primero` -> `createdAt asc`
 - `Nombre A-Z` -> `title asc`
 - `Nombre Z-A` -> `title desc`
 
